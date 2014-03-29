@@ -1,5 +1,18 @@
 lexer grammar PlanningLexer;
 
+// Keywords in domain
+DOM: 'domain';
+DEF: 'define';
+REQ: 'requirements';
+TYPE: 'types';
+PRED: 'predicates';
+ACT: 'action';
+PARM: 'parameters';
+PRE: 'precondition';
+EFF: 'effect';
+OBJ: 'object';
+EITHER: 'either';
+
 // Common used in domain and problem
 LB: '(';
 RB: ')';
@@ -28,7 +41,7 @@ EXISTS: 'exists';
 PREF: 'preference';
 BINARYCOMP: EQ | LT | GT | LEQ | GEQ ;
 BINARYOP: PLUS | MINUS | MULT | DIV ;
-LETTER: [a-z|A-Z];
+LETTER: [a-zA-Z];
 DIGIT: [0-9];
 
 NAME: LETTER CHAR* ;
@@ -36,17 +49,6 @@ CHAR: LETTER | DIGIT | DASH | UL ;
 NUMBER: DIGIT+ DECIMAL? ;
 DECIMAL: COMMA DIGIT+ ;
 VAR: QM NAME ;
-
-// Keywords in domain
-DOM: 'domain';
-DEF: 'define';
-REQ: 'requirements';
-TYPE: 'types';
-PRED: 'predicates';
-ACT: 'actions';
-PARM: 'parameters';
-PRE: 'precondition';
-EFF: 'effect';
 FUNSYM : NAME ;
 
 // Keywords in requirements

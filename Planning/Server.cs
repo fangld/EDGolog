@@ -25,7 +25,7 @@ namespace Planning
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
             // create a lexer that feeds off of input CharStream
-            PlanningDomainLexer lexer = new PlanningDomainLexer(input);
+            PlanningLexer lexer = new PlanningLexer(input);
             // create a buffer of tokens pulled from the lexer
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             // create a parser that feeds off the tokens buffer
@@ -39,6 +39,7 @@ namespace Planning
             ////walker.Walk(new ShortToUnicodeString(), tree);
             //Console.WriteLine(); // print a \n after translation
             Console.WriteLine(tree.ToStringTree((parser))); // print LISP-style tree
+            tr.Close();
         }
     }
 }

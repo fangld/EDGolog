@@ -55,6 +55,7 @@
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
       <Listener>False</Listener>
       <Visitor>False</Visitor>
+      <ForceAtn>False</ForceAtn>
     </Antlr4>
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +63,7 @@
     <Antlr4 Include="PlanningDomain.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
+      <ForceAtn>False</ForceAtn>
     </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -51,6 +51,7 @@
     <Compile Include="PlanningDomainListener.cs" />
     <Compile Include="PlanningDomainParser.cs" />
     <Compile Include="PlanningDomainVisitor.cs" />
+    <Compile Include="PlanningLexer.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

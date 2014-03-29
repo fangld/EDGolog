@@ -30,6 +30,17 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface IPlanningDomainListener : IParseTreeListener {
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.structDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStructDef([NotNull] PlanningDomainParser.StructDefContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.structDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStructDef([NotNull] PlanningDomainParser.StructDefContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.listName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -39,6 +50,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitListName([NotNull] PlanningDomainParser.ListNameContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.primType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPrimType([NotNull] PlanningDomainParser.PrimTypeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.primType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPrimType([NotNull] PlanningDomainParser.PrimTypeContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.actBodyDef"/>.
@@ -52,6 +74,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	void ExitActBodyDef([NotNull] PlanningDomainParser.ActBodyDefContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.atomicFormSke"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAtomicFormSke([NotNull] PlanningDomainParser.AtomicFormSkeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.atomicFormSke"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAtomicFormSke([NotNull] PlanningDomainParser.AtomicFormSkeContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.gd"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -61,6 +94,28 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitGd([NotNull] PlanningDomainParser.GdContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.type"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterType([NotNull] PlanningDomainParser.TypeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.type"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitType([NotNull] PlanningDomainParser.TypeContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPrefGD([NotNull] PlanningDomainParser.PrefGDContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPrefGD([NotNull] PlanningDomainParser.PrefGDContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.reqDef"/>.
@@ -83,17 +138,6 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitPredDef([NotNull] PlanningDomainParser.PredDefContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPrefGD([NotNull] PlanningDomainParser.PrefGDContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPrefGD([NotNull] PlanningDomainParser.PrefGDContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.listVar"/>.
@@ -184,6 +228,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	void ExitTypeDef([NotNull] PlanningDomainParser.TypeDefContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.pred"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPred([NotNull] PlanningDomainParser.PredContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.pred"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPred([NotNull] PlanningDomainParser.PredContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -204,17 +259,6 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitActDef([NotNull] PlanningDomainParser.ActDefContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningDomainParser.literal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterLiteral([NotNull] PlanningDomainParser.LiteralContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningDomainParser.literal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitLiteral([NotNull] PlanningDomainParser.LiteralContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.

@@ -31,11 +31,25 @@ using IToken = Antlr4.Runtime.IToken;
 [System.CLSCompliant(false)]
 public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.structDef"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStructDef([NotNull] PlanningDomainParser.StructDefContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.listName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitListName([NotNull] PlanningDomainParser.ListNameContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.primType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPrimType([NotNull] PlanningDomainParser.PrimTypeContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actBodyDef"/>.
@@ -45,11 +59,32 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitActBodyDef([NotNull] PlanningDomainParser.ActBodyDefContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.atomicFormSke"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAtomicFormSke([NotNull] PlanningDomainParser.AtomicFormSkeContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.gd"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitGd([NotNull] PlanningDomainParser.GdContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.type"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitType([NotNull] PlanningDomainParser.TypeContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPrefGD([NotNull] PlanningDomainParser.PrefGDContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.reqDef"/>.
@@ -64,13 +99,6 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitPredDef([NotNull] PlanningDomainParser.PredDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPrefGD([NotNull] PlanningDomainParser.PrefGDContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.listVar"/>.
@@ -129,6 +157,13 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitTypeDef([NotNull] PlanningDomainParser.TypeDefContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.pred"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPred([NotNull] PlanningDomainParser.PredContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -141,13 +176,6 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitActDef([NotNull] PlanningDomainParser.ActDefContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.literal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLiteral([NotNull] PlanningDomainParser.LiteralContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.

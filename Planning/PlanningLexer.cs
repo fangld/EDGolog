@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from E:\EDGolog\LanguageRecognition\PlanningDomain.g4 by ANTLR 4.2.1-SNAPSHOT
+// Generated from E:\EDGolog\LanguageRecognition\PlanningLexer.g4 by ANTLR 4.2.1-SNAPSHOT
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -25,7 +25,7 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.2.1-SNAPSHOT")]
 [System.CLSCompliant(false)]
-public partial class PlanningDomainLexer : Lexer {
+public partial class PlanningLexer : Lexer {
 	public const int
 		DOM=1, DEF=2, REQ=3, TYPE=4, PRED=5, ACT=6, PARM=7, PRE=8, EFF=9, OBJ=10, 
 		EITHER=11, LB=12, RB=13, LSB=14, RSB=15, COLON=16, QM=17, COMMA=18, UL=19, 
@@ -57,13 +57,13 @@ public partial class PlanningDomainLexer : Lexer {
 	};
 
 
-	public PlanningDomainLexer(ICharStream input)
+	public PlanningLexer(ICharStream input)
 		: base(input)
 	{
 		_interp = new LexerATNSimulator(this,_ATN);
 	}
 
-	public override string GrammarFileName { get { return "PlanningDomain.g4"; } }
+	public override string GrammarFileName { get { return "PlanningLexer.g4"; } }
 
 	public override string[] TokenNames { get { return tokenNames; } }
 
