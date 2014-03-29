@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9BE8B7F9-2B4C-49B8-9745-534A754A43E5}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Planning</RootNamespace>
     <AssemblyName>Planning</AssemblyName>
@@ -29,7 +29,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr4.Runtime.v4.5">
+      <HintPath>..\packages\Antlr4.Runtime.4.2.1-alpha001\lib\net45\Antlr4.Runtime.v4.5.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -39,8 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PlanningDomainBaseListener.cs" />
+    <Compile Include="PlanningDomainBaseVisitor.cs" />
+    <Compile Include="PlanningDomainLexer.cs" />
+    <Compile Include="PlanningDomainListener.cs" />
+    <Compile Include="PlanningDomainParser.cs" />
+    <Compile Include="PlanningDomainVisitor.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

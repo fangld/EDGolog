@@ -43,9 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlanningDomainParser.g4.cs">
-      <DependentUpon>PlanningDomainParser.g4</DependentUpon>
-    </Compile>
+    <Compile Include="PlanningDomain.g4.cs" />
     <Compile Include="PlanningLexer.g4.cs">
       <DependentUpon>PlanningLexer.g4</DependentUpon>
     </Compile>
@@ -55,11 +53,13 @@
     <Antlr4 Include="PlanningLexer.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
+      <Listener>False</Listener>
+      <Visitor>False</Visitor>
     </Antlr4>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Antlr4 Include="PlanningDomainParser.g4">
+    <Antlr4 Include="PlanningDomain.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
     </Antlr4>
