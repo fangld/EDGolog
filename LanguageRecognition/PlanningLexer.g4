@@ -12,6 +12,8 @@ PRE: 'precondition';
 EFF: 'effect';
 OBJ: 'object';
 EITHER: 'either';
+STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
+TYPING: 'typing'; // Allow type names in declarations of variables
 
 // Common used in domain and problem
 LB: '(';
@@ -53,7 +55,6 @@ VAR: QM NAME ;
 FUNSYM : NAME ;
 
 // Keywords in requirements
-STRIPS: COLON 'strips'; // Basic STRIPS-style adds and deletes
-TYPING: COLON 'typing'; // Allow type names in declarations of variables
+
 
 WS: [ \t\r\n]+ -> channel(HIDDEN);

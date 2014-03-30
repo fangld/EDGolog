@@ -195,6 +195,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	void ExitCondEffect([NotNull] PlanningDomainParser.CondEffectContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDomain([NotNull] PlanningDomainParser.DomainContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDomain([NotNull] PlanningDomainParser.DomainContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.actionDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -206,15 +217,15 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	void ExitActionDefine([NotNull] PlanningDomainParser.ActionDefineContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.typing"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterDomain([NotNull] PlanningDomainParser.DomainContext context);
+	void EnterTyping([NotNull] PlanningDomainParser.TypingContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.typing"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitDomain([NotNull] PlanningDomainParser.DomainContext context);
+	void ExitTyping([NotNull] PlanningDomainParser.TypingContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.atomicFormulaSkeleton"/>.
@@ -228,17 +239,6 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	void ExitAtomicFormulaSkeleton([NotNull] PlanningDomainParser.AtomicFormulaSkeletonContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPreGD([NotNull] PlanningDomainParser.PreGDContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPreGD([NotNull] PlanningDomainParser.PreGDContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.cEffect"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -248,6 +248,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCEffect([NotNull] PlanningDomainParser.CEffectContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPreGD([NotNull] PlanningDomainParser.PreGDContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPreGD([NotNull] PlanningDomainParser.PreGDContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.functionTerm"/>.
@@ -303,6 +314,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitPrimitiveType([NotNull] PlanningDomainParser.PrimitiveTypeContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.strips"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterStrips([NotNull] PlanningDomainParser.StripsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.strips"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitStrips([NotNull] PlanningDomainParser.StripsContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.

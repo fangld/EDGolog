@@ -13,7 +13,9 @@ domain: LB DEF LB DOM NAME RB
 		RB;
 
 requireDefine: LB COLON REQ requireKey+ RB;
-requireKey: STRIPS | TYPING;
+requireKey: strips | typing;
+strips: COLON STRIPS;
+typing: COLON TYPING;
 
 typeDefine: LB COLON TYPE listName RB;
 
@@ -21,7 +23,7 @@ predicatesDefine: LB COLON PRED atomicFormulaSkeleton+ RB;
 atomicFormulaSkeleton: LB predicate listVariable RB;
 predicate: NAME;
 
-primitiveType: NAME | OBJ;
+primitiveType: OBJ | NAME;
 type: primitiveType | LB EITHER primitiveType+ RB;
 
 structureDefine: actionDefine;

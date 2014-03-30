@@ -136,6 +136,13 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCondEffect([NotNull] PlanningDomainParser.CondEffectContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDomain([NotNull] PlanningDomainParser.DomainContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actionDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -143,11 +150,11 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitActionDefine([NotNull] PlanningDomainParser.ActionDefineContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.typing"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitDomain([NotNull] PlanningDomainParser.DomainContext context);
+	Result VisitTyping([NotNull] PlanningDomainParser.TypingContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.atomicFormulaSkeleton"/>.
@@ -157,18 +164,18 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitAtomicFormulaSkeleton([NotNull] PlanningDomainParser.AtomicFormulaSkeletonContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPreGD([NotNull] PlanningDomainParser.PreGDContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.cEffect"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCEffect([NotNull] PlanningDomainParser.CEffectContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitPreGD([NotNull] PlanningDomainParser.PreGDContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.functionTerm"/>.
@@ -204,6 +211,13 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitPrimitiveType([NotNull] PlanningDomainParser.PrimitiveTypeContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.strips"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitStrips([NotNull] PlanningDomainParser.StripsContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.
