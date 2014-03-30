@@ -40,8 +40,8 @@ FORALL: 'forall';
 EXISTS: 'exists';
 WHEN: 'when';
 PREF: 'preference';
-BINARYCOMP: EQ | LT | GT | LEQ | GEQ ;
-BINARYOP: PLUS | MINUS | MULT | DIV ;
+BINCOMP: EQ | LT | GT | LEQ | GEQ ;
+BINOP: PLUS | MINUS | MULT | DIV ;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 

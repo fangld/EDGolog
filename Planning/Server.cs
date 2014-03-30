@@ -20,7 +20,7 @@ namespace Planning
         static void Test1()
         {
             // Create a TextReader that reads from a file
-            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d.pddl");
+            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\blocks_domain.pddl");
 
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
