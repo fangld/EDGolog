@@ -1,0 +1,1 @@
+copy "LanguageRecognition\obj\Debug\Planning*.cs" "Planning\"
