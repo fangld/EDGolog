@@ -6,53 +6,64 @@ import PlanningLexer;
  */
 
 domain: LB DEF LB DOM NAME RB 
-		   reqDef 
-		   typeDef 
-		   predDef
-		   structDef* 
+		   requireDefine?
+		   typeDefine?
+		   predicatesDefine?
+		   structureDefine* 
 		RB;
 
-reqDef: LB COLON REQ reqKey+ RB;
-reqKey: STRIPS | TYPING;
+requireDefine: LB COLON REQ requireKey+ RB;
+requireKey: STRIPS | TYPING;
 
-typeDef: LB COLON TYPE listName RB;
+typeDefine: LB COLON TYPE listName RB;
 
-predDef: LB COLON PRED atomicFormSke+ RB;
-atomicFormSke: LB pred listVar RB;
-pred: NAME;
+predicatesDefine: LB COLON PRED atomicFormulaSkeleton+ RB;
+atomicFormulaSkeleton: LB predicate listVariable RB;
+predicate: NAME;
 
-primType: NAME | OBJ;
-type: primType | LB EITHER primType+ RB;
+primitiveType: NAME | OBJ;
+type: primitiveType | LB EITHER primitiveType+ RB;
 
-structDef: actDef;
+structureDefine: actionDefine;
 
-actDef: LB COLON ACT actSym 
-           COLON PARM LB listVar RB
-		   actBodyDef 
-		RB;
-actSym: NAME ;
-actBodyDef: LSB COLON PRE preGD RSB
-            LSB COLON EFF RSB;
+actionDefine: LB COLON ACT actionSymbol
+                 COLON PARM LB listVariable RB
+		         actionDefBody
+		      RB;
+actionSymbol: NAME ;
+actionDefBody: (COLON PRE (preGD | (LB RB)))?
+               (COLON EFF (effect | (LB RB)))?;
 
 listName: NAME+ ;
-listVar: VAR* | VAR+ DASH type listVar;
+listVariable: VAR* | VAR+ DASH type listVariable;
 preGD: prefGD
      | LB AND preGD* RB
-	 | LB FORALL listVar preGD RB;
+	 | LB FORALL listVariable preGD RB;
 prefGD: gd | LB PREF prefName gd RB;
 prefName: NAME;
 
-gd: atomicForm
-  | LB NOT atomicForm RB
+gd: atomicFormula
+  | literal
   | LB AND gd* RB
   | LB OR gd* RB
   | LB IMPLY gd gd RB
-  | LB EXISTS LB listVar RB gd RB
-  | LB FORALL LB listVar RB gd RB;
+  | LB EXISTS LB listVariable RB gd RB
+  | LB FORALL LB listVariable RB gd RB;
 
-atomicForm: LB PRED term* RB
-          | LB EQ term* RB;
-//literal: atomicForm | LB NOT atomicForm RB;
+atomicFormula: LB predicate term* RB
+             | LB EQ term* RB;
+literal: atomicFormula | LB NOT atomicFormula RB;
 
-term: NAME | VAR | funTerm;
-funTerm: FUNSYM term* ;
+term: NAME | VAR | functionTerm;
+
+effect: LB AND cEffect* RB
+      | cEffect;
+cEffect: LB FORALL listVariable effect RB
+       | LB WHEN gd condEffect RB
+	   | pEffect;
+pEffect: LB NOT atomicFormula RB
+       | atomicFormula;
+condEffect: LB AND pEffect* RB
+          | pEffect;
+
+functionTerm: FUNSYM term* ;

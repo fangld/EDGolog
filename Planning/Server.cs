@@ -41,5 +41,30 @@ namespace Planning
             Console.WriteLine(tree.ToStringTree((parser))); // print LISP-style tree
             tr.Close();
         }
+
+        static void Test2()
+        {
+            // Create a TextReader that reads from a file
+            TextReader tr = new StringReader(@"(nclogged ?toilet)");
+
+            // create a CharStream that reads from standard input
+            AntlrInputStream input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
+            PlanningLexer lexer = new PlanningLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            PlanningDomainParser parser = new PlanningDomainParser(tokens);
+
+            IParseTree tree = parser.atomicFormula();// begin parsing at init rule
+
+            //// Create a generic parse tree walker that can trigger callbacks 
+            //ParseTreeWalker walker = new ParseTreeWalker();
+            //// Walk the tree created during the parse, trigger callbacks 
+            ////walker.Walk(new ShortToUnicodeString(), tree);
+            //Console.WriteLine(); // print a \n after translation
+            Console.WriteLine(tree.ToStringTree((parser))); // print LISP-style tree
+            tr.Close();
+        }
     }
 }

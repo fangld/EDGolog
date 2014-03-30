@@ -33,7 +33,7 @@ using ParserRuleContext = Antlr4.Runtime.ParserRuleContext;
 [System.CLSCompliant(false)]
 public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisitor<Result>, IPlanningDomainVisitor<Result> {
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.structDef"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.typeDefine"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -41,7 +41,7 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitStructDef([NotNull] PlanningDomainParser.StructDefContext context) { return VisitChildren(context); }
+	public virtual Result VisitTypeDefine([NotNull] PlanningDomainParser.TypeDefineContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.listName"/>.
@@ -55,7 +55,7 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	public virtual Result VisitListName([NotNull] PlanningDomainParser.ListNameContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.primType"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.pEffect"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -63,10 +63,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitPrimType([NotNull] PlanningDomainParser.PrimTypeContext context) { return VisitChildren(context); }
+	public virtual Result VisitPEffect([NotNull] PlanningDomainParser.PEffectContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actBodyDef"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.requireDefine"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -74,10 +74,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitActBodyDef([NotNull] PlanningDomainParser.ActBodyDefContext context) { return VisitChildren(context); }
+	public virtual Result VisitRequireDefine([NotNull] PlanningDomainParser.RequireDefineContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.atomicFormSke"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.predicate"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -85,7 +85,18 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAtomicFormSke([NotNull] PlanningDomainParser.AtomicFormSkeContext context) { return VisitChildren(context); }
+	public virtual Result VisitPredicate([NotNull] PlanningDomainParser.PredicateContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.listVariable"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitListVariable([NotNull] PlanningDomainParser.ListVariableContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.gd"/>.
@@ -99,6 +110,17 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	public virtual Result VisitGd([NotNull] PlanningDomainParser.GdContext context) { return VisitChildren(context); }
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actionSymbol"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitActionSymbol([NotNull] PlanningDomainParser.ActionSymbolContext context) { return VisitChildren(context); }
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.type"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -108,6 +130,28 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitType([NotNull] PlanningDomainParser.TypeContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actionDefBody"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitActionDefBody([NotNull] PlanningDomainParser.ActionDefBodyContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.atomicFormula"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitAtomicFormula([NotNull] PlanningDomainParser.AtomicFormulaContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefGD"/>.
@@ -121,7 +165,7 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	public virtual Result VisitPrefGD([NotNull] PlanningDomainParser.PrefGDContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.reqDef"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.structureDefine"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -129,10 +173,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitReqDef([NotNull] PlanningDomainParser.ReqDefContext context) { return VisitChildren(context); }
+	public virtual Result VisitStructureDefine([NotNull] PlanningDomainParser.StructureDefineContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.predDef"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.predicatesDefine"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -140,10 +184,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitPredDef([NotNull] PlanningDomainParser.PredDefContext context) { return VisitChildren(context); }
+	public virtual Result VisitPredicatesDefine([NotNull] PlanningDomainParser.PredicatesDefineContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.listVar"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.condEffect"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -151,10 +195,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitListVar([NotNull] PlanningDomainParser.ListVarContext context) { return VisitChildren(context); }
+	public virtual Result VisitCondEffect([NotNull] PlanningDomainParser.CondEffectContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.atomicForm"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actionDefine"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -162,40 +206,7 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAtomicForm([NotNull] PlanningDomainParser.AtomicFormContext context) { return VisitChildren(context); }
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.term"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitTerm([NotNull] PlanningDomainParser.TermContext context) { return VisitChildren(context); }
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actSym"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitActSym([NotNull] PlanningDomainParser.ActSymContext context) { return VisitChildren(context); }
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.funTerm"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitFunTerm([NotNull] PlanningDomainParser.FunTermContext context) { return VisitChildren(context); }
+	public virtual Result VisitActionDefine([NotNull] PlanningDomainParser.ActionDefineContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.domain"/>.
@@ -209,7 +220,7 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	public virtual Result VisitDomain([NotNull] PlanningDomainParser.DomainContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.reqKey"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.atomicFormulaSkeleton"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -217,10 +228,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitReqKey([NotNull] PlanningDomainParser.ReqKeyContext context) { return VisitChildren(context); }
+	public virtual Result VisitAtomicFormulaSkeleton([NotNull] PlanningDomainParser.AtomicFormulaSkeletonContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.typeDef"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -228,10 +239,10 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitTypeDef([NotNull] PlanningDomainParser.TypeDefContext context) { return VisitChildren(context); }
+	public virtual Result VisitPreGD([NotNull] PlanningDomainParser.PreGDContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.pred"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.cEffect"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -239,7 +250,62 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitPred([NotNull] PlanningDomainParser.PredContext context) { return VisitChildren(context); }
+	public virtual Result VisitCEffect([NotNull] PlanningDomainParser.CEffectContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.functionTerm"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitFunctionTerm([NotNull] PlanningDomainParser.FunctionTermContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.requireKey"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitRequireKey([NotNull] PlanningDomainParser.RequireKeyContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.effect"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitEffect([NotNull] PlanningDomainParser.EffectContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.term"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitTerm([NotNull] PlanningDomainParser.TermContext context) { return VisitChildren(context); }
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.primitiveType"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitPrimitiveType([NotNull] PlanningDomainParser.PrimitiveTypeContext context) { return VisitChildren(context); }
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.
@@ -253,7 +319,7 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	public virtual Result VisitPrefName([NotNull] PlanningDomainParser.PrefNameContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.actDef"/>.
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.literal"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -261,17 +327,6 @@ public partial class PlanningDomainBaseVisitor<Result> : AbstractParseTreeVisito
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitActDef([NotNull] PlanningDomainParser.ActDefContext context) { return VisitChildren(context); }
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningDomainParser.preGD"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitPreGD([NotNull] PlanningDomainParser.PreGDContext context) { return VisitChildren(context); }
+	public virtual Result VisitLiteral([NotNull] PlanningDomainParser.LiteralContext context) { return VisitChildren(context); }
 }
 } // namespace LanguageRecognition

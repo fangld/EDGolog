@@ -38,6 +38,7 @@ NOT: 'not';
 IMPLY: 'imply';
 FORALL: 'forall';
 EXISTS: 'exists';
+WHEN: 'when';
 PREF: 'preference';
 BINARYCOMP: EQ | LT | GT | LEQ | GEQ ;
 BINARYOP: PLUS | MINUS | MULT | DIV ;
