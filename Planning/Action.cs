@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace Planning
 {
-    public class Predicate : VariablesContainer
+    public class Action : VariablesContainer
     {
         #region Properties
 
         public string Name { get; set; }
 
+        public string Precondition { get; set; }
+
+        public string Effect { get; set; }
+        
         #endregion
     }
 }
