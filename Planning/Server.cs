@@ -14,14 +14,14 @@ namespace Planning
     {
         public static void Main()
         {
-            //Test1();
-            Test2();
+            Test1();
+            //Test2();
         }
 
         static void Test1()
         {
             // Create a TextReader that reads from a file
-            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d2.pddl");
+            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d1.pddl");
 
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
