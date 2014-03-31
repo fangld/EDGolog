@@ -118,6 +118,17 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitActionSymbol([NotNull] PlanningParser.ActionSymbolContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.basicFunctionTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBasicFunctionTerm([NotNull] PlanningParser.BasicFunctionTermContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.basicFunctionTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBasicFunctionTerm([NotNull] PlanningParser.BasicFunctionTermContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.type"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -138,17 +149,6 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitActionDefBody([NotNull] PlanningParser.ActionDefBodyContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.atomicFormula"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterAtomicFormula([NotNull] PlanningParser.AtomicFormulaContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.atomicFormula"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitAtomicFormula([NotNull] PlanningParser.AtomicFormulaContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.prefGD"/>.
@@ -182,6 +182,17 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitPredicatesDefine([NotNull] PlanningParser.PredicatesDefineContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.literalTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLiteralTerm([NotNull] PlanningParser.LiteralTermContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.literalTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLiteralTerm([NotNull] PlanningParser.LiteralTermContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.emptyOrEffect"/>.
@@ -239,6 +250,17 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitTyping([NotNull] PlanningParser.TypingContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.literalName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterLiteralName([NotNull] PlanningParser.LiteralNameContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.literalName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitLiteralName([NotNull] PlanningParser.LiteralNameContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.atomicFormulaSkeleton"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -248,6 +270,17 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitAtomicFormulaSkeleton([NotNull] PlanningParser.AtomicFormulaSkeletonContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.atomicFormulaName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAtomicFormulaName([NotNull] PlanningParser.AtomicFormulaNameContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.atomicFormulaName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAtomicFormulaName([NotNull] PlanningParser.AtomicFormulaNameContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.cEffect"/>.
@@ -283,6 +316,17 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.initEl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterInitEl([NotNull] PlanningParser.InitElContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.initEl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitInitEl([NotNull] PlanningParser.InitElContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.requireKey"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -314,6 +358,17 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitProblem([NotNull] PlanningParser.ProblemContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.goal"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterGoal([NotNull] PlanningParser.GoalContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.goal"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitGoal([NotNull] PlanningParser.GoalContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.objectDeclaration"/>.
@@ -360,6 +415,17 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitPrimitiveType([NotNull] PlanningParser.PrimitiveTypeContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.functionSymbol"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFunctionSymbol([NotNull] PlanningParser.FunctionSymbolContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.functionSymbol"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFunctionSymbol([NotNull] PlanningParser.FunctionSymbolContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.strips"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -369,6 +435,17 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStrips([NotNull] PlanningParser.StripsContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.atomicFormulaTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAtomicFormulaTerm([NotNull] PlanningParser.AtomicFormulaTermContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.atomicFormulaTerm"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAtomicFormulaTerm([NotNull] PlanningParser.AtomicFormulaTermContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.emptyOrPreGD"/>.
@@ -391,16 +468,5 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitPrefName([NotNull] PlanningParser.PrefNameContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.literal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterLiteral([NotNull] PlanningParser.LiteralContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.literal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitLiteral([NotNull] PlanningParser.LiteralContext context);
 }
 } // namespace LanguageRecognition

@@ -14,7 +14,8 @@ namespace Planning
     {
         public static void Main()
         {
-            Test1();
+            //Test1();
+            Test2();
         }
 
         static void Test1()
@@ -39,14 +40,14 @@ namespace Planning
             // Walk the tree created during the parse, trigger callbacks 
             DomainLoader loader = new DomainLoader();
             walker.Walk(loader, tree);
-            ShowLoader(loader);
+            ShowDomainLoader(loader);
 
             //Console.WriteLine(); // print a \n after translation
             //Console.WriteLine(tree.ToStringTree((parser))); // print LISP-style tree
             tr.Close();
         }
 
-        static void ShowLoader(DomainLoader loader)
+        static void ShowDomainLoader(DomainLoader loader)
         {
             const string barline = "----------------";
 
@@ -97,24 +98,28 @@ namespace Planning
         static void Test2()
         {
             // Create a TextReader that reads from a file
-            TextReader tr = new StringReader(@"(nclogged ?toilet)");
+            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\p2.pddl");
 
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
             // create a lexer that feeds off of input CharStream
+
             PlanningLexer lexer = new PlanningLexer(input);
             // create a buffer of tokens pulled from the lexer
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             // create a parser that feeds off the tokens buffer
             PlanningParser parser = new PlanningParser(tokens);
 
-            IParseTree tree = parser.atomicFormula();// begin parsing at init rule
+            IParseTree tree = parser.problem();// begin parsing at init rule
 
-            //// Create a generic parse tree walker that can trigger callbacks 
-            //ParseTreeWalker walker = new ParseTreeWalker();
-            //// Walk the tree created during the parse, trigger callbacks 
-            ////walker.Walk(new ShortToUnicodeString(), tree);
-            //Console.WriteLine(); // print a \n after translation
+            // Create a generic parse tree walker that can trigger callbacks 
+            ParseTreeWalker walker = new ParseTreeWalker();
+            // Walk the tree created during the parse, trigger callbacks 
+            //DomainLoader loader = new DomainLoader();
+            //walker.Walk(loader, tree);
+            //ShowDomainLoader(loader);
+
+            Console.WriteLine(); // print a \n after translation
             Console.WriteLine(tree.ToStringTree((parser))); // print LISP-style tree
             tr.Close();
         }

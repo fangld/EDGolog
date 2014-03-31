@@ -47,17 +47,17 @@ preGD: prefGD
 prefGD: gd | LB PREF prefName gd RB;
 prefName: NAME;
 
-gd: atomicFormula
-  | literal
+gd: atomicFormulaTerm
+  | literalTerm
   | LB AND gd* RB
   | LB OR gd* RB
   | LB IMPLY gd gd RB
   | LB EXISTS LB listVariable RB gd RB
   | LB FORALL LB listVariable RB gd RB;
 
-atomicFormula: LB predicate term* RB
+atomicFormulaTerm: LB predicate term* RB
              | LB EQ term* RB;
-literal: atomicFormula | LB NOT atomicFormula RB;
+literalTerm: atomicFormulaTerm | LB NOT atomicFormulaTerm RB;
 
 term: NAME | VAR | functionTerm;
 
@@ -66,22 +66,37 @@ effect: LB AND cEffect* RB
 cEffect: LB FORALL listVariable effect RB
        | LB WHEN gd condEffect RB
 	   | pEffect;
-pEffect: LB NOT atomicFormula RB
-       | atomicFormula;
+pEffect: LB NOT atomicFormulaTerm RB
+       | atomicFormulaTerm;
 condEffect: LB AND pEffect* RB
           | pEffect;
 
 functionTerm: FUNSYM term* ;
 
-
 // Problem description
 problem: LB DEF LB PROM NAME RB 
 		   LB COLON DOM NAME RB
 		   requireDefine?
+		   objectDeclaration?
+		   init
+		   goal
 		RB;
 
 objectDeclaration: LB COLON OBJS listName RB;
-init: LB COLON INIT;
+
+init: LB COLON INIT initEl* RB;
+initEl: literalName
+      | LB AT NUMBER literalName RB
+	  | LB EQ basicFunctionTerm NUMBER RB
+	  | LB EQ basicFunctionTerm NAME RB;
+basicFunctionTerm: functionSymbol
+                 | LB functionSymbol NAME* RB;
+functionSymbol: NAME;
+atomicFormulaName: LB predicate NAME* RB
+             | LB EQ NAME* RB;
+literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
+
+goal: LB COLON GOAL preGD RB;
 
 /*
  * Lexer Rules
@@ -103,6 +118,8 @@ EITHER: 'either';
 
 OBJS: 'objects';
 INIT: 'init';
+GOAL: 'goal';
+AT: 'at';
 
 STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
 TYPING: 'typing'; // Allow type names in declarations of variables
