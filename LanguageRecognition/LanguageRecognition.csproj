@@ -43,27 +43,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlanningDomain.g4.cs" />
-    <Compile Include="PlanningLexer.g4.cs">
-      <DependentUpon>PlanningLexer.g4</DependentUpon>
+    <Compile Include="Planning.g4.lexer.cs">
+      <DependentUpon>Planning.g4</DependentUpon>
+    </Compile>
+    <Compile Include="Planning.g4.parser.cs">
+      <DependentUpon>Planning.g4</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Antlr4 Include="PlanningLexer.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
-      <Listener>False</Listener>
-      <Visitor>False</Visitor>
-      <ForceAtn>False</ForceAtn>
-    </Antlr4>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
-    <Antlr4 Include="PlanningDomain.g4">
+    <Antlr4 Include="Planning.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
-      <ForceAtn>False</ForceAtn>
     </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

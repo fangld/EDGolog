@@ -1,7 +1,8 @@
 lexer grammar PlanningLexer;
 
-// Keywords in domain
+// Keywords
 DOM: 'domain';
+PROM: 'problem';
 DEF: 'define';
 REQ: 'requirements';
 TYPE: 'types';
@@ -12,6 +13,10 @@ PRE: 'precondition';
 EFF: 'effect';
 OBJ: 'object';
 EITHER: 'either';
+
+OBJS: 'objects';
+INIT: 'init';
+
 STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
 TYPING: 'typing'; // Allow type names in declarations of variables
 
