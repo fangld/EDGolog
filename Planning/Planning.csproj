@@ -45,16 +45,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionDefinition.cs" />
-    <Compile Include="PlanningDomainBaseListener.cs" />
-    <Compile Include="PlanningDomainBaseVisitor.cs" />
-    <Compile Include="PlanningDomainListener.cs" />
-    <Compile Include="PlanningDomainLoader.cs" />
-    <Compile Include="PlanningDomainParser.cs" />
-    <Compile Include="PlanningDomainVisitor.cs" />
-    <Compile Include="PlanningLexer.cs" />
+    <Compile Include="Action.cs" />
+    <Compile Include="PlanningBaseListener.cs" />
+    <Compile Include="PlanningBaseVisitor.cs" />
+    <Compile Include="DomainLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlanningLexer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlanningListener.cs" />
+    <Compile Include="PlanningParser.cs" />
+    <Compile Include="PlanningVisitor.cs" />
+    <Compile Include="VariablesContainer.cs" />
+    <Compile Include="GroundPredicate.cs" />
     <Compile Include="Predicate.cs" />
-    <Compile Include="PredicateDefinition.cs" />
     <Compile Include="Requirements.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
