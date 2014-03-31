@@ -216,6 +216,19 @@ public partial class PlanningDomainBaseListener : IPlanningDomainListener {
 	public virtual void ExitPredicatesDefine([NotNull] PlanningDomainParser.PredicatesDefineContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.emptyOrEffect"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEmptyOrEffect([NotNull] PlanningDomainParser.EmptyOrEffectContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.emptyOrEffect"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEmptyOrEffect([NotNull] PlanningDomainParser.EmptyOrEffectContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.condEffect"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -383,6 +396,19 @@ public partial class PlanningDomainBaseListener : IPlanningDomainListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStrips([NotNull] PlanningDomainParser.StripsContext context) { }
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.emptyOrPreGD"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEmptyOrPreGD([NotNull] PlanningDomainParser.EmptyOrPreGDContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.emptyOrPreGD"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEmptyOrPreGD([NotNull] PlanningDomainParser.EmptyOrPreGDContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.

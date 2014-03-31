@@ -184,6 +184,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	void ExitPredicatesDefine([NotNull] PlanningDomainParser.PredicatesDefineContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.emptyOrEffect"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterEmptyOrEffect([NotNull] PlanningDomainParser.EmptyOrEffectContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.emptyOrEffect"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitEmptyOrEffect([NotNull] PlanningDomainParser.EmptyOrEffectContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.condEffect"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -325,6 +336,17 @@ public interface IPlanningDomainListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStrips([NotNull] PlanningDomainParser.StripsContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningDomainParser.emptyOrPreGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterEmptyOrPreGD([NotNull] PlanningDomainParser.EmptyOrPreGDContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningDomainParser.emptyOrPreGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitEmptyOrPreGD([NotNull] PlanningDomainParser.EmptyOrPreGDContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.
