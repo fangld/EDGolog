@@ -129,6 +129,13 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitPredicatesDefine([NotNull] PlanningDomainParser.PredicatesDefineContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.emptyOrEffect"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEmptyOrEffect([NotNull] PlanningDomainParser.EmptyOrEffectContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.condEffect"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -218,6 +225,13 @@ public interface IPlanningDomainVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitStrips([NotNull] PlanningDomainParser.StripsContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningDomainParser.emptyOrPreGD"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitEmptyOrPreGD([NotNull] PlanningDomainParser.EmptyOrPreGDContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningDomainParser.prefName"/>.
