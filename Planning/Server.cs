@@ -20,23 +20,24 @@ namespace Planning
         static void Test1()
         {
             // Create a TextReader that reads from a file
-            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d.pddl");
+            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d2.pddl");
 
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
             // create a lexer that feeds off of input CharStream
+
             PlanningLexer lexer = new PlanningLexer(input);
             // create a buffer of tokens pulled from the lexer
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             // create a parser that feeds off the tokens buffer
-            PlanningDomainParser parser = new PlanningDomainParser(tokens);
+            PlanningParser parser = new PlanningParser(tokens);
 
             IParseTree tree = parser.domain();// begin parsing at init rule
 
             // Create a generic parse tree walker that can trigger callbacks 
             ParseTreeWalker walker = new ParseTreeWalker();
             // Walk the tree created during the parse, trigger callbacks 
-            PlanningDomainLoader loader = new PlanningDomainLoader();
+            DomainLoader loader = new DomainLoader();
             walker.Walk(loader, tree);
             ShowLoader(loader);
 
@@ -45,7 +46,7 @@ namespace Planning
             tr.Close();
         }
 
-        static void ShowLoader(PlanningDomainLoader loader)
+        static void ShowLoader(DomainLoader loader)
         {
             const string barline = "----------------";
 
@@ -87,6 +88,8 @@ namespace Planning
                 {
                     Console.WriteLine("    Index: {0}, Type: {1}", i, actDef.ListVariablesType[i]);
                 }
+                Console.WriteLine("  Precondition: {0}", actDef.Precondition);
+                Console.WriteLine("  Effect: {0}", actDef.Effect);
                 Console.WriteLine();
             }
         }
@@ -103,7 +106,7 @@ namespace Planning
             // create a buffer of tokens pulled from the lexer
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             // create a parser that feeds off the tokens buffer
-            PlanningDomainParser parser = new PlanningDomainParser(tokens);
+            PlanningParser parser = new PlanningParser(tokens);
 
             IParseTree tree = parser.atomicFormula();// begin parsing at init rule
 
