@@ -32,14 +32,14 @@ actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
 		         actionDefBody
 		      RB;
-actionSymbol: NAME ;
+actionSymbol: NAME;
 actionDefBody: (COLON PRE emptyOrPreGD)?
                (COLON EFF emptyOrEffect)?;
 
 emptyOrPreGD: preGD | LB RB;
 emptyOrEffect: effect | LB RB;
 
-listName: NAME+;
+listName: NAME* | NAME+ DASH type listName;
 listVariable: VAR* | VAR+ DASH type listVariable;
 preGD: prefGD
      | LB AND preGD* RB
@@ -74,29 +74,42 @@ condEffect: LB AND pEffect* RB
 functionTerm: FUNSYM term* ;
 
 // Problem description
-problem: LB DEF LB PROM NAME RB 
-		   LB COLON DOM NAME RB
+problem: LB DEF LB PROM problemName RB 
+		   LB COLON DOM domainName RB
 		   requireDefine?
 		   objectDeclaration?
 		   init
-		   goal
 		RB;
+
+problemName: NAME;
+domainName: NAME;
 
 objectDeclaration: LB COLON OBJS listName RB;
 
-init: LB COLON INIT initEl* RB;
-initEl: literalName
+init: LB COLON INIT gdName RB;
+gdName: atomicFormulaName
+  | literalName
+  | LB AND gdName* RB
+  | LB OR gdName* RB
+  | LB IMPLY gdName gdName RB
+  | LB EXISTS LB listVariable RB gd RB
+  | LB FORALL LB listVariable RB gd RB;
+
+atomicFormulaName: LB predicate NAME* RB
+             | LB EQ NAME* RB;
+literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
+
+
+/*initEl: literalName
       | LB AT NUMBER literalName RB
 	  | LB EQ basicFunctionTerm NUMBER RB
 	  | LB EQ basicFunctionTerm NAME RB;
 basicFunctionTerm: functionSymbol
                  | LB functionSymbol NAME* RB;
-functionSymbol: NAME;
-atomicFormulaName: LB predicate NAME* RB
-             | LB EQ NAME* RB;
-literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
+functionSymbol: NAME;*/
 
-goal: LB COLON GOAL preGD RB;
+
+//goal: LB COLON GOAL preGD RB;
 
 /*
  * Lexer Rules

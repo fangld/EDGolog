@@ -138,19 +138,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitActionSymbol([NotNull] PlanningParser.ActionSymbolContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.basicFunctionTerm"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBasicFunctionTerm([NotNull] PlanningParser.BasicFunctionTermContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.basicFunctionTerm"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBasicFunctionTerm([NotNull] PlanningParser.BasicFunctionTermContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.type"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -294,6 +281,19 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitTyping([NotNull] PlanningParser.TypingContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.problemName"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterProblemName([NotNull] PlanningParser.ProblemNameContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.problemName"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitProblemName([NotNull] PlanningParser.ProblemNameContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.literalName"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -372,19 +372,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.initEl"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterInitEl([NotNull] PlanningParser.InitElContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.initEl"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitInitEl([NotNull] PlanningParser.InitElContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.requireKey"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -411,6 +398,19 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitInit([NotNull] PlanningParser.InitContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.domainName"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDomainName([NotNull] PlanningParser.DomainNameContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.domainName"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDomainName([NotNull] PlanningParser.DomainNameContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.problem"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -422,19 +422,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitProblem([NotNull] PlanningParser.ProblemContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.goal"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterGoal([NotNull] PlanningParser.GoalContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.goal"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitGoal([NotNull] PlanningParser.GoalContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.objectDeclaration"/>.
@@ -489,17 +476,17 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitPrimitiveType([NotNull] PlanningParser.PrimitiveTypeContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.functionSymbol"/>.
+	/// Enter a parse tree produced by <see cref="PlanningParser.gdName"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFunctionSymbol([NotNull] PlanningParser.FunctionSymbolContext context) { }
+	public virtual void EnterGdName([NotNull] PlanningParser.GdNameContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.functionSymbol"/>.
+	/// Exit a parse tree produced by <see cref="PlanningParser.gdName"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFunctionSymbol([NotNull] PlanningParser.FunctionSymbolContext context) { }
+	public virtual void ExitGdName([NotNull] PlanningParser.GdNameContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.strips"/>.

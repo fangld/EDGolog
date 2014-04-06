@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="MainProgram.cs" />
     <Compile Include="PlanningBaseListener.cs" />
     <Compile Include="PlanningBaseVisitor.cs" />
     <Compile Include="DomainLoader.cs">
@@ -57,6 +59,7 @@
     <Compile Include="PlanningListener.cs" />
     <Compile Include="PlanningParser.cs" />
     <Compile Include="PlanningVisitor.cs" />
+    <Compile Include="ProblemLoader.cs" />
     <Compile Include="VariablesContainer.cs" />
     <Compile Include="GroundPredicate.cs" />
     <Compile Include="Predicate.cs" />
@@ -66,6 +69,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PAT.BDD\PAT.BDD.csproj">
+      <Project>{ebb3ad28-953a-4c12-add4-4a6752628280}</Project>
+      <Name>PAT.BDD</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -87,13 +87,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitActionSymbol([NotNull] PlanningParser.ActionSymbolContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.basicFunctionTerm"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitBasicFunctionTerm([NotNull] PlanningParser.BasicFunctionTermContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.type"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -171,6 +164,13 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitTyping([NotNull] PlanningParser.TypingContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.problemName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitProblemName([NotNull] PlanningParser.ProblemNameContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.literalName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -213,13 +213,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.initEl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitInitEl([NotNull] PlanningParser.InitElContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.requireKey"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -234,18 +227,18 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitInit([NotNull] PlanningParser.InitContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.domainName"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDomainName([NotNull] PlanningParser.DomainNameContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.problem"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitProblem([NotNull] PlanningParser.ProblemContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.goal"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitGoal([NotNull] PlanningParser.GoalContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.objectDeclaration"/>.
@@ -276,11 +269,11 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitPrimitiveType([NotNull] PlanningParser.PrimitiveTypeContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.functionSymbol"/>.
+	/// Visit a parse tree produced by <see cref="PlanningParser.gdName"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitFunctionSymbol([NotNull] PlanningParser.FunctionSymbolContext context);
+	Result VisitGdName([NotNull] PlanningParser.GdNameContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.strips"/>.

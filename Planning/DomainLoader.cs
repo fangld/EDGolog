@@ -126,5 +126,57 @@ namespace Planning
         }
 
         #endregion
+
+        #region Methods
+
+        public void ShowInfo()
+        {
+            const string barline = "----------------";
+
+            Console.WriteLine("Name: {0}", Name);
+            Console.WriteLine(barline);
+
+            Console.WriteLine("Requirment:");
+            Console.WriteLine("  strips: {0}", Requirements.Strips);
+            Console.WriteLine("  typing: {0}", Requirements.Typing);
+            Console.WriteLine(barline);
+
+            Console.Write("Types: ");
+            for (int i = 0; i < ListType.Count - 1; i++)
+            {
+                Console.Write("{0}, ", ListType[i]);
+            }
+            Console.WriteLine("{0}", ListType[ListType.Count - 1]);
+            Console.WriteLine(barline);
+
+            Console.WriteLine("Predicates:");
+            foreach (var predDef in PredicateDefinitions)
+            {
+                Console.WriteLine("  Name: {0}", predDef.Name);
+                Console.WriteLine("  Variable: {0}", predDef.VariablesNum);
+                for (int i = 0; i < predDef.VariablesNum; i++)
+                {
+                    Console.WriteLine("    Index: {0}, Type: {1}", i, predDef.ListVariablesType[i]);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine(barline);
+
+            Console.WriteLine("Actions:");
+            foreach (var actDef in ActionDefinitions)
+            {
+                Console.WriteLine("  Name: {0}", actDef.Name);
+                Console.WriteLine("  Variable: {0}", actDef.VariablesNum);
+                for (int i = 0; i < actDef.VariablesNum; i++)
+                {
+                    Console.WriteLine("    Index: {0}, Type: {1}", i, actDef.ListVariablesType[i]);
+                }
+                Console.WriteLine("  Precondition: {0}", actDef.Precondition);
+                Console.WriteLine("  Effect: {0}", actDef.Effect);
+                Console.WriteLine();
+            }
+        }
+
+        #endregion
     }
 }
