@@ -37,6 +37,8 @@ namespace Planning
 
         private Dictionary<string, bool> _predBooleanMap;
 
+        private List<Client> _listClient; 
+
         #endregion
 
         #region Events
@@ -80,11 +82,11 @@ namespace Planning
             }
 
             int offset = 0;
-            foreach (var predicate in _domainLoader.PredicateDefinitions)
+            foreach (var predicate in _domainLoader.PredicateDict.Values)
             {
                 List<List<string>> collection = new List<List<string>>();
 
-                for (int j = 0; j < predicate.VariablesNum; j++)
+                for (int j = 0; j < predicate.Count; j++)
                 {
                     string type = predicate.ListVariablesType[j];
                     List<string> objectList = _typeObjectsMap[type];
@@ -206,6 +208,8 @@ namespace Planning
                 if (e.SocketError == SocketError.Success)
                 {
                     Client client = new Client(e.AcceptSocket);
+                    client.ActionOccur += client_ActionOccur;
+                    _listClient.Add(client);
                     NewClient(this, client);
                 }
                 else
@@ -220,6 +224,11 @@ namespace Planning
                     acceptEventArg_Completed(this, acceptEventArg);
                 }
             }
+        }
+
+        void client_ActionOccur(object sender, GroundAction e)
+        {
+            Console.WriteLine(e);
         }
 
         #endregion

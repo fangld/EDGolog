@@ -7,7 +7,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Planning
 {
-    public class Predicate : VariablesContainer
+    public class Predicate : VariableContainer
     {
         #region Properties
 

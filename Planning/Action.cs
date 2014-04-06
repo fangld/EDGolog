@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Planning
 {
-    public class Action : VariablesContainer
+    public class Action : VariableContainer
     {
         #region Properties
 

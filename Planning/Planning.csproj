@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Action.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="GroundAction.cs" />
     <Compile Include="MainProgram.cs" />
     <Compile Include="PlanningBaseListener.cs" />
     <Compile Include="PlanningBaseVisitor.cs" />
@@ -60,7 +61,7 @@
     <Compile Include="PlanningParser.cs" />
     <Compile Include="PlanningVisitor.cs" />
     <Compile Include="ProblemLoader.cs" />
-    <Compile Include="VariablesContainer.cs" />
+    <Compile Include="VariableContainer.cs" />
     <Compile Include="GroundPredicate.cs" />
     <Compile Include="Predicate.cs" />
     <Compile Include="Requirements.cs" />

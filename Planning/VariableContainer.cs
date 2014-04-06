@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Planning
 {
-    public abstract class VariablesContainer
+    public abstract class VariableContainer
     {
         #region Fields
 
@@ -16,7 +16,7 @@ namespace Planning
 
         #region Properties
 
-        public int VariablesNum
+        public int Count
         {
             get { return _varaiblesType.Count; }
         }
@@ -30,7 +30,7 @@ namespace Planning
 
         #region Constructors
 
-        public VariablesContainer()
+        public VariableContainer()
         {
             _varaiblesType = new List<string>();
         }

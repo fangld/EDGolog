@@ -9,6 +9,14 @@ namespace Planning
 {
     public class DomainLoader : PlanningBaseListener
     {
+        #region Fields
+
+        private Dictionary<string, Predicate> _predicateDict;
+        
+        private Dictionary<string, Action> _actionDict;
+
+        #endregion
+
         #region Properties
 
         public const string DefaultType = "object";
@@ -19,9 +27,19 @@ namespace Planning
 
         public List<string> ListType { get; set; }
 
-        public List<Predicate> PredicateDefinitions { get; set; }
+        public IReadOnlyDictionary<string, Predicate> PredicateDict
+        {
+            get { return _predicateDict; }
+        }
 
-        public List<Action> ActionDefinitions { get; set; }
+        public IReadOnlyDictionary<string, Action> ActionDict
+        {
+            get { return _actionDict; }
+        }
+
+        //public List<Predicate> PredicateDefinitions { get; set; }
+
+        //public List<Action> ActionDefinitions { get; set; }
 
 
         #endregion
@@ -32,8 +50,10 @@ namespace Planning
             Requirements = new Requirements();
             ListType = new List<string>();
             ListType.Add(DefaultType);
-            PredicateDefinitions = new List<Predicate>();
-            ActionDefinitions = new List<Action>();
+            _predicateDict = new Dictionary<string, Predicate>();
+            _actionDict = new Dictionary<string, Action>();
+            //PredicateDefinitions = new List<Predicate>();
+            //AtionDefinitions = new List<Action>();
         }
 
         #endregion
@@ -75,41 +95,43 @@ namespace Planning
         {
             foreach (var atomicFormulaSkeleton in context.atomicFormulaSkeleton())
             {
-                Predicate predDef = new Predicate();
-                predDef.Name = atomicFormulaSkeleton.predicate().GetText();
-                AddVairablesToContainer(predDef, atomicFormulaSkeleton.listVariable());
-                PredicateDefinitions.Add(predDef);
+                Predicate pred = new Predicate();
+                pred.Name = atomicFormulaSkeleton.predicate().GetText();
+                AddVairablesToContainer(pred, atomicFormulaSkeleton.listVariable());
+                _predicateDict.Add(pred.Name, pred);
+                //PredicateDefinitions.Add(pred);
             }
         }
 
         public override void EnterActionDefine(PlanningParser.ActionDefineContext context)
         {
-            Action actDef = new Action();
-            actDef.Name = context.actionSymbol().GetText();
-            AddVairablesToContainer(actDef, context.listVariable());
+            Action action = new Action();
+            action.Name = context.actionSymbol().GetText();
+            AddVairablesToContainer(action, context.listVariable());
 
-            actDef.Precondition = "true";
+            action.Precondition = "true";
             if (context.actionDefBody().emptyOrPreGD() != null)
             {
                 if (context.actionDefBody().emptyOrPreGD().preGD() != null)
                 {
-                    actDef.Precondition = context.actionDefBody().emptyOrPreGD().preGD().GetText();
+                    action.Precondition = context.actionDefBody().emptyOrPreGD().preGD().GetText();
                 }
             }
 
-            actDef.Effect = "true";
+            action.Effect = "true";
             if (context.actionDefBody().emptyOrEffect() != null)
             {
                 if (context.actionDefBody().emptyOrEffect().effect() != null)
                 {
-                    actDef.Effect = context.actionDefBody().emptyOrEffect().effect().GetText();
+                    action.Effect = context.actionDefBody().emptyOrEffect().effect().GetText();
                 }
             }
 
-            ActionDefinitions.Add(actDef);
+            _actionDict.Add(action.Name, action);
+            //ActionDefinitions.Add(actDef);
         }
 
-        private void AddVairablesToContainer(VariablesContainer container, PlanningParser.ListVariableContext context)
+        private void AddVairablesToContainer(VariableContainer container, PlanningParser.ListVariableContext context)
         {
             do
             {
@@ -147,29 +169,29 @@ namespace Planning
             Console.WriteLine(barline);
 
             Console.WriteLine("Predicates:");
-            foreach (var predDef in PredicateDefinitions)
+            foreach (var pred in _predicateDict.Values)
             {
-                Console.WriteLine("  Name: {0}", predDef.Name);
-                Console.WriteLine("  Variable: {0}", predDef.VariablesNum);
-                for (int i = 0; i < predDef.VariablesNum; i++)
+                Console.WriteLine("  Name: {0}", pred.Name);
+                Console.WriteLine("  Variable: {0}", pred.Count);
+                for (int i = 0; i < pred.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Type: {1}", i, predDef.ListVariablesType[i]);
+                    Console.WriteLine("    Index: {0}, Type: {1}", i, pred.ListVariablesType[i]);
                 }
                 Console.WriteLine();
             }
             Console.WriteLine(barline);
 
             Console.WriteLine("Actions:");
-            foreach (var actDef in ActionDefinitions)
+            foreach (var action in _actionDict.Values)
             {
-                Console.WriteLine("  Name: {0}", actDef.Name);
-                Console.WriteLine("  Variable: {0}", actDef.VariablesNum);
-                for (int i = 0; i < actDef.VariablesNum; i++)
+                Console.WriteLine("  Name: {0}", action.Name);
+                Console.WriteLine("  Variable: {0}", action.Count);
+                for (int i = 0; i < action.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Type: {1}", i, actDef.ListVariablesType[i]);
+                    Console.WriteLine("    Index: {0}, Type: {1}", i, action.ListVariablesType[i]);
                 }
-                Console.WriteLine("  Precondition: {0}", actDef.Precondition);
-                Console.WriteLine("  Effect: {0}", actDef.Effect);
+                Console.WriteLine("  Precondition: {0}", action.Precondition);
+                Console.WriteLine("  Effect: {0}", action.Effect);
                 Console.WriteLine();
             }
         }
