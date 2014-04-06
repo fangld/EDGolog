@@ -79,7 +79,7 @@ problem: LB DEF LB PROM problemName RB
 		   requireDefine?
 		   objectDeclaration?
 		   init
-		RB;
+		 RB;
 
 problemName: NAME;
 domainName: NAME;

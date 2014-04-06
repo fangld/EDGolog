@@ -9,13 +9,10 @@ namespace Planning
 {
     public class DomainLoader : PlanningBaseListener
     {
-        #region Fields
-
-        private const string DefaultType = "object";
-
-        #endregion
-
         #region Properties
+
+        public const string DefaultType = "object";
+
         public string Name { get; set; }
 
         public Requirements Requirements { get; set; }
