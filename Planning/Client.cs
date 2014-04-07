@@ -23,18 +23,6 @@ namespace Planning
         /// </summary>
         private Socket _socket;
 
-        /// <summary>
-        /// The buffer that received
-        /// </summary>
-        private byte[] _rcvBuffer;
-
-        /// <summary>
-        /// The buffer to send
-        /// </summary>
-        private byte[] _sndBuffer;
-
-        private Timer _timer;
-
         private IReadOnlyDictionary<string, Predicate> _predDict;
 
         private IReadOnlyDictionary<string, Action> _actionDict;
@@ -101,7 +89,7 @@ namespace Planning
             
         }
 
-        public GroundAction GetAction()
+        public Ground<Action> GetAction()
         {
             byte[] contentBuffer = ReceiveBuffer();
 
@@ -120,7 +108,7 @@ namespace Planning
             while (parmToExclusive != -1)
             {
                 char[] parmChars = new char[parmToExclusive - parmFromInclusive];
-                Parallel.For(parmFromInclusive, parmToExclusive, i => parmChars[i] = (char) contentBuffer[i]);
+                Parallel.For(parmFromInclusive, parmToExclusive, i => parmChars[i - parmFromInclusive] = (char)contentBuffer[i]);
                 string parm = new string(parmChars);
                 parmList.Add(parm);
                 parmFromInclusive = parmToExclusive + 1;
@@ -128,7 +116,7 @@ namespace Planning
                     b => b == (byte) ',' || b == (byte) ')');
             }
 
-            GroundAction result = new GroundAction(action, parmList);
+            Ground<Action> result = new Ground<Action>(action, parmList);
 
             return result;
         }

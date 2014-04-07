@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,22 +10,62 @@ namespace Agents
 {
     public class Agent
     {
-        public void SendMessage()
+        #region Fields
+
+        private Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        private string _host;
+
+        private int _port;
+
+        #endregion
+
+        #region Constructors
+
+        public Agent()
         {
-            Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            serverSocket.Connect("127.0.0.1", 888);
+            _host = "127.0.0.1";
+            _port = 888;
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void Connect()
+        {
+            _serverSocket.Connect(_host, _port);
+            SendMessage("a1");
+        }
+
+        public void ExecutionAction(string name, params string[] parmList)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (parmList.Length != 0)
+            {
+                sb.AppendFormat("{0}(", name);
+                for (int i = 0; i < parmList.Length - 1; i++)
+                {
+                    sb.AppendFormat("{0},", parmList[i]);
+                }
+                sb.AppendFormat("{0})", parmList[parmList.Length - 1]);
+            }
+            else
+            {
+                sb.AppendFormat("{0}()", name);
+            }
+            SendMessage(sb.ToString());
+        }
+
+        private void SendMessage(string message)
+        {
             byte[] lengthBuffer = new byte[4];
-            byte[] contentBuffer = StringToBytes("a1");
+            byte[] contentBuffer = StringToBytes(message);
             SetBytesLength(lengthBuffer, contentBuffer.Length);
-            serverSocket.Send(lengthBuffer);
-            serverSocket.Send(contentBuffer);
+            _serverSocket.Send(lengthBuffer);
+            _serverSocket.Send(contentBuffer);
 
-            contentBuffer = StringToBytes("dunk(bomb1,toilet1)");
-            SetBytesLength(lengthBuffer, contentBuffer.Length);
-            serverSocket.Send(lengthBuffer);
-            serverSocket.Send(contentBuffer);
-
-            Console.WriteLine("Send dunk(bomb1,toilet1)");
+            Console.WriteLine("Send {0}", message);
         }
 
         private byte[] StringToBytes(string message)
@@ -64,5 +105,7 @@ namespace Agents
             result |= (bytes[3]);
             return result;
         }
+
+        #endregion
     }
 }

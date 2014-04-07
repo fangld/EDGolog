@@ -16,6 +16,8 @@ namespace Planning
 
         #region Properties
 
+        public string Name { get; set; }
+
         public int Count
         {
             get { return _varaiblesType.Count; }

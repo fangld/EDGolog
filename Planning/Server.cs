@@ -199,11 +199,14 @@ namespace Planning
 
         public void ReceiveActions()
         {
-            foreach (var agent in _problemLoader.AgentList)
+            do
             {
-                GroundAction gndAction = _agentClientDict[agent].GetAction();
-                Console.WriteLine(gndAction);
-            }
+                foreach (var agent in _problemLoader.AgentList)
+                {
+                    Ground<Action> gndAction = _agentClientDict[agent].GetAction();
+                    Console.WriteLine(gndAction);
+                }
+            } while (true);
         }
 
         #endregion

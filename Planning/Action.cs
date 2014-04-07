@@ -10,8 +10,6 @@ namespace Planning
     {
         #region Properties
 
-        public string Name { get; set; }
-
         public string Precondition { get; set; }
 
         public string Effect { get; set; }
