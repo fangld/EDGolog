@@ -128,7 +128,7 @@ namespace Planning
 
             Server server = new Server(port, listenBacklog, domainLoader, problemLoader);
             server.ShowInfo();
-            server.Listen();
+            server.Run();
             Console.ReadLine();
         }
 

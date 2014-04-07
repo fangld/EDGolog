@@ -94,6 +94,13 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitType([NotNull] PlanningParser.TypeContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.agentDefine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAgentDefine([NotNull] PlanningParser.AgentDefineContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.actionDefBody"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

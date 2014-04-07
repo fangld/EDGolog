@@ -27,8 +27,9 @@ namespace Planning
 
         #region Constructors
 
-        public GroundAction(List<string> listParam)
+        public GroundAction(Action action, List<string> listParam)
         {
+            Action = action;
             _listParam = listParam;
         }
 

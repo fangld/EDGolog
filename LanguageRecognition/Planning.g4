@@ -76,6 +76,7 @@ functionTerm: FUNSYM term* ;
 // Problem description
 problem: LB DEF LB PROM problemName RB 
 		   LB COLON DOM domainName RB
+		   agentDefine
 		   requireDefine?
 		   objectDeclaration?
 		   init
@@ -83,6 +84,8 @@ problem: LB DEF LB PROM problemName RB
 
 problemName: NAME;
 domainName: NAME;
+
+agentDefine: LB COLON AGENTS NAME+ RB;
 
 objectDeclaration: LB COLON OBJS listName RB;
 
@@ -131,6 +134,7 @@ EITHER: 'either';
 
 OBJS: 'objects';
 INIT: 'init';
+AGENTS: 'agents';
 GOAL: 'goal';
 AT: 'at';
 

@@ -21,8 +21,6 @@ namespace Planning
 
         private Socket _socket;
 
-        private bool _running;
-
         private int _listenBackLog;
 
         private int _port;
@@ -37,15 +35,15 @@ namespace Planning
 
         private Dictionary<string, bool> _predBooleanMap;
 
-        private List<Client> _listClient; 
+        private List<Client> _listClient;
+
+        private Dictionary<string, Client> _agentClientDict;
 
         #endregion
 
         #region Events
 
         public event EventHandler<Client> NewClient;
-
-        public event EventHandler<string> ListenFail;
 
         #endregion
 
@@ -54,7 +52,6 @@ namespace Planning
         public Server(int port, int listenBacklog, DomainLoader domainLoader, ProblemLoader problemLoader)
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-            _running = false;
             _port = port;
             _listenBackLog = listenBacklog;
             _domainLoader = domainLoader;
@@ -67,6 +64,7 @@ namespace Planning
             _predIndexMap = new Dictionary<string, int>();
             _predBooleanMap = new Dictionary<string, bool>();
             _typeObjectsMap = new Dictionary<string, List<string>>();
+            _agentClientDict = new Dictionary<string, Client>();
 
             foreach (var type in _domainLoader.ListType)
             {
@@ -172,63 +170,40 @@ namespace Planning
             }
         }
 
-        /// <summary>
-        /// Listen
-        /// </summary>
-        public async void Listen()
+        public void Run()
         {
-            lock (this)
-            {
-                _running = true;
-                IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, _port);
-                _socket.Bind(localEndPoint);
-                _socket.Listen(_listenBackLog);
-                SocketAsyncEventArgs acceptEventArg = new SocketAsyncEventArgs();
-                acceptEventArg.Completed += acceptEventArg_Completed;
-                if (!_socket.AcceptAsync(acceptEventArg))
-                {
-                    acceptEventArg_Completed(this, acceptEventArg);
-                }
-            }
+            Listen();
+            ReceiveActions();
         }
 
-        public async void Stop()
+        public void Listen()
         {
-            lock (this)
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, _port);
+            _socket.Bind(localEndPoint);
+            _socket.Listen(_listenBackLog);
+
+            int i = 0;
+            do
             {
-                _running = false;
-                _socket.Dispose();
-            }
+                Socket newSocket = _socket.Accept();
+                Client client = new Client(newSocket, _domainLoader.PredicateDict, _domainLoader.ActionDict);
+                client.Handshake();
+                _agentClientDict.Add(client.Name, client);
+                Console.WriteLine("Agent {0} connected!", client.Name);
+
+                i++;
+            } while (i < _problemLoader.AgentList.Count);
+
+            Console.WriteLine("All agents connected!");
         }
 
-        void acceptEventArg_Completed(object sender, SocketAsyncEventArgs e)
+        public void ReceiveActions()
         {
-            if (_running)
+            foreach (var agent in _problemLoader.AgentList)
             {
-                if (e.SocketError == SocketError.Success)
-                {
-                    Client client = new Client(e.AcceptSocket);
-                    client.ActionOccur += client_ActionOccur;
-                    _listClient.Add(client);
-                    NewClient(this, client);
-                }
-                else
-                {
-                    ListenFail(this, e.SocketError.ToString());
-                }
-
-                SocketAsyncEventArgs acceptEventArg = new SocketAsyncEventArgs();
-                acceptEventArg.Completed += acceptEventArg_Completed;
-                if (!_socket.AcceptAsync(acceptEventArg))
-                {
-                    acceptEventArg_Completed(this, acceptEventArg);
-                }
+                GroundAction gndAction = _agentClientDict[agent].GetAction();
+                Console.WriteLine(gndAction);
             }
-        }
-
-        void client_ActionOccur(object sender, GroundAction e)
-        {
-            Console.WriteLine(e);
         }
 
         #endregion

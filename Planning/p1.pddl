@@ -1,5 +1,6 @@
 (define (problem bomb-50-10)
 (:domain bomb)
+   (:agents a1)
    (:objects  
        bomb1  bomb2  bomb3  bomb4  bomb5  bomb6  bomb7  bomb8  bomb9  bomb10
 	   bomb11 bomb12 bomb13 bomb14 bomb15 bomb16 bomb17 bomb18 bomb19 bomb20

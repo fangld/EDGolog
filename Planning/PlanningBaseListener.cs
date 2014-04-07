@@ -151,6 +151,19 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitType([NotNull] PlanningParser.TypeContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.agentDefine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterAgentDefine([NotNull] PlanningParser.AgentDefineContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.agentDefine"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitAgentDefine([NotNull] PlanningParser.AgentDefineContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.actionDefBody"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

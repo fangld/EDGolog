@@ -129,6 +129,17 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitType([NotNull] PlanningParser.TypeContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.agentDefine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAgentDefine([NotNull] PlanningParser.AgentDefineContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.agentDefine"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAgentDefine([NotNull] PlanningParser.AgentDefineContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.actionDefBody"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

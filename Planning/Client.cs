@@ -35,13 +35,15 @@ namespace Planning
 
         private Timer _timer;
 
-        private Dictionary<string, Predicate> _predDict;
+        private IReadOnlyDictionary<string, Predicate> _predDict;
 
-        private Dictionary<string, Action> _actionDict;
+        private IReadOnlyDictionary<string, Action> _actionDict;
 
         #endregion
 
         #region Properties
+
+        public string Name { get; set; }
 
         /// <summary>
         /// The host address of peer
@@ -60,18 +62,18 @@ namespace Planning
 
         #endregion
 
-        #region Events
+        //#region Events
 
-        public event EventHandler<GroundAction> ActionOccur;
+        //public event EventHandler<GroundAction> ActionOccur;
 
-        #endregion
+        //#endregion
 
         #region Constructors
 
         /// <summary>
         /// Create new connected peer with socket
         /// </summary>
-        public Client(Socket socket, Dictionary<string, Predicate> predDict, Dictionary<string, Action> actionDict)
+        public Client(Socket socket, IReadOnlyDictionary<string, Predicate> predDict, IReadOnlyDictionary<string, Action> actionDict)
         {
             _socket = socket;
             IPEndPoint ipEndPoint = (IPEndPoint) socket.RemoteEndPoint;
@@ -90,7 +92,8 @@ namespace Planning
 
         public void Handshake()
         {
-            
+            byte[] contentBuffer = ReceiveBuffer();
+            Name = BytesToString(contentBuffer);
         }
 
         public void SendMessage()
@@ -98,7 +101,39 @@ namespace Planning
             
         }
 
-        public void GetMessage()
+        public GroundAction GetAction()
+        {
+            byte[] contentBuffer = ReceiveBuffer();
+
+            int index = Array.FindIndex(contentBuffer, b => b == (byte) '(');
+            char[] actionNameChars = new char[index];
+            Parallel.For(0, index, i => actionNameChars[i] = (char) contentBuffer[i]);
+            string actionName = new string(actionNameChars);
+
+            Action action = _actionDict[actionName];
+
+            List<string> parmList = new List<string>();
+
+            int parmFromInclusive = index + 1;
+            int parmToExclusive = Array.FindIndex(contentBuffer, parmFromInclusive,
+                b => b == (byte) ',' || b == (byte) ')');
+            while (parmToExclusive != -1)
+            {
+                char[] parmChars = new char[parmToExclusive - parmFromInclusive];
+                Parallel.For(parmFromInclusive, parmToExclusive, i => parmChars[i] = (char) contentBuffer[i]);
+                string parm = new string(parmChars);
+                parmList.Add(parm);
+                parmFromInclusive = parmToExclusive + 1;
+                parmToExclusive = Array.FindIndex(contentBuffer, parmFromInclusive,
+                    b => b == (byte) ',' || b == (byte) ')');
+            }
+
+            GroundAction result = new GroundAction(action, parmList);
+
+            return result;
+        }
+
+        private byte[] ReceiveBuffer()
         {
             byte[] lengthBuffer = new byte[LengthBufferSize];
             int offset = 0;
@@ -109,34 +144,27 @@ namespace Planning
             } while (offset < 4);
 
             int contentBufferSize = GetLength(lengthBuffer);
-            byte[] contentBuffer = new byte[contentBufferSize];
+            byte[] result = new byte[contentBufferSize];
             offset = 0;
             do
             {
-                int rcvCount = _socket.Receive(contentBuffer, offset, contentBufferSize, SocketFlags.None);
+                int rcvCount = _socket.Receive(result, offset, contentBufferSize, SocketFlags.None);
                 offset += rcvCount;
             } while (offset < contentBufferSize);
 
-            int index = Array.FindIndex(contentBuffer, b => b == (byte) ':');
-            char[] actionNameChars = new char[index];
-            Parallel.For(0, index, i => actionNameChars[i] = (char) contentBuffer[i]);
-            string actionName = new string(actionNameChars);
+            return result;
+        }
 
-            Action action = _actionDict[actionName];
+        private string BytesToString(byte[] bytes)
+        {
+            return BytesToString(bytes, 0, bytes.Length);
+        }
 
-            List<string> parmList = new List<string>();
-
-            //int firstParmIndex = index + 1;
-            int parmIndex = Array.FindIndex(contentBuffer, index + 1, b => b == (byte) ',');
-            while (parmIndex != -1)
-            {
-                parmIndex = Array.FindIndex(contentBuffer, parmIndex + 1, b => b == (byte)',');
-            }
-
-            GroundAction result = new GroundAction();
-
-            char[] chars = new char[contentBufferSize];
-            Parallel.For(0, contentBufferSize, i => chars[i] = (char) contentBuffer[i]);
+        private string BytesToString(byte[] bytes, int offset, int count)
+        {
+            char[] chars = new char[count];
+            Parallel.For(offset, count, i => chars[i - offset] = (char)bytes[i]);
+            return new string(chars);
         }
 
         private void SetBytesLength(byte[] bytes, int length)

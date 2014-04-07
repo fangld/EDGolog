@@ -14,7 +14,7 @@ namespace Planning
 
         private Dictionary<string, string> _objectNameTypeMap;
 
-        //private List<string> TruePredSet;
+        private List<string> _agentList;
 
         #endregion
 
@@ -26,9 +26,12 @@ namespace Planning
 
         public DomainLoader DomainLoader { get; set; }
 
-        //public string InitState { get; set; }
-
         public HashSet<string> TruePredSet { get; set; }
+
+        public IReadOnlyList<string> AgentList
+        {
+            get { return _agentList; }
+        }
 
 
         public IReadOnlyDictionary<string, string> ObjectNameTypeMapMap
@@ -44,6 +47,7 @@ namespace Planning
         {
             _objectNameTypeMap = new Dictionary<string, string>();
             TruePredSet = new HashSet<string>();
+            _agentList = new List<string>();
         }
 
         public ProblemLoader(DomainLoader domainLoader):this()
@@ -59,6 +63,14 @@ namespace Planning
         {
             Name = context.problemName().GetText();
             DomainName = context.domainName().GetText();
+        }
+
+        public override void EnterAgentDefine(PlanningParser.AgentDefineContext context)
+        {
+            foreach (var nameNode in context.NAME())
+            {
+                _agentList.Add(nameNode.GetText());
+            }
         }
 
         public override void EnterObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
@@ -104,6 +116,13 @@ namespace Planning
             Console.WriteLine(barline);
 
             Console.WriteLine("Domain name: {0}", DomainName);
+            Console.WriteLine(barline);
+
+            Console.WriteLine("Agents:");
+            foreach (var agent in _agentList)
+            {
+                Console.WriteLine("  {0}", agent);
+            }
             Console.WriteLine(barline);
 
             Console.WriteLine("Variables:");
