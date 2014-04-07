@@ -48,7 +48,7 @@
     <Compile Include="Action.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Ground.cs" />
-    <Compile Include="MainProgram.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="PlanningBaseListener.cs" />
     <Compile Include="PlanningBaseVisitor.cs" />
     <Compile Include="DomainLoader.cs">
@@ -77,6 +77,11 @@
       <Project>{ebb3ad28-953a-4c12-add4-4a6752628280}</Project>
       <Name>PAT.BDD</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CUDDHelper.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
