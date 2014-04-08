@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
@@ -97,9 +98,8 @@ namespace Planning
             {
                 Predicate pred = new Predicate();
                 pred.Name = atomicFormulaSkeleton.predicate().GetText();
-                AddVairablesToContainer(pred, atomicFormulaSkeleton.listVariable());
+                AddVariablesToContainer(pred, atomicFormulaSkeleton.listVariable());
                 _predicateDict.Add(pred.Name, pred);
-                //PredicateDefinitions.Add(pred);
             }
         }
 
@@ -107,14 +107,16 @@ namespace Planning
         {
             Action action = new Action();
             action.Name = context.actionSymbol().GetText();
-            AddVairablesToContainer(action, context.listVariable());
+            AddVariablesToContainer(action, context.listVariable());
 
-            action.Precondition = "true";
+            FormulaVistor vistor = new FormulaVistor();
+
+            action.Precondition = CUDD.ONE;
             if (context.actionDefBody().emptyOrPreGD() != null)
             {
                 if (context.actionDefBody().emptyOrPreGD().preGD() != null)
                 {
-                    action.Precondition = context.actionDefBody().emptyOrPreGD().preGD().GetText();
+                    action.Precondition = vistor.Visit(context.actionDefBody().emptyOrPreGD().preGD());
                 }
             }
 
@@ -128,10 +130,9 @@ namespace Planning
             }
 
             _actionDict.Add(action.Name, action);
-            //ActionDefinitions.Add(actDef);
         }
-
-        private void AddVairablesToContainer(VariableContainer container, PlanningParser.ListVariableContext context)
+        
+        private void AddVariablesToContainer(Predicate container, PlanningParser.ListVariableContext context)
         {
             do
             {
