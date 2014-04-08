@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public class Action : VariableContainer
+    public class Action : Predicate
     {
         #region Properties
 
-        public string Precondition { get; set; }
+        public CUDDNode Precondition { get; set; }
 
         public string Effect { get; set; }
         
