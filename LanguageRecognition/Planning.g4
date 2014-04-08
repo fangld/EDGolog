@@ -51,6 +51,7 @@ gd: atomicFormulaTerm
   | literalTerm
   | LB AND gd* RB
   | LB OR gd* RB
+  | LB NOT gd RB
   | LB IMPLY gd gd RB
   | LB EXISTS LB listVariable RB gd RB
   | LB FORALL LB listVariable RB gd RB;
