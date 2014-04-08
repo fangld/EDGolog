@@ -18,8 +18,8 @@ namespace Planning
         
         public static void Main()
         {
-            //Test1();
-            Test2();
+            Test1();
+            //Test2();
         }
 
         static void Test1()
