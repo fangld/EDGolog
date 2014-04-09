@@ -86,8 +86,8 @@ namespace Planning
 
                 for (int j = 0; j < predicate.Count; j++)
                 {
-                    string type = predicate.ListVariablesType[j];
-                    List<string> objectList = _typeObjectsMap[type];
+                    Tuple<string, string> variable = predicate.VariableTypeList[j];
+                    List<string> objectList = _typeObjectsMap[variable.Item2];
                     collection.Add(objectList);
                 }
 

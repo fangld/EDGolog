@@ -10,7 +10,7 @@ namespace Planning
     {
         #region Fields
 
-        private List<string> _variablesType;
+        private List<Tuple<string, string>> _variableTypeList;
 
         #endregion
 
@@ -20,12 +20,12 @@ namespace Planning
 
         public int Count
         {
-            get { return _variablesType.Count; }
+            get { return _variableTypeList.Count; }
         }
 
-        public IReadOnlyList<string> ListVariablesType
+        public IReadOnlyList<Tuple<string, string>> VariableTypeList
         {
-            get { return _variablesType; }
+            get { return _variableTypeList; }
         }
 
         #endregion
@@ -34,22 +34,17 @@ namespace Planning
 
         public Predicate()
         {
-            _variablesType = new List<string>();
+            _variableTypeList = new List<Tuple<string, string>>();
         }
 
         #endregion
 
         #region Methods
 
-        public void AddVariableTypes(string type, int number)
+        public void AddVariable(string name, string type)
         {
-            string[] types = new string[number];
-            for (int i = 0; i < number; i++)
-            {
-                types[i] = type;
-            }
-
-            _variablesType.AddRange(types);
+            Tuple<string, string> tuple = new Tuple<string, string>(name, type);
+            _variableTypeList.Add(tuple);
         }
 
         #endregion

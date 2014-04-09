@@ -50,9 +50,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="ConditionalEffect.cs" />
     <Compile Include="Effect.cs" />
-    <Compile Include="FormulaVistor.cs" />
     <Compile Include="Ground.cs" />
-    <Compile Include="AbstractPredicateGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PlanningBaseListener.cs" />
     <Compile Include="PlanningBaseVisitor.cs" />

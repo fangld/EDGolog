@@ -51,9 +51,9 @@ namespace Planning
                         }
                     }
 
-                    for (int i = 0; i < ListVariablesType.Count; i++)
+                    for (int i = 0; i < VariableTypeList.Count; i++)
                     {
-                        if (ListVariablesType[i] != other.ListVariablesType[i])
+                        if (VariableTypeList[i] != other.VariableTypeList[i])
                         {
                             return false;
                         }

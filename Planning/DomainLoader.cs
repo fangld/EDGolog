@@ -16,6 +16,8 @@ namespace Planning
         
         private Dictionary<string, Action> _actionDict;
 
+        private int _currentCuddIndex;
+
         #endregion
 
         #region Properties
@@ -38,11 +40,6 @@ namespace Planning
             get { return _actionDict; }
         }
 
-        //public List<Predicate> PredicateDefinitions { get; set; }
-
-        //public List<Action> ActionDefinitions { get; set; }
-
-
         #endregion
 
         #region Constructors
@@ -53,8 +50,7 @@ namespace Planning
             ListType.Add(DefaultType);
             _predicateDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
-            //PredicateDefinitions = new List<Predicate>();
-            //AtionDefinitions = new List<Action>();
+            _currentCuddIndex = 0;
         }
 
         #endregion
@@ -107,40 +103,9 @@ namespace Planning
 
         public override void EnterActionDefine(PlanningParser.ActionDefineContext context)
         {
-            Action action = new Action();
-            action.Name = context.actionSymbol().GetText();
-            AddVariablesToContainer(action, context.listVariable());
-            Console.WriteLine("Action name: {0}", action.Name);
-
-            FormulaVistor vistor = new FormulaVistor();
-
-            action.Precondition = CUDD.ONE;
-            //Console.WriteLine("Interpret precondition.");
-            if (context.actionDefBody().emptyOrPreGD() != null)
-            {
-                if (context.actionDefBody().emptyOrPreGD().gd() != null)
-                {
-                    action.Precondition = vistor.Visit(context.actionDefBody().emptyOrPreGD().gd());
-                }
-            }
-
-            Console.WriteLine("  Precondition:");
-            CUDD.Print.PrintMinterm(action.Precondition);
-
-            action.Effect = CUDD.ONE;
-            if (context.actionDefBody().emptyOrEffect() != null)
-            {
-                if (context.actionDefBody().emptyOrEffect().effect() != null)
-                {
-                    action.Effect = vistor.Visit(context.actionDefBody().emptyOrEffect().effect());
-                }
-            }
-
-            Console.WriteLine("  Effect:");
-            CUDD.Print.PrintMinterm(action.Effect);
-
-
+            Action action = new Action(_currentCuddIndex, context);
             _actionDict.Add(action.Name, action);
+            _currentCuddIndex = action.CurrentCuddIndex;
         }
         
         private void AddVariablesToContainer(Predicate container, PlanningParser.ListVariableContext context)
@@ -150,7 +115,11 @@ namespace Planning
                 if (context.VAR().Count != 0)
                 {
                     string type = context.type() == null ? DefaultType : context.type().GetText();
-                    container.AddVariableTypes(type, context.VAR().Count);
+
+                    foreach (var varNode in context.VAR())
+                    {
+                        container.AddVariable(varNode.GetText(), type);
+                    }
                 }
                 context = context.listVariable();
             } while (context != null);
@@ -187,7 +156,8 @@ namespace Planning
                 Console.WriteLine("  Variable: {0}", pred.Count);
                 for (int i = 0; i < pred.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Type: {1}", i, pred.ListVariablesType[i]);
+                    Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, pred.VariableTypeList[i].Item1,
+                        pred.VariableTypeList[i].Item2);
                 }
                 Console.WriteLine();
             }
@@ -200,10 +170,27 @@ namespace Planning
                 Console.WriteLine("  Variable: {0}", action.Count);
                 for (int i = 0; i < action.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Type: {1}", i, action.ListVariablesType[i]);
+                    Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, action.VariableTypeList[i].Item1,
+                        action.VariableTypeList[i].Item2);
                 }
-                Console.WriteLine("  Precondition: {0}", action.Precondition.ToString());
-                Console.WriteLine("  Effect: {0}", action.Effect);
+
+                Console.WriteLine("    Previous Abstract Predicates: ");
+                foreach (var abstractPredicate in action.PreviousAbstractPredicates)
+                {
+                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
+                }
+
+                Console.WriteLine("    Successive Abstract Predicates: ");
+                foreach (var abstractPredicate in action.SuccessiveAbstractPredicates)
+                {
+                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
+                }
+                Console.WriteLine("  Precondition:");
+                CUDD.Print.PrintMinterm(action.Precondition);
+
+                Console.WriteLine("  Effect:");
+                CUDD.Print.PrintMinterm(action.Effect);
+
                 Console.WriteLine();
             }
         }
