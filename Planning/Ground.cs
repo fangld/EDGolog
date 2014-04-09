@@ -8,7 +8,7 @@ namespace Planning
 {
     public class Ground<T> where T : Predicate
     {
-         #region Fields
+        #region Fields
 
         private List<string> _paramList;
 

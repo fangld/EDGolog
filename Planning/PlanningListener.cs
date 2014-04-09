@@ -52,17 +52,6 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitListName([NotNull] PlanningParser.ListNameContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.pEffect"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPEffect([NotNull] PlanningParser.PEffectContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.pEffect"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPEffect([NotNull] PlanningParser.PEffectContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -149,17 +138,6 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitActionDefBody([NotNull] PlanningParser.ActionDefBodyContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.prefGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPrefGD([NotNull] PlanningParser.PrefGDContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.prefGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPrefGD([NotNull] PlanningParser.PrefGDContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.structureDefine"/>.
@@ -305,17 +283,6 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitCEffect([NotNull] PlanningParser.CEffectContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.preGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPreGD([NotNull] PlanningParser.PreGDContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.preGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPreGD([NotNull] PlanningParser.PreGDContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -457,16 +424,5 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitEmptyOrPreGD([NotNull] PlanningParser.EmptyOrPreGDContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.prefName"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterPrefName([NotNull] PlanningParser.PrefNameContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.prefName"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitPrefName([NotNull] PlanningParser.PrefNameContext context);
 }
 } // namespace LanguageRecognition

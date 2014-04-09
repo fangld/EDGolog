@@ -64,6 +64,7 @@ namespace Planning
         public override void EnterDomain(PlanningParser.DomainContext context)
         {
             Name = context.NAME().GetText();
+            Console.WriteLine("Name: {0}", Name);
         }
 
         public override void EnterRequireDefine(PlanningParser.RequireDefineContext context)
@@ -89,6 +90,7 @@ namespace Planning
             foreach (var type in context.listName().NAME())
             {
                 ListType.Add(type.GetText());
+                Console.WriteLine("type: {0}", type);
             }
         }
 
@@ -108,26 +110,35 @@ namespace Planning
             Action action = new Action();
             action.Name = context.actionSymbol().GetText();
             AddVariablesToContainer(action, context.listVariable());
+            Console.WriteLine("Action name: {0}", action.Name);
 
             FormulaVistor vistor = new FormulaVistor();
 
             action.Precondition = CUDD.ONE;
+            //Console.WriteLine("Interpret precondition.");
             if (context.actionDefBody().emptyOrPreGD() != null)
             {
-                if (context.actionDefBody().emptyOrPreGD().preGD() != null)
+                if (context.actionDefBody().emptyOrPreGD().gd() != null)
                 {
-                    action.Precondition = vistor.Visit(context.actionDefBody().emptyOrPreGD().preGD());
+                    action.Precondition = vistor.Visit(context.actionDefBody().emptyOrPreGD().gd());
                 }
             }
 
-            action.Effect = "true";
+            Console.WriteLine("  Precondition:");
+            CUDD.Print.PrintMinterm(action.Precondition);
+
+            action.Effect = CUDD.ONE;
             if (context.actionDefBody().emptyOrEffect() != null)
             {
                 if (context.actionDefBody().emptyOrEffect().effect() != null)
                 {
-                    action.Effect = context.actionDefBody().emptyOrEffect().effect().GetText();
+                    action.Effect = vistor.Visit(context.actionDefBody().emptyOrEffect().effect());
                 }
             }
+
+            Console.WriteLine("  Effect:");
+            CUDD.Print.PrintMinterm(action.Effect);
+
 
             _actionDict.Add(action.Name, action);
         }
@@ -191,7 +202,7 @@ namespace Planning
                 {
                     Console.WriteLine("    Index: {0}, Type: {1}", i, action.ListVariablesType[i]);
                 }
-                Console.WriteLine("  Precondition: {0}", action.Precondition);
+                Console.WriteLine("  Precondition: {0}", action.Precondition.ToString());
                 Console.WriteLine("  Effect: {0}", action.Effect);
                 Console.WriteLine();
             }

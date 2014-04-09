@@ -54,6 +54,7 @@ namespace PAT.Common.Classes.CUDDLib
         /// </summary>
         public override bool Equals(object obj)
         {
+            //Console.WriteLine("Hello Equal");
             CUDDNode dd = obj as CUDDNode;
             return (this.Ptr == dd.Ptr);
         }
@@ -63,14 +64,29 @@ namespace PAT.Common.Classes.CUDDLib
             return (int)this.Ptr;
         }
 
-        public static bool operator ==(CUDDNode a, CUDDNode b)
-        {
-            return a.Equals(b);
-        }
+        //public static bool operator ==(CUDDNode a, CUDDNode b)
+        //{
+        //    return a.Equals(b);
 
-        public static bool operator !=(CUDDNode a, CUDDNode b)
-        {
-            return !(a.Equals(b));
-        }
+        //    bool result;
+        //    if (a == null)
+        //    {
+        //        result = b == null;
+        //    }
+        //    else if (b == null)
+        //    {
+        //        result = false;
+        //    }
+        //    else
+        //    {
+        //        result = a.Equals(b);
+        //    }
+        //    return result;
+        //}
+
+        //public static bool operator !=(CUDDNode a, CUDDNode b)
+        //{
+        //    return !(a.Equals(b));
+        //}
     }
 }

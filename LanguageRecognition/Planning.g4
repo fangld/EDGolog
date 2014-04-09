@@ -36,41 +36,41 @@ actionSymbol: NAME;
 actionDefBody: (COLON PRE emptyOrPreGD)?
                (COLON EFF emptyOrEffect)?;
 
-emptyOrPreGD: preGD | LB RB;
+emptyOrPreGD: gd | LB RB;
 emptyOrEffect: effect | LB RB;
 
 listName: NAME* | NAME+ DASH type listName;
 listVariable: VAR* | VAR+ DASH type listVariable;
-preGD: prefGD
-     | LB AND preGD* RB
-	 | LB FORALL listVariable preGD RB;
-prefGD: gd | LB PREF prefName gd RB;
-prefName: NAME;
+//preGD: gd//prefGD
+     //| LB AND preGD* RB
+	 /*| LB FORALL listVariable preGD RB*///;
+//prefGD: gd | LB PREF prefName gd RB;
+//prefName: NAME;
 
 gd: atomicFormulaTerm
   | literalTerm
   | LB AND gd* RB
   | LB OR gd* RB
   | LB NOT gd RB
-  | LB IMPLY gd gd RB
+  | LB IMPLY gd gd RB/*
   | LB EXISTS LB listVariable RB gd RB
-  | LB FORALL LB listVariable RB gd RB;
+  | LB FORALL LB listVariable RB gd RB*/;
 
 atomicFormulaTerm: LB predicate term* RB
-             | LB EQ term* RB;
+                 | LB EQ term* RB;
 literalTerm: atomicFormulaTerm | LB NOT atomicFormulaTerm RB;
 
 term: NAME | VAR | functionTerm;
 
 effect: LB AND cEffect* RB
       | cEffect;
-cEffect: LB FORALL listVariable effect RB
-       | LB WHEN gd condEffect RB
-	   | pEffect;
-pEffect: LB NOT atomicFormulaTerm RB
-       | atomicFormulaTerm;
-condEffect: LB AND pEffect* RB
-          | pEffect;
+cEffect: /*LB FORALL listVariable effect RB
+       | */LB WHEN gd condEffect RB
+	   | literalTerm;
+/*pEffect: LB NOT atomicFormulaTerm RB
+       | atomicFormulaTerm;*/
+condEffect: LB AND literalTerm* RB
+          | literalTerm;
 
 functionTerm: FUNSYM term* ;
 

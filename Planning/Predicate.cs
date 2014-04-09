@@ -10,7 +10,7 @@ namespace Planning
     {
         #region Fields
 
-        private List<string> _varaiblesType;
+        private List<string> _variablesType;
 
         #endregion
 
@@ -20,12 +20,12 @@ namespace Planning
 
         public int Count
         {
-            get { return _varaiblesType.Count; }
+            get { return _variablesType.Count; }
         }
 
         public IReadOnlyList<string> ListVariablesType
         {
-            get { return _varaiblesType; }
+            get { return _variablesType; }
         }
 
         #endregion
@@ -34,7 +34,7 @@ namespace Planning
 
         public Predicate()
         {
-            _varaiblesType = new List<string>();
+            _variablesType = new List<string>();
         }
 
         #endregion
@@ -49,7 +49,7 @@ namespace Planning
                 types[i] = type;
             }
 
-            _varaiblesType.AddRange(types);
+            _variablesType.AddRange(types);
         }
 
         #endregion

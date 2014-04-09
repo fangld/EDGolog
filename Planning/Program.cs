@@ -24,6 +24,12 @@ namespace Planning
 
         static void Test1()
         {
+            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+
+            //CUDDNode x0 = CUDD.Var(0);
+            //CUDDNode x1 = CUDD.Var(1);
+
+
             // Create a TextReader that reads from a file
             TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d1.pddl");
 
@@ -66,6 +72,9 @@ namespace Planning
             // Walk the tree created during the parse, trigger callbacks 
             ProblemLoader problemLoader = new ProblemLoader();
             walker.Walk(problemLoader, tree);
+
+
+            //CUDDNode node = CUDD.Var(0);
 
             Server server = new Server(port, listenBacklog, domainLoader, problemLoader);
             server.ShowInfo();

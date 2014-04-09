@@ -60,19 +60,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitListName([NotNull] PlanningParser.ListNameContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.pEffect"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPEffect([NotNull] PlanningParser.PEffectContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.pEffect"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPEffect([NotNull] PlanningParser.PEffectContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -175,19 +162,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitActionDefBody([NotNull] PlanningParser.ActionDefBodyContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.prefGD"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPrefGD([NotNull] PlanningParser.PrefGDContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.prefGD"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPrefGD([NotNull] PlanningParser.PrefGDContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.structureDefine"/>.
@@ -359,19 +333,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitCEffect([NotNull] PlanningParser.CEffectContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.preGD"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPreGD([NotNull] PlanningParser.PreGDContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.preGD"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPreGD([NotNull] PlanningParser.PreGDContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -539,19 +500,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitEmptyOrPreGD([NotNull] PlanningParser.EmptyOrPreGDContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.prefName"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPrefName([NotNull] PlanningParser.PrefNameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.prefName"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPrefName([NotNull] PlanningParser.PrefNameContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

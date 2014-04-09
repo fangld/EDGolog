@@ -45,13 +45,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitListName([NotNull] PlanningParser.ListNameContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.pEffect"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPEffect([NotNull] PlanningParser.PEffectContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -106,13 +99,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitActionDefBody([NotNull] PlanningParser.ActionDefBodyContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.prefGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPrefGD([NotNull] PlanningParser.PrefGDContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.structureDefine"/>.
@@ -206,13 +192,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCEffect([NotNull] PlanningParser.CEffectContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.preGD"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPreGD([NotNull] PlanningParser.PreGDContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -302,12 +281,5 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitEmptyOrPreGD([NotNull] PlanningParser.EmptyOrPreGDContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.prefName"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitPrefName([NotNull] PlanningParser.PrefNameContext context);
 }
 } // namespace LanguageRecognition
