@@ -16,9 +16,7 @@ namespace Planning
     public class Server
     {
         #region Fields
-
-        private bool[] _booleans;
-
+        
         private Socket _socket;
 
         private int _listenBackLog;
@@ -80,18 +78,18 @@ namespace Planning
             }
 
             int offset = 0;
-            foreach (var predicate in _domainLoader.PredicateDict.Values)
+            foreach (var pred in _domainLoader.PredicateDict.Values)
             {
                 List<List<string>> collection = new List<List<string>>();
 
-                for (int j = 0; j < predicate.Count; j++)
+                for (int j = 0; j < pred.Count; j++)
                 {
-                    Tuple<string, string> variable = predicate.VariableTypeList[j];
+                    Tuple<string, string> variable = pred.VariableTypeList[j];
                     List<string> objectList = _typeObjectsMap[variable.Item2];
                     collection.Add(objectList);
                 }
 
-                ScanMixedRadix(ref offset, predicate.Name, collection, AddToPredIndexMap);
+                ScanMixedRadix(ref offset, pred.Name, collection, AddToPredIndexMap);
             }
         }
 

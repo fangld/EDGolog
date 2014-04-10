@@ -12,7 +12,17 @@ namespace Planning
     {
         #region Fields
 
-        private Dictionary<string, string> _objectNameTypeMap;
+        private Dictionary<string, string> _objNameTypeMap;
+
+        private Dictionary<string, List<string>> _objTypeNamesMap;
+
+        private Dictionary<string, Ground<Predicate>> _gndPredDict;
+
+        private Dictionary<string, Ground<Action>> _gndActionDict;
+
+        private IReadOnlyDictionary<string, Predicate> _predDict;
+
+        private IReadOnlyDictionary<string, Action> _actionDict;
 
         private List<string> _agentList;
 
@@ -36,24 +46,32 @@ namespace Planning
 
         public IReadOnlyDictionary<string, string> ObjectNameTypeMapMap
         {
-            get { return _objectNameTypeMap; }
+            get { return _objNameTypeMap; }
         }
 
         #endregion
 
         #region Constructors
 
-        public ProblemLoader()
+        public ProblemLoader(DomainLoader domainLoader)//, Dictionary<string, Predicate> predDict, Dictionary<string, Action> actionDict)
+            //: this()
         {
-            _objectNameTypeMap = new Dictionary<string, string>();
+            _objNameTypeMap = new Dictionary<string, string>();
+            _objTypeNamesMap = new Dictionary<string, List<string>>();
             TruePredSet = new HashSet<string>();
             _agentList = new List<string>();
+            DomainLoader = domainLoader;
+            _predDict = domainLoader.PredicateDict;
+            _actionDict = domainLoader.ActionDict;
+            _gndPredDict = new Dictionary<string, Ground<Predicate>>();
+            _gndActionDict = new Dictionary<string, Ground<Action>>();
         }
 
-        public ProblemLoader(DomainLoader domainLoader):this()
-        {
-            DomainLoader = domainLoader;
-        }
+        #endregion
+
+        #region Methods
+
+
 
         #endregion
 
@@ -76,18 +94,146 @@ namespace Planning
         public override void EnterObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
         {
             var listNameContext = context.listName();
+            BuildObjectNamesTypeMap(listNameContext);
+            BuildGroundPredicates();
+            BuildGroundActions();
+        }
+
+        private void BuildObjectNamesTypeMap(PlanningParser.ListNameContext listNameContext)
+        {
             do
             {
                 string type = listNameContext.type() != null
                     ? listNameContext.type().GetText()
                     : DomainLoader.DefaultType;
+
+                List<string> objNamesList;
+
+                if (_objTypeNamesMap.ContainsKey(type))
+                {
+                    objNamesList = _objTypeNamesMap[type];
+                }
+                else
+                {
+                    objNamesList = new List<string>(listNameContext.NAME().Count);
+                    _objTypeNamesMap.Add(type, objNamesList);
+                }
+
                 foreach (var nameNode in listNameContext.NAME())
                 {
-                    _objectNameTypeMap.Add(nameNode.GetText(), type);
+                    _objNameTypeMap.Add(nameNode.GetText(), type);
+                    objNamesList.Add(nameNode.GetText());
                 }
+
                 listNameContext = listNameContext.listName();
             } while (listNameContext != null);
         }
+
+        private void BuildGroundPredicates()
+        {
+            //int offset = 0;
+
+            foreach (var pred in _predDict.Values)
+            {
+                List<List<string>> collection = new List<List<string>>();
+
+                for (int j = 0; j < pred.Count; j++)
+                {
+                    Tuple<string, string> variable = pred.VariableTypeList[j];
+                    List<string> objectList = _objTypeNamesMap[variable.Item2];
+                    collection.Add(objectList);
+                }
+
+                ScanMixedRadix(pred.Name, collection);
+            }
+        }
+
+        private void ScanMixedRadix(string predName, List<List<string>> collection)
+        {
+            int count = collection.Count;
+            string[] scanArray = new string[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            for (int i = 0; i < count; i++)
+            {
+                maxIndex[i] = collection[i].Count;
+            }
+
+            do
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    scanArray[i] = collection[i][index[i]];
+                }
+
+                AddToGroundPredicateDict(predName, scanArray);
+                //offset++;
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+                if (j == -1)
+                    return;
+                index[j]++;
+            } while (true);
+        }
+
+        private void AddToGroundPredicateDict(string predName, string[] variableList)
+        {
+            Predicate pred = _predDict[predName];
+            Ground<Predicate> gndPred = new Ground<Predicate>(pred, variableList);
+            _gndPredDict.Add(gndPred.ToString(), gndPred);
+
+            //StringBuilder sb = new StringBuilder();
+            //sb.AppendFormat("{0}(", predName);
+            //for (int i = 0; i < variableList.Length - 1; i++)
+            //{
+            //    sb.AppendFormat("{0},", variableList[i]);
+            //}
+            //sb.AppendFormat("{0})", variableList[variableList.Length - 1]);
+            //string gndPredName = sb.ToString();
+            //_predIndexMap.Add(gndPredName, index);
+            //if (TruePredSet.Contains(gndPredName))
+            //{
+            //    _predBooleanMap.Add(gndPredName, true);
+            //}
+            //else
+            //{
+            //    _predBooleanMap.Add(gndPredName, false);
+            //}
+        }
+
+        private void BuildGroundActions()
+        {
+            foreach (var pred in _predDict.Values)
+            {
+                List<List<string>> collection = new List<List<string>>();
+
+                for (int j = 0; j < pred.Count; j++)
+                {
+                    Tuple<string, string> variable = pred.VariableTypeList[j];
+                    List<string> objectList = _objTypeNamesMap[variable.Item2];
+                    collection.Add(objectList);
+                }
+
+                ScanMixedRadix(pred.Name, collection);
+            }
+        }
+
+        private void AddToGroundActionDict(string actionName, string[] variableList)
+        {
+            Action action = _actionDict[actionName];
+            Ground<Action> gndAction = new Ground<Action>(action, variableList);
+            _gndActionDict.Add(gndAction.ToString(), gndAction);
+        }
+
 
         public override void EnterInit(PlanningParser.InitContext context)
         {
@@ -104,8 +250,6 @@ namespace Planning
                 sb.AppendFormat("{0})", nameNodes[nameNodes.Count - 1].GetText());
                 TruePredSet.Add(sb.ToString());
             }
-            
-            //InitState = context.gdName().GetText();
         }
 
         public void ShowInfo()
@@ -126,13 +270,13 @@ namespace Planning
             Console.WriteLine(barline);
 
             Console.WriteLine("Variables:");
-            foreach (var pair in _objectNameTypeMap)
+            foreach (var pair in _objNameTypeMap)
             {
                 Console.WriteLine("  {0} - {1}", pair.Key, pair.Value);
             }
             Console.WriteLine(barline);
 
-            Console.WriteLine("Initial state");
+            Console.WriteLine("Initial state:");
             foreach (var pred in TruePredSet)
             {
                 Console.WriteLine(" {0}", pred);

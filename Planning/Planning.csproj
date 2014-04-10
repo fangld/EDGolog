@@ -68,7 +68,6 @@
     <Compile Include="Requirements.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UsedPredicateGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="d1.pddl" />

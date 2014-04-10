@@ -70,7 +70,7 @@ namespace Planning
             // Create a generic parse tree walker that can trigger callbacks 
             walker = new ParseTreeWalker();
             // Walk the tree created during the parse, trigger callbacks 
-            ProblemLoader problemLoader = new ProblemLoader();
+            ProblemLoader problemLoader = new ProblemLoader(domainLoader);
             walker.Walk(problemLoader, tree);
 
 

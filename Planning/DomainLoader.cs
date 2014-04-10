@@ -12,7 +12,7 @@ namespace Planning
     {
         #region Fields
 
-        private Dictionary<string, Predicate> _predicateDict;
+        private Dictionary<string, Predicate> _predDict;
         
         private Dictionary<string, Action> _actionDict;
 
@@ -32,7 +32,7 @@ namespace Planning
 
         public IReadOnlyDictionary<string, Predicate> PredicateDict
         {
-            get { return _predicateDict; }
+            get { return _predDict; }
         }
 
         public IReadOnlyDictionary<string, Action> ActionDict
@@ -48,7 +48,7 @@ namespace Planning
             Requirements = new Requirements();
             ListType = new List<string>();
             ListType.Add(DefaultType);
-            _predicateDict = new Dictionary<string, Predicate>();
+            _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
             _currentCuddIndex = 0;
         }
@@ -97,7 +97,7 @@ namespace Planning
                 Predicate pred = new Predicate();
                 pred.Name = atomicFormulaSkeleton.predicate().GetText();
                 AddVariablesToContainer(pred, atomicFormulaSkeleton.listVariable());
-                _predicateDict.Add(pred.Name, pred);
+                _predDict.Add(pred.Name, pred);
             }
         }
 
@@ -150,7 +150,7 @@ namespace Planning
             Console.WriteLine(barline);
 
             Console.WriteLine("Predicates:");
-            foreach (var pred in _predicateDict.Values)
+            foreach (var pred in _predDict.Values)
             {
                 Console.WriteLine("  Name: {0}", pred.Name);
                 Console.WriteLine("  Variable: {0}", pred.Count);

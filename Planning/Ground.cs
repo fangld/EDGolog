@@ -27,10 +27,10 @@ namespace Planning
 
         #region Constructors
 
-        public Ground(T variableContainer, List<string> paramList)
+        public Ground(T variableContainer, ICollection<string> paramList)
         {
             VariableContainer = variableContainer;
-            _paramList = paramList;
+            _paramList = new List<string>(paramList);
         }
 
         #endregion
