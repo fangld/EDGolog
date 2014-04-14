@@ -18,6 +18,8 @@ namespace Planning
 
         public T VariableContainer { get; set; }
 
+        public int CuddIndex { get; set; }
+
         public IReadOnlyList<string> ParamList
         {
             get { return _paramList; }

@@ -16,8 +16,6 @@ namespace Planning
         
         private Dictionary<string, Action> _actionDict;
 
-        private int _currentCuddIndex;
-
         #endregion
 
         #region Properties
@@ -25,6 +23,8 @@ namespace Planning
         public const string DefaultType = "object";
 
         public string Name { get; set; }
+
+        public int CurrentCuddIndex { get; set; }
 
         public Requirements Requirements { get; set; }
 
@@ -50,7 +50,7 @@ namespace Planning
             ListType.Add(DefaultType);
             _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
-            _currentCuddIndex = 0;
+            CurrentCuddIndex = 0;
         }
 
         #endregion
@@ -103,9 +103,9 @@ namespace Planning
 
         public override void EnterActionDefine(PlanningParser.ActionDefineContext context)
         {
-            Action action = new Action(_currentCuddIndex, context);
+            Action action = new Action(CurrentCuddIndex, context);
             _actionDict.Add(action.Name, action);
-            _currentCuddIndex = action.CurrentCuddIndex;
+            CurrentCuddIndex = action.CurrentCuddIndex;
         }
         
         private void AddVariablesToContainer(Predicate container, PlanningParser.ListVariableContext context)

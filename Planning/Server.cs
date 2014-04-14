@@ -33,7 +33,7 @@ namespace Planning
 
         private Dictionary<string, bool> _predBooleanMap;
 
-        private List<Client> _listClient;
+        private List<Client> _clientList;
 
         private Dictionary<string, Client> _agentClientDict;
 

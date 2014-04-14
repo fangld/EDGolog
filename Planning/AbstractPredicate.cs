@@ -28,6 +28,8 @@ namespace Planning
 
         #region Constructors
 
+        #region Methods
+
         public AbstractPredicate(List<string> variableNameList)
         {
             _variableNameList = variableNameList;
@@ -35,7 +37,7 @@ namespace Planning
 
         #endregion
 
-        #region Methods
+        #region Overriden Methods
 
         public bool Equals(AbstractPredicate other)
         {
@@ -85,6 +87,8 @@ namespace Planning
 
             return sb.ToString();
         }
+
+        #endregion
 
         #endregion
     }
