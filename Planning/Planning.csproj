@@ -51,6 +51,7 @@
     <Compile Include="ConditionalEffect.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="Ground.cs" />
+    <Compile Include="GroundAction.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PlanningBaseListener.cs" />
     <Compile Include="PlanningBaseVisitor.cs" />

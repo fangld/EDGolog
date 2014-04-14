@@ -17,9 +17,11 @@ namespace Planning
 
         private Dictionary<string, List<string>> _objTypeNamesMap;
 
-        private Dictionary<string, Ground<Predicate>> _gndPredDict;
+        private Dictionary<string, Ground<Predicate>> _preGndPredDict;
 
-        private Dictionary<string, Ground<Action>> _gndActionDict;
+        private Dictionary<string, Ground<Predicate>> _sucGndPredDict;
+
+        private Dictionary<string, GroundAction> _gndActionDict;
 
         private IReadOnlyDictionary<string, Predicate> _predDict;
 
@@ -64,8 +66,9 @@ namespace Planning
             DomainLoader = domainLoader;
             _predDict = domainLoader.PredicateDict;
             _actionDict = domainLoader.ActionDict;
-            _gndPredDict = new Dictionary<string, Ground<Predicate>>();
-            _gndActionDict = new Dictionary<string, Ground<Action>>();
+            _preGndPredDict = new Dictionary<string, Ground<Predicate>>();
+            _sucGndPredDict = new Dictionary<string, Ground<Predicate>>();
+            _gndActionDict = new Dictionary<string, GroundAction>();
             _currentCuddIndex = domainLoader.CurrentCuddIndex;
         }
 
@@ -185,10 +188,15 @@ namespace Planning
         private void AddToGroundPredicateDict(string predName, string[] variableList)
         {
             Predicate pred = _predDict[predName];
-            Ground<Predicate> gndPred = new Ground<Predicate>(pred, variableList);
-            gndPred.CuddIndex = _currentCuddIndex;
+            Ground<Predicate> preGndPred = new Ground<Predicate>(pred, variableList);
+            preGndPred.CuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
-            _gndPredDict.Add(gndPred.ToString(), gndPred);
+            _preGndPredDict.Add(preGndPred.ToString(), preGndPred);
+
+            Ground<Predicate> sucGndPred = new Ground<Predicate>(pred, variableList);
+            sucGndPred.CuddIndex = _currentCuddIndex;
+            _currentCuddIndex++;
+            _sucGndPredDict.Add(sucGndPred.ToString(), sucGndPred);
         }
 
         private void BuildGroundActions()
@@ -248,14 +256,90 @@ namespace Planning
         {
             Action action = _actionDict[actionName];
 
-            Ground<Action> gndAction = new Ground<Action>(action, variableList);
+            GroundAction gndAction = new GroundAction(action, variableList);
+            GenerateGroundPrecondition(gndAction);
             _gndActionDict.Add(gndAction.ToString(), gndAction);
         }
 
-        private void SubstitutionPredication(CUDDNode precondition)
+        private void GenerateGroundPrecondition(GroundAction gndAction)
         {
-            //precondition.
+            CUDDVars oldVars = new CUDDVars();
+            CUDDVars newVars = new CUDDVars();
+
+            Dictionary<string, string> abstractParmMap = new Dictionary<string, string>();
+
+            Console.WriteLine("  gndaction parmlist count:{0}", gndAction.ParamList.Count);
+
+            for (int i = 0; i < gndAction.ParamList.Count; i++)
+            {
+                string abstractParm = gndAction.VariableContainer.VariableTypeList[i].Item1;
+                string gndParm = gndAction.ParamList[i];
+                abstractParmMap.Add(abstractParm, gndParm);
+                Console.WriteLine("  Abstract parm:{0}, Grounded parm:{1}", abstractParm, gndParm);
+            }
+
+            foreach (var preAbstractPred in gndAction.VariableContainer.PreviousAbstractPredicates)
+            {
+                oldVars.AddVar(CUDD.Var(preAbstractPred.CuddIndex));
+                List<string> collection = new List<string>();
+                foreach (var parm in preAbstractPred.VariableNameList)
+                {
+                    collection.Add(abstractParmMap[parm]);
+                }
+
+                Ground<Predicate> gndPred = new Ground<Predicate>(preAbstractPred, collection);
+                gndPred = _preGndPredDict[gndPred.ToString()];
+                newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
+
+                Console.WriteLine("  old cuddIndex:{0}, new cuddIndex:{1}", preAbstractPred.CuddIndex, gndPred.CuddIndex);
+            }
+
+            CUDDNode abstractPre = gndAction.VariableContainer.Precondition;
+            Console.WriteLine("  Abstract precondition:");
+            CUDD.Print.PrintMinterm(abstractPre);
+
+            gndAction.Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
+            Console.WriteLine("  Grounded precondition:");
+            CUDD.Print.PrintMinterm(gndAction.VariableContainer.Precondition);
+
+            //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
+            //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
         }
+
+        //private void GenerateGroundEffect(Ground<Action> gndAction)
+        //{
+        //    CUDDVars oldVars = new CUDDVars();
+        //    CUDDVars newVars = new CUDDVars();
+
+        //    Dictionary<string, string> abstractParmMap = new Dictionary<string, string>();
+
+        //    for (int i = 0; i < gndAction.ParamList.Count; i++)
+        //    {
+        //        string abstractParm = gndAction.VariableContainer.VariableTypeList[i].Item1;
+        //        string gndParm = gndAction.ParamList[i];
+        //        abstractParmMap.Add(abstractParm, gndParm);
+        //    }
+
+        //    foreach (var preAbstractPred in gndAction.VariableContainer.PreviousAbstractPredicates)
+        //    {
+        //        oldVars.AddVar(CUDD.Var(preAbstractPred.CuddIndex));
+        //        List<string> collection = new List<string>();
+        //        foreach (var parm in preAbstractPred.VariableNameList)
+        //        {
+        //            collection.Add(abstractParmMap[parm]);
+        //        }
+
+        //        Ground<Predicate> gndPred = new Ground<Predicate>(preAbstractPred, collection);
+        //        gndPred = _preGndPredDict[gndPred.ToString()];
+        //        newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
+        //    }
+
+        //    CUDDNode abstractPre = gndAction.VariableContainer.Precondition;
+        //    gndAction.VariableContainer.Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
+
+        //    //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
+        //    //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
+        //}
 
         public override void EnterInit(PlanningParser.InitContext context)
         {
@@ -291,12 +375,6 @@ namespace Planning
             }
             Console.WriteLine(barline);
 
-            //Console.WriteLine("Grounded predicates:");
-            //foreach (var gndPred in _gndPredDict.Values)
-            //{
-            //    Console.WriteLine("  CuddIndex:{0}, Name:{1}", gndPred.CuddIndex, gndPred);
-            //}
-
             Console.WriteLine("Variables:");
             foreach (var pair in _objNameTypeMap)
             {
@@ -309,8 +387,50 @@ namespace Planning
             {
                 Console.WriteLine("  {0}", pred);
             }
-
             Console.WriteLine(barline);
+
+            Console.WriteLine("Ground predicates:");
+            foreach (var pair in _preGndPredDict)
+            {
+                Console.WriteLine("  Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
+            }
+            Console.WriteLine(barline);
+
+            Console.WriteLine("Ground actions:");
+            foreach (var gndAction in _gndActionDict.Values)
+            {
+                Console.WriteLine("  Name: {0}", gndAction.VariableContainer.Name);
+                Console.WriteLine("  Variable: {0}", gndAction.VariableContainer.Count);
+                for (int i = 0; i < gndAction.ParamList.Count; i++)
+                {
+                    Console.WriteLine("    Index: {0}, Name: {1}", i, gndAction.ParamList[i]);
+                }
+
+                //Console.WriteLine("    Previous Abstract Predicates: ");
+                //foreach (var abstractPredicate in gndAction.PreviousAbstractPredicates)
+                //{
+                //    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
+                //}
+
+                //Console.WriteLine("    Successive Abstract Predicates: ");
+                //foreach (var abstractPredicate in gndAction.SuccessiveAbstractPredicates)
+                //{
+                //    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
+                //}
+                Console.WriteLine("  Precondition:");
+                CUDD.Print.PrintMinterm(gndAction.VariableContainer.Precondition);
+
+                //Console.WriteLine("  Effect:");
+                //CUDD.Print.PrintMinterm(gndAction.Effect);
+
+                Console.WriteLine();
+            }
+
+
+            //foreach (var pair in _actionDict)
+            //{
+            //    Console.WriteLine("  Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
+            //}
         }
 
         #endregion

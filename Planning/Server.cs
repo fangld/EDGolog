@@ -160,12 +160,12 @@ namespace Planning
 
             _problemLoader.ShowInfo();
 
-            Console.WriteLine("Ground predicates:");
+            //Console.WriteLine("Ground predicates:");
 
-            foreach (KeyValuePair<string, int> pair in _predIndexMap)
-            {
-                Console.WriteLine("  Name: {0}, Index: {1}, Value: {2}", pair.Key, pair.Value, _predBooleanMap[pair.Key]);
-            }
+            //foreach (KeyValuePair<string, int> pair in _predIndexMap)
+            //{
+            //    Console.WriteLine("  Name: {0}, Index: {1}, Value: {2}", pair.Key, pair.Value, _predBooleanMap[pair.Key]);
+            //}
         }
 
         public void Run()

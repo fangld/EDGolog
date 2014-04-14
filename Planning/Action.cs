@@ -214,8 +214,7 @@ namespace Planning
                 }
             }
         }
-
-        public CUDDNode Visit(PlanningParser.EffectContext context)
+        private CUDDNode Visit(PlanningParser.EffectContext context)
         {
             CUDDNode result = Visit(context.cEffect()[0]);
             //Console.WriteLine("     CEffNode: {0}", context.cEffect()[0].GetText());
@@ -241,7 +240,7 @@ namespace Planning
             return result;
         }
 
-        public CUDDNode Visit(PlanningParser.CEffectContext context)
+        private CUDDNode Visit(PlanningParser.CEffectContext context)
         {
             CUDDNode result;
 
@@ -261,7 +260,7 @@ namespace Planning
             return result;
         }
 
-        public CUDDNode Visit(PlanningParser.CondEffectContext context)
+        private CUDDNode Visit(PlanningParser.CondEffectContext context)
         {
             CUDDNode result = Visit(context.literalTerm()[0], false);
             //Console.WriteLine("     GdNode: {0}", context.literalTerm()[0].GetText());
@@ -285,7 +284,7 @@ namespace Planning
             return result;
         }
 
-        public CUDDNode Visit(PlanningParser.AtomicFormulaTermContext context, bool isPrevious)
+        private CUDDNode Visit(PlanningParser.AtomicFormulaTermContext context, bool isPrevious)
         {
             //Console.WriteLine("Before Atomic Formula: {0}, count: {1}", context.GetText(), _variablesCount);
             AbstractPredicate abstractPredicate = GetAbstractPredicate(context);
@@ -303,7 +302,7 @@ namespace Planning
             return result;
         }
 
-        public CUDDNode Visit(PlanningParser.LiteralTermContext context, bool isPrevious)
+        private CUDDNode Visit(PlanningParser.LiteralTermContext context, bool isPrevious)
         {
             //Console.WriteLine("Before Literal: {0}, count: {1}", context.GetText(), _variablesCount);
             CUDDNode subNode = Visit(context.atomicFormulaTerm(), isPrevious);
@@ -325,7 +324,7 @@ namespace Planning
             return result;
         }
 
-        public CUDDNode Visit(PlanningParser.GdContext context, bool isPrevious)
+        private CUDDNode Visit(PlanningParser.GdContext context, bool isPrevious)
         {
             //Console.WriteLine("Before Gd: {0}", context.GetText());
             CUDDNode result = null;
