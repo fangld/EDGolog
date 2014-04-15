@@ -31,7 +31,7 @@ namespace Planning
 
         static ConditionalEffect()
         {
-            ObservableEffect =new ConditionalEffect();
+            ObservableEffect = new ConditionalEffect();
             ObservableEffect.Condition = CUDD.ONE;
         }
 

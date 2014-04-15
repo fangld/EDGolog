@@ -1,4 +1,4 @@
-(define (problem bomb-50-10)
+(define (problem bomb-3-2)
 (:domain bomb)
    (:agents a1)
    (:objects  
