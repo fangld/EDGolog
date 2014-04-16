@@ -52,17 +52,6 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitListName([NotNull] PlanningParser.ListNameContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRequireDefine([NotNull] PlanningParser.RequireDefineContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRequireDefine([NotNull] PlanningParser.RequireDefineContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.predicate"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -195,17 +184,6 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitCondEffect([NotNull] PlanningParser.CondEffectContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.domain"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterDomain([NotNull] PlanningParser.DomainContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.domain"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitDomain([NotNull] PlanningParser.DomainContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.actionDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -217,15 +195,15 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitActionDefine([NotNull] PlanningParser.ActionDefineContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.typing"/>.
+	/// Enter a parse tree produced by <see cref="PlanningParser.domain"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterTyping([NotNull] PlanningParser.TypingContext context);
+	void EnterDomain([NotNull] PlanningParser.DomainContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.typing"/>.
+	/// Exit a parse tree produced by <see cref="PlanningParser.domain"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitTyping([NotNull] PlanningParser.TypingContext context);
+	void ExitDomain([NotNull] PlanningParser.DomainContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.problemName"/>.
@@ -292,17 +270,6 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.requireKey"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterRequireKey([NotNull] PlanningParser.RequireKeyContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.requireKey"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitRequireKey([NotNull] PlanningParser.RequireKeyContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.init"/>.
@@ -391,17 +358,6 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitGdName([NotNull] PlanningParser.GdNameContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.strips"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterStrips([NotNull] PlanningParser.StripsContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.strips"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitStrips([NotNull] PlanningParser.StripsContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.atomicFormulaTerm"/>.

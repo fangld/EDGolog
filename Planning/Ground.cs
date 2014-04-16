@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Planning
 {
-    public class Ground<T> where T : Predicate
+    public class Ground<T> where T : VariableContainer
     {
         #region Fields
 

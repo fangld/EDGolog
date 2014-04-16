@@ -64,7 +64,7 @@ namespace Planning
             _typeObjectsMap = new Dictionary<string, List<string>>();
             _agentClientDict = new Dictionary<string, Client>();
 
-            foreach (var type in _domainLoader.ListType)
+            foreach (var type in _domainLoader.TypeList)
             {
                 List<string> objectNames = new List<string>();
                 foreach (var pair in _problemLoader.ObjectNameTypeMapMap)
@@ -84,7 +84,7 @@ namespace Planning
 
                 for (int j = 0; j < pred.Count; j++)
                 {
-                    Tuple<string, string> variable = pred.VariableTypeList[j];
+                    Tuple<string, string> variable = pred.VariableList[j];
                     List<string> objectList = _typeObjectsMap[variable.Item2];
                     collection.Add(objectList);
                 }

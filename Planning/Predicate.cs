@@ -3,48 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LanguageRecognition;
 
 namespace Planning
 {
-    public class Predicate
+    public class Predicate : VariableContainer
     {
-        #region Fields
-
-        private List<Tuple<string, string>> _variableTypeList;
-
-        #endregion
-
-        #region Properties
-
-        public string Name { get; set; }
-
-        public int Count
-        {
-            get { return _variableTypeList.Count; }
-        }
-
-        public IReadOnlyList<Tuple<string, string>> VariableTypeList
-        {
-            get { return _variableTypeList; }
-        }
-
-        #endregion
 
         #region Constructors
 
-        public Predicate()
-        {
-            _variableTypeList = new List<Tuple<string, string>>();
-        }
+        private Predicate() { }
 
         #endregion
 
         #region Methods
 
-        public void AddVariable(string name, string type)
+        public static Predicate FromContext(PlanningParser.AtomicFormulaSkeletonContext context)
         {
-            Tuple<string, string> tuple = new Tuple<string, string>(name, type);
-            _variableTypeList.Add(tuple);
+            Predicate result = new Predicate();
+            result.Name = context.predicate().GetText();
+            result.GenerateVariableList(context.listVariable());
+            return result;
         }
 
         #endregion

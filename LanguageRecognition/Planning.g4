@@ -6,16 +6,16 @@ grammar Planning;
 
 // Domain description
 domain: LB DEF LB DOM NAME RB 
-		   requireDefine?
+		   //requireDefine?
 		   typeDefine?
 		   predicatesDefine?
 		   structureDefine* 
 		RB;
 
-requireDefine: LB COLON REQ requireKey+ RB;
+/*requireDefine: LB COLON REQ requireKey+ RB;
 requireKey: strips | typing;
 strips: COLON STRIPS;
-typing: COLON TYPING;
+typing: COLON TYPING;*/
 
 typeDefine: LB COLON TYPE listName RB;
 
@@ -78,7 +78,7 @@ functionTerm: FUNSYM term* ;
 problem: LB DEF LB PROM problemName RB 
 		   LB COLON DOM domainName RB
 		   agentDefine
-		   requireDefine?
+		   //requireDefine?
 		   objectDeclaration?
 		   init
 		 RB;
@@ -123,7 +123,7 @@ functionSymbol: NAME;*/
 DOM: 'domain';
 PROM: 'problem';
 DEF: 'define';
-REQ: 'requirements';
+//REQ: 'requirements';
 TYPE: 'types';
 PRED: 'predicates';
 ACT: 'action';
@@ -139,8 +139,8 @@ AGENTS: 'agents';
 GOAL: 'goal';
 AT: 'at';
 
-STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
-TYPING: 'typing'; // Allow type names in declarations of variables
+//STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
+//TYPING: 'typing'; // Allow type names in declarations of variables
 
 // Common used in domain and problem
 LB: '(';

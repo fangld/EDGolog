@@ -7,16 +7,19 @@ using System.Threading.Tasks;
 
 namespace Planning
 {
-    public class AbstractPredicate : Predicate, IEquatable<AbstractPredicate>
+    public class AbstractPredicate : IEquatable<AbstractPredicate>
     {
         #region Fields
 
         private List<string> _variableNameList;
 
+
         #endregion
 
         #region Properties
 
+        public Predicate Predicate { get; set; }
+        
         public int CuddIndex { get; set; }
 
         public IReadOnlyList<string> VariableNameList
@@ -41,7 +44,7 @@ namespace Planning
 
         public bool Equals(AbstractPredicate other)
         {
-            if (Name == other.Name)
+            if (Predicate.Name == other.Predicate.Name)
             {
                 if (_variableNameList.Count == other.VariableNameList.Count)
                 {
@@ -53,9 +56,9 @@ namespace Planning
                         }
                     }
 
-                    for (int i = 0; i < VariableTypeList.Count; i++)
+                    for (int i = 0; i < Predicate.VariableList.Count; i++)
                     {
-                        if (VariableTypeList[i] != other.VariableTypeList[i])
+                        if (Predicate.VariableList[i] != other.Predicate.VariableList[i])
                         {
                             return false;
                         }
@@ -71,7 +74,7 @@ namespace Planning
             StringBuilder sb = new StringBuilder();
             if (_variableNameList.Count != 0)
             {
-                sb.AppendFormat("{0}(", Name);
+                sb.AppendFormat("{0}(", Predicate.Name);
 
                 for (int i = 0; i < _variableNameList.Count - 1; i++)
                 {
@@ -82,7 +85,7 @@ namespace Planning
             }
             else
             {
-                sb.AppendFormat("{0}()", Name);
+                sb.AppendFormat("{0}()", Predicate.Name);
             }
 
             return sb.ToString();

@@ -60,19 +60,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitListName([NotNull] PlanningParser.ListNameContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRequireDefine([NotNull] PlanningParser.RequireDefineContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.requireDefine"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRequireDefine([NotNull] PlanningParser.RequireDefineContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.predicate"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -229,19 +216,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitCondEffect([NotNull] PlanningParser.CondEffectContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.domain"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterDomain([NotNull] PlanningParser.DomainContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.domain"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitDomain([NotNull] PlanningParser.DomainContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.actionDefine"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -255,17 +229,17 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitActionDefine([NotNull] PlanningParser.ActionDefineContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.typing"/>.
+	/// Enter a parse tree produced by <see cref="PlanningParser.domain"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTyping([NotNull] PlanningParser.TypingContext context) { }
+	public virtual void EnterDomain([NotNull] PlanningParser.DomainContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.typing"/>.
+	/// Exit a parse tree produced by <see cref="PlanningParser.domain"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTyping([NotNull] PlanningParser.TypingContext context) { }
+	public virtual void ExitDomain([NotNull] PlanningParser.DomainContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.problemName"/>.
@@ -344,19 +318,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.requireKey"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRequireKey([NotNull] PlanningParser.RequireKeyContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.requireKey"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRequireKey([NotNull] PlanningParser.RequireKeyContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.init"/>.
@@ -461,19 +422,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitGdName([NotNull] PlanningParser.GdNameContext context) { }
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.strips"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStrips([NotNull] PlanningParser.StripsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.strips"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStrips([NotNull] PlanningParser.StripsContext context) { }
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.atomicFormulaTerm"/>.

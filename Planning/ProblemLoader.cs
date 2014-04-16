@@ -140,7 +140,7 @@ namespace Planning
 
                 for (int i = 0; i < pred.Count; i++)
                 {
-                    Tuple<string, string> variable = pred.VariableTypeList[i];
+                    Tuple<string, string> variable = pred.VariableList[i];
                     List<string> objectList = _objTypeNamesMap[variable.Item2];
                     collection.Add(objectList);
                 }
@@ -207,7 +207,7 @@ namespace Planning
 
                 for (int i = 0; i < action.Count; i++)
                 {
-                    Tuple<string, string> variable = action.VariableTypeList[i];
+                    Tuple<string, string> variable = action.VariableList[i];
                     List<string> objList = _objTypeNamesMap[variable.Item2];
                     collection.Add(objList);
                 }
@@ -272,7 +272,7 @@ namespace Planning
 
             for (int i = 0; i < gndAction.ParamList.Count; i++)
             {
-                string abstractParm = gndAction.VariableContainer.VariableTypeList[i].Item1;
+                string abstractParm = gndAction.VariableContainer.VariableList[i].Item1;
                 string gndParm = gndAction.ParamList[i];
                 abstractParmMap.Add(abstractParm, gndParm);
                 Console.WriteLine("  Abstract parm:{0}, Grounded parm:{1}", abstractParm, gndParm);
@@ -287,7 +287,7 @@ namespace Planning
                     collection.Add(abstractParmMap[parm]);
                 }
 
-                Ground<Predicate> gndPred = new Ground<Predicate>(preAbstractPred, collection);
+                Ground<Predicate> gndPred = new Ground<Predicate>(preAbstractPred.Predicate, collection);
                 gndPred = _preGndPredDict[gndPred.ToString()];
                 newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
 

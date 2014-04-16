@@ -12,6 +12,8 @@ namespace Planning
     {
         #region Fields
 
+        private List<string> _typeList;
+
         private Dictionary<string, Predicate> _predDict;
         
         private Dictionary<string, Action> _actionDict;
@@ -26,9 +28,12 @@ namespace Planning
 
         public int CurrentCuddIndex { get; set; }
 
-        public Requirements Requirements { get; set; }
+        //public Requirements Requirements { get; set; }
 
-        public List<string> ListType { get; set; }
+        public IReadOnlyList<string> TypeList
+        {
+            get { return _typeList; }
+        }
 
         public IReadOnlyDictionary<string, Predicate> PredicateDict
         {
@@ -45,9 +50,9 @@ namespace Planning
         #region Constructors
         public DomainLoader()
         {
-            Requirements = new Requirements();
-            ListType = new List<string>();
-            ListType.Add(DefaultType);
+            //Requirements = new Requirements();
+            _typeList = new List<string>();
+            _typeList.Add(DefaultType);
             _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
             CurrentCuddIndex = 0;
@@ -63,29 +68,29 @@ namespace Planning
             Console.WriteLine("Name: {0}", Name);
         }
 
-        public override void EnterRequireDefine(PlanningParser.RequireDefineContext context)
-        {
-            Requirements.Strips = false;
+        //public override void EnterRequireDefine(PlanningParser.RequireDefineContext context)
+        //{
+        //    Requirements.Strips = false;
 
-            foreach (var requirment in context.requireKey())
-            {
-                if (requirment.GetText() == ":typing")
-                {
-                    Requirements.Typing = true;
-                }
+        //    foreach (var requirment in context.requireKey())
+        //    {
+        //        if (requirment.GetText() == ":typing")
+        //        {
+        //            Requirements.Typing = true;
+        //        }
 
-                else if (requirment.GetText() == ":strips")
-                {
-                    Requirements.Strips = true;
-                }
-            }
-        }
+        //        else if (requirment.GetText() == ":strips")
+        //        {
+        //            Requirements.Strips = true;
+        //        }
+        //    }
+        //}
 
         public override void EnterTypeDefine(PlanningParser.TypeDefineContext context)
         {
             foreach (var type in context.listName().NAME())
             {
-                ListType.Add(type.GetText());
+                _typeList.Add(type.GetText());
                 Console.WriteLine("type: {0}", type);
             }
         }
@@ -94,35 +99,16 @@ namespace Planning
         {
             foreach (var atomicFormulaSkeleton in context.atomicFormulaSkeleton())
             {
-                Predicate pred = new Predicate();
-                pred.Name = atomicFormulaSkeleton.predicate().GetText();
-                AddVariablesToContainer(pred, atomicFormulaSkeleton.listVariable());
+                Predicate pred = Predicate.FromContext(atomicFormulaSkeleton);
                 _predDict.Add(pred.Name, pred);
             }
         }
 
         public override void EnterActionDefine(PlanningParser.ActionDefineContext context)
         {
-            Action action = new Action(CurrentCuddIndex, context);
+            Action action = Action.FromContext(CurrentCuddIndex, context, _predDict);
             _actionDict.Add(action.Name, action);
             CurrentCuddIndex = action.CurrentCuddIndex;
-        }
-        
-        private void AddVariablesToContainer(Predicate container, PlanningParser.ListVariableContext context)
-        {
-            do
-            {
-                if (context.VAR().Count != 0)
-                {
-                    string type = context.type() == null ? DefaultType : context.type().GetText();
-
-                    foreach (var varNode in context.VAR())
-                    {
-                        container.AddVariable(varNode.GetText(), type);
-                    }
-                }
-                context = context.listVariable();
-            } while (context != null);
         }
 
         #endregion
@@ -136,17 +122,17 @@ namespace Planning
             Console.WriteLine("Name: {0}", Name);
             Console.WriteLine(barline);
 
-            Console.WriteLine("Requirment:");
-            Console.WriteLine("  strips: {0}", Requirements.Strips);
-            Console.WriteLine("  typing: {0}", Requirements.Typing);
+            //Console.WriteLine("Requirment:");
+            //Console.WriteLine("  strips: {0}", Requirements.Strips);
+            //Console.WriteLine("  typing: {0}", Requirements.Typing);
             Console.WriteLine(barline);
 
             Console.Write("Types: ");
-            for (int i = 0; i < ListType.Count - 1; i++)
+            for (int i = 0; i < _typeList.Count - 1; i++)
             {
-                Console.Write("{0}, ", ListType[i]);
+                Console.Write("{0}, ", _typeList[i]);
             }
-            Console.WriteLine("{0}", ListType[ListType.Count - 1]);
+            Console.WriteLine("{0}", _typeList[_typeList.Count - 1]);
             Console.WriteLine(barline);
 
             Console.WriteLine("Predicates:");
@@ -156,8 +142,8 @@ namespace Planning
                 Console.WriteLine("  Variable: {0}", pred.Count);
                 for (int i = 0; i < pred.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, pred.VariableTypeList[i].Item1,
-                        pred.VariableTypeList[i].Item2);
+                    Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, pred.VariableList[i].Item1,
+                        pred.VariableList[i].Item2);
                 }
                 Console.WriteLine();
             }
@@ -170,8 +156,8 @@ namespace Planning
                 Console.WriteLine("  Variable: {0}", action.Count);
                 for (int i = 0; i < action.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, action.VariableTypeList[i].Item1,
-                        action.VariableTypeList[i].Item2);
+                    Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, action.VariableList[i].Item1,
+                        action.VariableList[i].Item2);
                 }
 
                 Console.WriteLine("    Previous Abstract Predicates: ");

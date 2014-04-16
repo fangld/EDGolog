@@ -1,6 +1,5 @@
 
 (define (domain bomb)
-  (:requirements :typing)
     (:types bomb toilet)
     
 (:predicates 
