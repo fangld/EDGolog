@@ -10,55 +10,38 @@ namespace Planning
     {
         #region Fields
 
-        private List<string> _paramList;
+        private List<string> _constantList;
 
         #endregion
 
         #region Properties
 
-        public T VariableContainer { get; set; }
+        public T Container { get; set; }
 
         public int CuddIndex { get; set; }
 
-        public IReadOnlyList<string> ParamList
+        public IReadOnlyList<string> ConstantList
         {
-            get { return _paramList; }
+            get { return _constantList; }
         }
 
         #endregion
 
         #region Constructors
 
-        public Ground(T variableContainer, ICollection<string> paramList)
+        public Ground(T container, IEnumerable<string> constantList)
         {
-            VariableContainer = variableContainer;
-            _paramList = new List<string>(paramList);
+            Container = container;
+            _constantList = new List<string>(constantList);
         }
 
         #endregion
 
-        #region Methods
+        #region Overriden Methods
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            if (_paramList.Count != 0)
-            {
-                sb.AppendFormat("{0}(", VariableContainer.Name);
-
-                for (int i = 0; i < _paramList.Count - 1; i++)
-                {
-                    sb.AppendFormat("{0},", _paramList[i]);
-                }
-
-                sb.AppendFormat("{0})", _paramList[_paramList.Count - 1]);
-            }
-            else
-            {
-                sb.AppendFormat("{0}()", VariableContainer.Name);
-            }
-
-            return sb.ToString();
+            return VariableContainer.GetFullName(Container.Name, _constantList);
         }
 
         #endregion

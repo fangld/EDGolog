@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
@@ -78,6 +79,40 @@ namespace Planning
                 }
                 context = context.listVariable();
             } while (context != null);
+        }
+
+        public override string ToString()
+        {
+            List<string> variableNameList = new List<string>();
+            foreach (var tuple in _variableList)
+            {
+                variableNameList.Add(tuple.Item1);
+            }
+            string result = GetFullName(Name, variableNameList);
+            return result;
+        }
+
+        public static string GetFullName(string name, IReadOnlyList<string> termList)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (termList.Count != 0)
+            {
+                sb.AppendFormat("{0}(", name);
+
+                for (int i = 0; i < termList.Count - 1; i++)
+                {
+                    sb.AppendFormat("{0},", termList[i]);
+                }
+
+                sb.AppendFormat("{0})", termList[termList.Count - 1]);
+            }
+            else
+            {
+                sb.AppendFormat("{0}()", name);
+            }
+
+            return sb.ToString();
         }
 
         #endregion

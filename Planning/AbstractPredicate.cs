@@ -11,8 +11,7 @@ namespace Planning
     {
         #region Fields
 
-        private List<string> _variableNameList;
-
+        private List<string> _parameterList;
 
         #endregion
 
@@ -22,9 +21,9 @@ namespace Planning
         
         public int CuddIndex { get; set; }
 
-        public IReadOnlyList<string> VariableNameList
+        public IReadOnlyList<string> ParameterList
         {
-            get { return _variableNameList; }
+            get { return _parameterList; }
         }
 
         #endregion
@@ -33,9 +32,9 @@ namespace Planning
 
         #region Methods
 
-        public AbstractPredicate(List<string> variableNameList)
+        public AbstractPredicate(List<string> parameterList)
         {
-            _variableNameList = variableNameList;
+            _parameterList = parameterList;
         }
 
         #endregion
@@ -46,11 +45,11 @@ namespace Planning
         {
             if (Predicate.Name == other.Predicate.Name)
             {
-                if (_variableNameList.Count == other.VariableNameList.Count)
+                if (_parameterList.Count == other.ParameterList.Count)
                 {
-                    for (int i = 0; i < _variableNameList.Count; i++)
+                    for (int i = 0; i < _parameterList.Count; i++)
                     {
-                        if (_variableNameList[i] != other.VariableNameList[i])
+                        if (_parameterList[i] != other.ParameterList[i])
                         {
                             return false;
                         }
@@ -71,24 +70,7 @@ namespace Planning
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            if (_variableNameList.Count != 0)
-            {
-                sb.AppendFormat("{0}(", Predicate.Name);
-
-                for (int i = 0; i < _variableNameList.Count - 1; i++)
-                {
-                    sb.AppendFormat("{0},", _variableNameList[i]);
-                }
-
-                sb.AppendFormat("{0})", _variableNameList[_variableNameList.Count - 1]);
-            }
-            else
-            {
-                sb.AppendFormat("{0}()", Predicate.Name);
-            }
-
-            return sb.ToString();
+            return VariableContainer.GetFullName(Predicate.Name, _parameterList);
         }
 
         #endregion

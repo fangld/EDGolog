@@ -120,6 +120,9 @@
     <Compile Include="Ultility\Ultility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CUDDHelper.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Note.txt" />
   </ItemGroup>
   <ItemGroup />

@@ -108,7 +108,7 @@ namespace Planning
             {
                 string type = listNameContext.type() != null
                     ? listNameContext.type().GetText()
-                    : DomainLoader.DefaultType;
+                    : VariableContainer.DefaultType;
 
                 List<string> objNamesList;
 
@@ -268,21 +268,21 @@ namespace Planning
 
             Dictionary<string, string> abstractParmMap = new Dictionary<string, string>();
 
-            Console.WriteLine("  gndaction parmlist count:{0}", gndAction.ParamList.Count);
+            Console.WriteLine("  Ground action constant list count:{0}", gndAction.ConstantList.Count);
 
-            for (int i = 0; i < gndAction.ParamList.Count; i++)
+            for (int i = 0; i < gndAction.ConstantList.Count; i++)
             {
-                string abstractParm = gndAction.VariableContainer.VariableList[i].Item1;
-                string gndParm = gndAction.ParamList[i];
+                string abstractParm = gndAction.Container.VariableList[i].Item1;
+                string gndParm = gndAction.ConstantList[i];
                 abstractParmMap.Add(abstractParm, gndParm);
-                Console.WriteLine("  Abstract parm:{0}, Grounded parm:{1}", abstractParm, gndParm);
+                Console.WriteLine("    Parameter:{0}, Constant:{1}", abstractParm, gndParm);
             }
 
-            foreach (var preAbstractPred in gndAction.VariableContainer.PreviousAbstractPredicates)
+            foreach (var preAbstractPred in gndAction.Container.PreviousAbstractPredicates)
             {
                 oldVars.AddVar(CUDD.Var(preAbstractPred.CuddIndex));
                 List<string> collection = new List<string>();
-                foreach (var parm in preAbstractPred.VariableNameList)
+                foreach (var parm in preAbstractPred.ParameterList)
                 {
                     collection.Add(abstractParmMap[parm]);
                 }
@@ -294,13 +294,13 @@ namespace Planning
                 Console.WriteLine("  old cuddIndex:{0}, new cuddIndex:{1}", preAbstractPred.CuddIndex, gndPred.CuddIndex);
             }
 
-            CUDDNode abstractPre = gndAction.VariableContainer.Precondition;
+            CUDDNode abstractPre = gndAction.Container.Precondition;
             Console.WriteLine("  Abstract precondition:");
             CUDD.Print.PrintMinterm(abstractPre);
 
             gndAction.Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
-            Console.WriteLine("  Grounded precondition:");
-            CUDD.Print.PrintMinterm(gndAction.VariableContainer.Precondition);
+            Console.WriteLine("  Ground precondition:");
+            CUDD.Print.PrintMinterm(gndAction.Container.Precondition);
 
             //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
             //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
@@ -399,11 +399,11 @@ namespace Planning
             Console.WriteLine("Ground actions:");
             foreach (var gndAction in _gndActionDict.Values)
             {
-                Console.WriteLine("  Name: {0}", gndAction.VariableContainer.Name);
-                Console.WriteLine("  Variable: {0}", gndAction.VariableContainer.Count);
-                for (int i = 0; i < gndAction.ParamList.Count; i++)
+                Console.WriteLine("  Name: {0}", gndAction.Container.Name);
+                Console.WriteLine("  Variable: {0}", gndAction.Container.Count);
+                for (int i = 0; i < gndAction.ConstantList.Count; i++)
                 {
-                    Console.WriteLine("    Index: {0}, Name: {1}", i, gndAction.ParamList[i]);
+                    Console.WriteLine("    Index: {0}, Name: {1}", i, gndAction.ConstantList[i]);
                 }
 
                 //Console.WriteLine("    Previous Abstract Predicates: ");
@@ -418,7 +418,7 @@ namespace Planning
                 //    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
                 //}
                 Console.WriteLine("  Precondition:");
-                CUDD.Print.PrintMinterm(gndAction.VariableContainer.Precondition);
+                CUDD.Print.PrintMinterm(gndAction.Container.Precondition);
 
                 //Console.WriteLine("  Effect:");
                 //CUDD.Print.PrintMinterm(gndAction.Effect);

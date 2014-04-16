@@ -22,8 +22,6 @@ namespace Planning
 
         #region Properties
 
-        public const string DefaultType = "object";
-
         public string Name { get; set; }
 
         public int CurrentCuddIndex { get; set; }
@@ -50,9 +48,7 @@ namespace Planning
         #region Constructors
         public DomainLoader()
         {
-            //Requirements = new Requirements();
-            _typeList = new List<string>();
-            _typeList.Add(DefaultType);
+            _typeList = new List<string> {VariableContainer.DefaultType};
             _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
             CurrentCuddIndex = 0;

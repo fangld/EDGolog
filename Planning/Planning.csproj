@@ -66,9 +66,9 @@
     <Compile Include="PlanningVisitor.cs" />
     <Compile Include="ProblemLoader.cs" />
     <Compile Include="Predicate.cs" />
-    <Compile Include="Requirements.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringExtension.cs" />
     <Compile Include="VariableContainer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -81,11 +81,6 @@
       <Project>{ebb3ad28-953a-4c12-add4-4a6752628280}</Project>
       <Name>PAT.BDD</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="CUDDHelper.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

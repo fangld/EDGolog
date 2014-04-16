@@ -19,7 +19,7 @@ namespace Planning
 
         #region Constructors
 
-        public GroundAction(Action action, ICollection<string> paramList):base(action, paramList)
+        public GroundAction(Action action, IEnumerable<string> constantList) : base(action, constantList)
         {
         }
 

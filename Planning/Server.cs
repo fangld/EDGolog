@@ -19,7 +19,7 @@ namespace Planning
         
         private Socket _socket;
 
-        private int _listenBackLog;
+        private int _backLog;
 
         private int _port;
 
@@ -47,11 +47,11 @@ namespace Planning
 
         #region Constructors
 
-        public Server(int port, int listenBacklog, DomainLoader domainLoader, ProblemLoader problemLoader)
+        public Server(int port, int backlog, DomainLoader domainLoader, ProblemLoader problemLoader)
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             _port = port;
-            _listenBackLog = listenBacklog;
+            _backLog = backlog;
             _domainLoader = domainLoader;
             _problemLoader = problemLoader;
             Initial();
@@ -69,7 +69,7 @@ namespace Planning
                 List<string> objectNames = new List<string>();
                 foreach (var pair in _problemLoader.ObjectNameTypeMapMap)
                 {
-                    if (pair.Value == type || pair.Value == DomainLoader.DefaultType)
+                    if (pair.Value == type || pair.Value == VariableContainer.DefaultType)
                     {
                         objectNames.Add(pair.Key);
                     }
@@ -178,7 +178,7 @@ namespace Planning
         {
             IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, _port);
             _socket.Bind(localEndPoint);
-            _socket.Listen(_listenBackLog);
+            _socket.Listen(_backLog);
 
             int i = 0;
             do
