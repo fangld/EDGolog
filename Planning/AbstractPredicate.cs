@@ -70,7 +70,24 @@ namespace Planning
 
         public override string ToString()
         {
-            return VariableContainer.GetFullName(Predicate.Name, _parameterList);
+            StringBuilder sb = new StringBuilder();
+            if (_parameterList.Count != 0)
+            {
+                sb.AppendFormat("{0}(", Predicate.Name);
+
+                for (int i = 0; i < _parameterList.Count - 1; i++)
+                {
+                    sb.AppendFormat("{0},", _parameterList[i]);
+                }
+
+                sb.AppendFormat("{0})", _parameterList[_parameterList.Count - 1]);
+            }
+            else
+            {
+                sb.AppendFormat("{0}()", Predicate.Name);
+            }
+
+            return sb.ToString();
         }
 
         #endregion

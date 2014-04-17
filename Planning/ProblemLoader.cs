@@ -13,9 +13,9 @@ namespace Planning
     {
         #region Fields
 
-        private Dictionary<string, string> _objNameTypeMap;
+        private Dictionary<string, string> _constantTypeMap;
 
-        private Dictionary<string, List<string>> _objTypeNamesMap;
+        private Dictionary<string, List<string>> _typeConstantListMap;
 
         private Dictionary<string, Ground<Predicate>> _preGndPredDict;
 
@@ -50,7 +50,7 @@ namespace Planning
 
         public IReadOnlyDictionary<string, string> ObjectNameTypeMapMap
         {
-            get { return _objNameTypeMap; }
+            get { return _constantTypeMap; }
         }
 
         #endregion
@@ -59,8 +59,8 @@ namespace Planning
 
         public ProblemLoader(DomainLoader domainLoader)
         {
-            _objNameTypeMap = new Dictionary<string, string>();
-            _objTypeNamesMap = new Dictionary<string, List<string>>();
+            _constantTypeMap = new Dictionary<string, string>();
+            _typeConstantListMap = new Dictionary<string, List<string>>();
             TruePredSet = new HashSet<string>();
             _agentList = new List<string>();
             DomainLoader = domainLoader;
@@ -71,10 +71,6 @@ namespace Planning
             _gndActionDict = new Dictionary<string, GroundAction>();
             _currentCuddIndex = domainLoader.CurrentCuddIndex;
         }
-
-        #endregion
-
-        #region Methods
 
         #endregion
 
@@ -97,12 +93,32 @@ namespace Planning
         public override void EnterObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
         {
             var listNameContext = context.listName();
-            BuildObjectNamesTypeMap(listNameContext);
-            BuildGroundPredicates();
-            BuildGroundActions();
+            BuildConstantTypeMap(listNameContext);
+            BuildGround(_predDict.Values, AddToGroundPredicateDict);
+            BuildGround(_actionDict.Values, AddToGroundActionDict);
         }
 
-        private void BuildObjectNamesTypeMap(PlanningParser.ListNameContext listNameContext)
+        public override void EnterInit(PlanningParser.InitContext context)
+        {
+            foreach (var gdNameContext in context.gdName().gdName())
+            {
+                var afnContext = gdNameContext.atomicFormulaName();
+                var nameNodes = afnContext.NAME();
+                List<string> termList = new List<string>();
+                foreach (var nameNode in nameNodes)
+                {
+                    termList.Add(nameNode.GetText());
+                }
+                string gndPredName = VariableContainer.GetFullName(afnContext.predicate().GetText(), termList);
+
+                TruePredSet.Add(gndPredName);
+            }
+        }
+
+        #endregion
+
+        #region Methods
+        private void BuildConstantTypeMap(PlanningParser.ListNameContext listNameContext)
         {
             do
             {
@@ -110,64 +126,58 @@ namespace Planning
                     ? listNameContext.type().GetText()
                     : VariableContainer.DefaultType;
 
-                List<string> objNamesList;
+                List<string> constantList;
 
-                if (_objTypeNamesMap.ContainsKey(type))
+                if (_typeConstantListMap.ContainsKey(type))
                 {
-                    objNamesList = _objTypeNamesMap[type];
+                    constantList = _typeConstantListMap[type];
                 }
                 else
                 {
-                    objNamesList = new List<string>(listNameContext.NAME().Count);
-                    _objTypeNamesMap.Add(type, objNamesList);
+                    constantList = new List<string>(listNameContext.NAME().Count);
+                    _typeConstantListMap.Add(type, constantList);
                 }
 
                 foreach (var nameNode in listNameContext.NAME())
                 {
-                    _objNameTypeMap.Add(nameNode.GetText(), type);
-                    objNamesList.Add(nameNode.GetText());
+                    _constantTypeMap.Add(nameNode.GetText(), type);
+                    constantList.Add(nameNode.GetText());
                 }
 
                 listNameContext = listNameContext.listName();
             } while (listNameContext != null);
         }
 
-        private void BuildGroundPredicates()
+        private void BuildGround<T>(IEnumerable<T> containters, Action<string, string[]> action) where  T : VariableContainer
         {
-            foreach (var pred in _predDict.Values)
+            foreach (var container in containters)
             {
                 List<List<string>> collection = new List<List<string>>();
 
-                for (int i = 0; i < pred.Count; i++)
+                for (int i = 0; i < container.Count; i++)
                 {
-                    Tuple<string, string> variable = pred.VariableList[i];
-                    List<string> objectList = _objTypeNamesMap[variable.Item2];
-                    collection.Add(objectList);
+                    Tuple<string, string> variable = container.VariableList[i];
+                    List<string> constantList = _typeConstantListMap[variable.Item2];
+                    collection.Add(constantList);
                 }
 
-                ScanMixedRadixPredicate(pred.Name, collection);
+                ScanMixedRadix(container.Name, collection, action);
             }
         }
 
-        private void ScanMixedRadixPredicate(string predName, List<List<string>> collection)
+        private void ScanMixedRadix(string actionName, IReadOnlyList<List<string>> collection, Action<string, string[]> action)
         {
             int count = collection.Count;
             string[] scanArray = new string[count];
             int[] index = new int[count];
             int[] maxIndex = new int[count];
-            for (int i = 0; i < count; i++)
-            {
-                maxIndex[i] = collection[i].Count;
-            }
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
 
             do
             {
-                for (int i = 0; i < count; i++)
-                {
-                    scanArray[i] = collection[i][index[i]];
-                }
+                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
 
-                AddToGroundPredicateDict(predName, scanArray);
+                action(actionName, scanArray);
                 int j = count - 1;
                 while (j != -1)
                 {
@@ -184,79 +194,26 @@ namespace Planning
                 index[j]++;
             } while (true);
         }
-
-        private void AddToGroundPredicateDict(string predName, string[] variableList)
+        
+        private void AddToGroundPredicateDict(string predName, string[] constantList)
         {
             Predicate pred = _predDict[predName];
-            Ground<Predicate> preGndPred = new Ground<Predicate>(pred, variableList);
+            Ground<Predicate> preGndPred = new Ground<Predicate>(pred, constantList);
             preGndPred.CuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
             _preGndPredDict.Add(preGndPred.ToString(), preGndPred);
 
-            Ground<Predicate> sucGndPred = new Ground<Predicate>(pred, variableList);
+            Ground<Predicate> sucGndPred = new Ground<Predicate>(pred, constantList);
             sucGndPred.CuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
             _sucGndPredDict.Add(sucGndPred.ToString(), sucGndPred);
         }
-
-        private void BuildGroundActions()
-        {
-            foreach (var action in _actionDict.Values)
-            {
-                List<List<string>> collection = new List<List<string>>();
-
-                for (int i = 0; i < action.Count; i++)
-                {
-                    Tuple<string, string> variable = action.VariableList[i];
-                    List<string> objList = _objTypeNamesMap[variable.Item2];
-                    collection.Add(objList);
-                }
-
-                ScanMixedRadixAction(action.Name, collection);
-            }
-        }
-
-        private void ScanMixedRadixAction(string actionName, List<List<string>> collection)
-        {
-            int count = collection.Count;
-            string[] scanArray = new string[count];
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            for (int i = 0; i < count; i++)
-            {
-                maxIndex[i] = collection[i].Count;
-            }
-
-            do
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    scanArray[i] = collection[i][index[i]];
-                }
-
-                AddToGroundActionDict(actionName, scanArray);
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
-                    {
-                        index[j] = 0;
-                        j--;
-                        continue;
-                    }
-                    break;
-                }
-                if (j == -1)
-                    return;
-                index[j]++;
-            } while (true);
-        }
-
-        private void AddToGroundActionDict(string actionName, string[] variableList)
+        
+        private void AddToGroundActionDict(string actionName, string[] constantList)
         {
             Action action = _actionDict[actionName];
 
-            GroundAction gndAction = new GroundAction(action, variableList);
+            GroundAction gndAction = new GroundAction(action, constantList);
             GenerateGroundPrecondition(gndAction);
             _gndActionDict.Add(gndAction.ToString(), gndAction);
         }
@@ -275,7 +232,7 @@ namespace Planning
                 string abstractParm = gndAction.Container.VariableList[i].Item1;
                 string gndParm = gndAction.ConstantList[i];
                 abstractParmMap.Add(abstractParm, gndParm);
-                Console.WriteLine("    Parameter:{0}, Constant:{1}", abstractParm, gndParm);
+                Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
             foreach (var preAbstractPred in gndAction.Container.PreviousAbstractPredicates)
@@ -300,7 +257,7 @@ namespace Planning
 
             gndAction.Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
             Console.WriteLine("  Ground precondition:");
-            CUDD.Print.PrintMinterm(gndAction.Container.Precondition);
+            CUDD.Print.PrintMinterm(gndAction.Precondition);
 
             //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
             //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
@@ -341,23 +298,6 @@ namespace Planning
         //    //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
         //}
 
-        public override void EnterInit(PlanningParser.InitContext context)
-        {
-            foreach (var gdNameContext in context.gdName().gdName())
-            {
-                var afnContext = gdNameContext.atomicFormulaName();
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("{0}(", afnContext.predicate().GetText());
-                var nameNodes = afnContext.NAME();
-                for (int i = 0; i < nameNodes.Count - 1; i++)
-                {
-                    sb.AppendFormat("{0},", nameNodes[i].GetText());
-                }
-                sb.AppendFormat("{0})", nameNodes[nameNodes.Count - 1].GetText());
-                TruePredSet.Add(sb.ToString());
-            }
-        }
-
         public void ShowInfo()
         {
             const string barline = "----------------";
@@ -376,7 +316,7 @@ namespace Planning
             Console.WriteLine(barline);
 
             Console.WriteLine("Variables:");
-            foreach (var pair in _objNameTypeMap)
+            foreach (var pair in _constantTypeMap)
             {
                 Console.WriteLine("  {0} - {1}", pair.Key, pair.Value);
             }
@@ -418,7 +358,7 @@ namespace Planning
                 //    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
                 //}
                 Console.WriteLine("  Precondition:");
-                CUDD.Print.PrintMinterm(gndAction.Container.Precondition);
+                CUDD.Print.PrintMinterm(gndAction.Precondition);
 
                 //Console.WriteLine("  Effect:");
                 //CUDD.Print.PrintMinterm(gndAction.Effect);
