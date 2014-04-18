@@ -178,13 +178,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCEffect([NotNull] PlanningParser.CEffectContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.init"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

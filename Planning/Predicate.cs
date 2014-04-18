@@ -9,7 +9,6 @@ namespace Planning
 {
     public class Predicate : VariableContainer
     {
-
         #region Constructors
 
         private Predicate() { }

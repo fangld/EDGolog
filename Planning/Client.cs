@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -23,9 +24,15 @@ namespace Planning
         /// </summary>
         private Socket _socket;
 
-        private IReadOnlyDictionary<string, Predicate> _predDict;
+        //private IReadOnlyDictionary<string, Predicate> _predDict;
 
-        private IReadOnlyDictionary<string, Action> _actionDict;
+        //private IReadOnlyDictionary<string, Action> _actionDict;
+
+        //private IReadOnlyDictionary<string, GroundAction> _gndActionDict;
+
+        private DomainLoader _domainLoader;
+
+        private ProblemLoader _problemLoader;
 
         #endregion
 
@@ -50,28 +57,20 @@ namespace Planning
 
         #endregion
 
-        //#region Events
-
-        //public event EventHandler<GroundAction> ActionOccur;
-
-        //#endregion
-
         #region Constructors
 
         /// <summary>
         /// Create new connected peer with socket
         /// </summary>
-        public Client(Socket socket, IReadOnlyDictionary<string, Predicate> predDict, IReadOnlyDictionary<string, Action> actionDict)
+        public Client(Socket socket, DomainLoader domainLoader, ProblemLoader problemLoader)
         {
             _socket = socket;
             IPEndPoint ipEndPoint = (IPEndPoint) socket.RemoteEndPoint;
             Host = ipEndPoint.Address.ToString();
             Port = ipEndPoint.Port;
             IsConnected = true;
-            _predDict = predDict;
-            _actionDict = actionDict;
-            //_rcvBuffer = new byte[Count];
-            //_sndBuffer = new byte[Count];
+            _domainLoader = domainLoader;
+            _problemLoader = problemLoader;
         }
 
         #endregion
@@ -89,7 +88,7 @@ namespace Planning
             
         }
 
-        public Ground<Action> GetAction()
+        public GroundAction GetAction()
         {
             byte[] contentBuffer = ReceiveBuffer();
 
@@ -98,9 +97,7 @@ namespace Planning
             Parallel.For(0, index, i => actionNameChars[i] = (char) contentBuffer[i]);
             string actionName = new string(actionNameChars);
 
-            Action action = _actionDict[actionName];
-
-            List<string> parmList = new List<string>();
+            List<string> constantList = new List<string>();
 
             int parmFromInclusive = index + 1;
             int parmToExclusive = Array.FindIndex(contentBuffer, parmFromInclusive,
@@ -110,15 +107,14 @@ namespace Planning
                 char[] parmChars = new char[parmToExclusive - parmFromInclusive];
                 Parallel.For(parmFromInclusive, parmToExclusive, i => parmChars[i - parmFromInclusive] = (char)contentBuffer[i]);
                 string parm = new string(parmChars);
-                parmList.Add(parm);
+                constantList.Add(parm);
                 parmFromInclusive = parmToExclusive + 1;
                 parmToExclusive = Array.FindIndex(contentBuffer, parmFromInclusive,
                     b => b == (byte) ',' || b == (byte) ')');
             }
 
-            Ground<Action> result = new Ground<Action>(action, parmList);
-
-            return result;
+            string actionFullName = VariableContainer.GetFullName(actionName, constantList);
+            return _problemLoader.GroundActionDict[actionFullName];
         }
 
         private byte[] ReceiveBuffer()

@@ -261,17 +261,6 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitCEffect([NotNull] PlanningParser.CEffectContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterFunctionTerm([NotNull] PlanningParser.FunctionTermContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.init"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

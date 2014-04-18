@@ -49,30 +49,30 @@ listVariable: VAR* | VAR+ DASH type listVariable;
 
 gd: atomicFormulaTerm
   | literalTerm
-  | LB AND gd* RB
-  | LB OR gd* RB
+  | LB AND gd+ RB
+  | LB OR gd+ RB
   | LB NOT gd RB
   | LB IMPLY gd gd RB/*
   | LB EXISTS LB listVariable RB gd RB
   | LB FORALL LB listVariable RB gd RB*/;
 
-atomicFormulaTerm: LB predicate term* RB
-                 | LB EQ term* RB;
+atomicFormulaTerm: LB predicate term* RB;
+                 //| LB EQ term* RB;
 literalTerm: atomicFormulaTerm | LB NOT atomicFormulaTerm RB;
 
-term: NAME | VAR | functionTerm;
+term: NAME | VAR;// | functionTerm;
 
-effect: LB AND cEffect* RB
+effect: LB AND cEffect+ RB
       | cEffect;
 cEffect: /*LB FORALL listVariable effect RB
        | */LB WHEN gd condEffect RB
 	   | literalTerm;
 /*pEffect: LB NOT atomicFormulaTerm RB
        | atomicFormulaTerm;*/
-condEffect: LB AND literalTerm* RB
+condEffect: LB AND literalTerm+ RB
           | literalTerm;
 
-functionTerm: FUNSYM term* ;
+//functionTerm: FUNSYM term* ;
 
 // Problem description
 problem: LB DEF LB PROM problemName RB 
@@ -93,14 +93,14 @@ objectDeclaration: LB COLON OBJS listName RB;
 init: LB COLON INIT gdName RB;
 gdName: atomicFormulaName
   | literalName
-  | LB AND gdName* RB
-  | LB OR gdName* RB
+  | LB AND gdName+ RB
+  | LB OR gdName+ RB
   | LB IMPLY gdName gdName RB
   | LB EXISTS LB listVariable RB gd RB
   | LB FORALL LB listVariable RB gd RB;
 
-atomicFormulaName: LB predicate NAME* RB
-             | LB EQ NAME* RB;
+atomicFormulaName: LB predicate NAME* RB;
+             //| LB EQ NAME* RB;
 literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
 
 
@@ -152,7 +152,7 @@ QM: '?';
 COMMA: '.';
 UL: '_';
 DASH: '-';
-PLUS: '+';
+/*PLUS: '+';
 MINUS: '-';
 MULT: '*';
 DIV: '/';
@@ -160,7 +160,7 @@ EQ: '=';
 LT: '<';
 LEQ: '<=';
 GT: '>';
-GEQ: '>=';
+GEQ: '>=';*/
 AND: 'and';
 OR: 'or';
 NOT: 'not';
@@ -169,8 +169,8 @@ FORALL: 'forall';
 EXISTS: 'exists';
 WHEN: 'when';
 PREF: 'preference';
-BINCOMP: EQ | LT | GT | LEQ | GEQ ;
-BINOP: PLUS | MINUS | MULT | DIV ;
+//BINCOMP: EQ | LT | GT | LEQ | GEQ ;
+//BINOP: PLUS | MINUS | MULT | DIV ;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 

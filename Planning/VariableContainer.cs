@@ -115,6 +115,36 @@ namespace Planning
             return sb.ToString();
         }
 
+        public static string GetFullName(PlanningParser.AtomicFormulaTermContext context)
+        {
+            string name = context.predicate().GetText();
+            List<string> termList = new List<string>();
+            foreach (var termContext in context.term())
+            {
+                termList.Add(termContext.GetText());
+            }
+            return GetFullName(name, termList);
+        }
+
+        public static string GetFullName(PlanningParser.ActionDefineContext context)
+        {
+            string name = context.actionSymbol().GetText();
+            List<string> termList = new List<string>();
+            PlanningParser.ListVariableContext listVariableContext = context.listVariable();
+            do
+            {
+                if (listVariableContext.VAR().Count != 0)
+                {
+                    foreach (var varNode in listVariableContext.VAR())
+                    {
+                        termList.Add(varNode.GetText());
+                    }
+                }
+                listVariableContext = listVariableContext.listVariable();
+            } while (listVariableContext != null);
+            return GetFullName(name, termList);
+        }
+
         #endregion
     }
 }

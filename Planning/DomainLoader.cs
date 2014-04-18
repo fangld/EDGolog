@@ -157,21 +157,51 @@ namespace Planning
                 }
 
                 Console.WriteLine("    Previous Abstract Predicates: ");
-                foreach (var abstractPredicate in action.PreviousAbstractPredicates)
+                foreach (var pair in action.PreviousAbstractPredicateDict)
                 {
-                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
+                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
                 }
 
                 Console.WriteLine("    Successive Abstract Predicates: ");
-                foreach (var abstractPredicate in action.SuccessiveAbstractPredicates)
+                foreach (var pair in action.SuccessiveAbstractPredicateDict)
                 {
-                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", abstractPredicate, abstractPredicate.CuddIndex);
+                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
                 }
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(action.Precondition);
 
                 Console.WriteLine("  Effect:");
-                CUDD.Print.PrintMinterm(action.Effect);
+                for (int i = 0; i < action.Effect.Count; i++)
+                {
+                    Console.WriteLine("      Index:{0}", i);
+                    Console.WriteLine("      Condition:");
+                    CUDD.Print.PrintMinterm(action.Effect[i].Item1);
+
+                    Console.Write("      Literals: { ");
+                    var literal = action.Effect[i].Item2[0];
+                    if (literal.Item2)
+                    {
+                        Console.Write("{0}", literal.Item1);
+                    }
+                    else
+                    {
+                        Console.Write("not {0}", literal.Item1);
+                    }
+
+                    for (int j = 1; j < action.Effect[i].Item2.Count; j++)
+                    {
+                        if (literal.Item2)
+                        {
+                            Console.Write(", {0}", literal.Item1);
+                        }
+                        else
+                        {
+                            Console.Write(", not {0}", literal.Item1);
+                        }
+                    }
+
+                    Console.WriteLine(" }");
+                }
 
                 Console.WriteLine();
             }

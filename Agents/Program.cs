@@ -12,21 +12,19 @@ namespace Agents
         {
             Agent agent = new Agent();
             agent.Connect();
-            string action;
             do
             {
-                action = Console.ReadLine();
-                if (action == "d11")
+                string action = Console.ReadLine();
+                if (action[0] == 'd')
                 {
-                    agent.ExecutionAction("dunk", "bomb1", "toilet1");
-                }
-                else if (action == "d22")
+                    string bombName = string.Format("bomb{0}", action[1]);
+                    string toiletName = string.Format("toilet{0}", action[2]);
+
+                    agent.ExecutionAction("dunk", bombName, toiletName);}
+                else if (action[0] == 'f')
                 {
-                    agent.ExecutionAction("dunk", "bomb2", "toilet2");
-                }
-                else
-                {
-                    agent.ExecutionAction("flush", "toilet1");
+                    string toiletName = string.Format("toilet{0}", action[1]);
+                    agent.ExecutionAction("flush", toiletName);
                 }
             } while (true);
         }

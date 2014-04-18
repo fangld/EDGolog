@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
@@ -26,8 +27,6 @@ namespace Planning
         private DomainLoader _domainLoader;
 
         private ProblemLoader _problemLoader;
-
-        private Dictionary<string, int> _predIndexMap;
 
         private Dictionary<string, List<string>> _typeObjectsMap;
 
@@ -59,7 +58,6 @@ namespace Planning
 
         private void Initial()
         {
-            _predIndexMap = new Dictionary<string, int>();
             _predBooleanMap = new Dictionary<string, bool>();
             _typeObjectsMap = new Dictionary<string, List<string>>();
             _agentClientDict = new Dictionary<string, Client>();
@@ -67,7 +65,7 @@ namespace Planning
             foreach (var type in _domainLoader.TypeList)
             {
                 List<string> objectNames = new List<string>();
-                foreach (var pair in _problemLoader.ObjectNameTypeMapMap)
+                foreach (var pair in _problemLoader.ConstantTypeMap)
                 {
                     if (pair.Value == type || pair.Value == VariableContainer.DefaultType)
                     {
@@ -139,7 +137,6 @@ namespace Planning
             }
             sb.AppendFormat("{0})", array[array.Length - 1]);
             string gndPred = sb.ToString();
-            _predIndexMap.Add(gndPred, index);
             if (_problemLoader.TruePredSet.Contains(gndPred))
             {
                 _predBooleanMap.Add(gndPred, true);
@@ -170,6 +167,7 @@ namespace Planning
 
         public void Run()
         {
+            ShowKnowledgeBase();
             Listen();
             ReceiveActions();
         }
@@ -184,7 +182,7 @@ namespace Planning
             do
             {
                 Socket newSocket = _socket.Accept();
-                Client client = new Client(newSocket, _domainLoader.PredicateDict, _domainLoader.ActionDict);
+                Client client = new Client(newSocket, _domainLoader, _problemLoader);
                 client.Handshake();
                 _agentClientDict.Add(client.Name, client);
                 Console.WriteLine("Agent {0} connected!", client.Name);
@@ -201,10 +199,89 @@ namespace Planning
             {
                 foreach (var agent in _problemLoader.AgentList)
                 {
-                    Ground<Action> gndAction = _agentClientDict[agent].GetAction();
+                    GroundAction gndAction = _agentClientDict[agent].GetAction();
                     Console.WriteLine(gndAction);
+                    List<Tuple<Ground<Predicate>, bool>> gndLiteralList = new List<Tuple<Ground<Predicate>, bool>>();
+                    CUDDNode kbNode = GetKnowledgeBase();
+                    CUDDNode preconditionNode = CUDD.Function.Implies(kbNode, gndAction.Precondition);
+                    
+                    Console.WriteLine("  Precondition value:{0}", preconditionNode.GetValue());
+                    CUDD.Print.PrintMinterm(kbNode);
+
+
+                    if (preconditionNode.GetValue() > 0.5)
+                    {
+                        foreach (var cEffect in gndAction.Effect)
+                        {
+                            CUDDNode impliesNode = CUDD.Function.Implies(kbNode, cEffect.Item1);
+                            if (impliesNode.GetValue() > 0.5)
+                            {
+                                gndLiteralList.AddRange(cEffect.Item2);
+                            }
+                        }
+                        UpdateKnowledgeBase(gndLiteralList);
+                    }
+                    else
+                    {
+                        Console.WriteLine("    Action {0} is not executable now!", gndAction);
+                    }
+                    CUDD.Deref(kbNode);
+                    ShowKnowledgeBase();
                 }
             } while (true);
+        }
+
+        private CUDDNode GetKnowledgeBase()
+        {
+            List<CUDDNode> literalNodes = new List<CUDDNode>();
+
+            foreach (var gndPred in _predBooleanMap)
+            {
+                string name = gndPred.Key;
+                int index = _problemLoader.PreviousGroundPredicateDict[name].CuddIndex;
+                CUDDNode node;
+
+                if (gndPred.Value)
+                {
+                    node = CUDD.Var(index);
+                }
+                else
+                {
+                    node = CUDD.Function.Not(CUDD.Var(index));
+                }
+                literalNodes.Add(node);
+            }
+
+            CUDDNode result = literalNodes[0];
+            for (int i = 1; i < literalNodes.Count; i++)
+            {
+                CUDDNode literalNode = literalNodes[i];
+                CUDDNode andNode = CUDD.Function.And(result, literalNode);
+                CUDD.Ref(andNode);
+                CUDD.Deref(result);
+                CUDD.Deref(literalNode);
+                result = andNode;
+            }
+            return result;
+        }
+
+        private void UpdateKnowledgeBase(List<Tuple<Ground<Predicate>, bool>> gndLiteralList)
+        {
+            foreach (var literal in gndLiteralList)
+            {
+                string gndPredName = literal.Item1.ToString();
+                _predBooleanMap[gndPredName] = literal.Item2;
+                //Console.WriteLine("  Predicate:{0}, Value:{1}", gndPredName, _predBooleanMap[gndPredName]);
+            }
+        }
+
+        private void ShowKnowledgeBase()
+        {
+            Console.WriteLine("  Knowledge base:");
+            foreach (var pair in _predBooleanMap)
+            {
+                Console.WriteLine("    Predicate name:{0}, Value:{1}", pair.Key, pair.Value);
+            }
         }
 
         #endregion

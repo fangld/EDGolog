@@ -307,19 +307,6 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitCEffect([NotNull] PlanningParser.CEffectContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFunctionTerm([NotNull] PlanningParser.FunctionTermContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.functionTerm"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFunctionTerm([NotNull] PlanningParser.FunctionTermContext context) { }
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.init"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
