@@ -45,38 +45,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractPredicate.cs" />
-    <Compile Include="Action.cs" />
+    <Compile Include="Planning\AbstractPredicate.cs" />
+    <Compile Include="Planning\Action.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="ConditionalEffect.cs" />
-    <Compile Include="Domain.cs" />
-    <Compile Include="Effect.cs" />
-    <Compile Include="Ground.cs" />
-    <Compile Include="GroundAction.cs" />
-    <Compile Include="ObjectBase.cs" />
-    <Compile Include="Problem.cs" />
+    <Compile Include="Planning\ConditionalEffect.cs" />
+    <Compile Include="Planning\Domain.cs" />
+    <Compile Include="Planning\Effect.cs" />
+    <Compile Include="Planning\Ground.cs" />
+    <Compile Include="Planning\GroundAction.cs" />
+    <Compile Include="Planning\ObjectBase.cs" />
+    <Compile Include="Planning\Problem.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="PlanningBaseListener.cs" />
-    <Compile Include="PlanningBaseVisitor.cs" />
-    <Compile Include="DomainLoader.cs">
+    <Compile Include="Planning\PlanningBaseListener.cs" />
+    <Compile Include="Planning\PlanningBaseVisitor.cs" />
+    <Compile Include="Planning\DomainLoader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PlanningLexer.cs">
+    <Compile Include="Planning\PlanningLexer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PlanningListener.cs" />
-    <Compile Include="PlanningParser.cs" />
-    <Compile Include="PlanningVisitor.cs" />
-    <Compile Include="ProblemLoader.cs" />
-    <Compile Include="Predicate.cs" />
+    <Compile Include="Planning\PlanningListener.cs" />
+    <Compile Include="Planning\PlanningParser.cs" />
+    <Compile Include="Planning\PlanningVisitor.cs" />
+    <Compile Include="Planning\ProblemLoader.cs" />
+    <Compile Include="Planning\Predicate.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtension.cs" />
-    <Compile Include="VariableContainer.cs" />
+    <Compile Include="Planning\VariableContainer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="d1.pddl" />
-    <None Include="p1.pddl" />
+    <None Include="d1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="p1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

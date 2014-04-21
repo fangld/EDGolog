@@ -31,7 +31,7 @@ namespace ObjectWorlds
 
 
             // Create a TextReader that reads from a file
-            TextReader tr = new StreamReader(@"E:\EDGolog\Planning\d1.pddl");
+            TextReader tr = new StreamReader(@"d1.pddl");
 
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
@@ -55,7 +55,7 @@ namespace ObjectWorlds
             domain.ShowInfo();
 
             // Create a TextReader that reads from a file
-            tr = new StreamReader(@"E:\EDGolog\Planning\p1.pddl");
+            tr = new StreamReader(@"p1.pddl");
 
             // create a CharStream that reads from standard input
             input = new AntlrInputStream(tr);
