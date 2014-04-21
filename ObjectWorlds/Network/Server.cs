@@ -13,7 +13,7 @@ using LanguageRecognition;
 using ObjectWorlds.Planning;
 using PAT.Common.Classes.CUDDLib;
 
-namespace ObjectWorlds
+namespace ObjectWorlds.Network
 {
     public class Server
     {

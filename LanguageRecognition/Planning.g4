@@ -137,7 +137,7 @@ OBJS: 'objects';
 INIT: 'init';
 AGENTS: 'agents';
 GOAL: 'goal';
-AT: 'at';
+//AT: 'at';
 
 //STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
 //TYPING: 'typing'; // Allow type names in declarations of variables
@@ -149,7 +149,7 @@ LSB: '[';
 RSB: ']';
 COLON: ':';
 QM: '?';
-COMMA: '.';
+POINT: '.';
 UL: '_';
 DASH: '-';
 /*PLUS: '+';
@@ -168,17 +168,17 @@ IMPLY: 'imply';
 FORALL: 'forall';
 EXISTS: 'exists';
 WHEN: 'when';
-PREF: 'preference';
+//PREF: 'preference';
 //BINCOMP: EQ | LT | GT | LEQ | GEQ ;
 //BINOP: PLUS | MINUS | MULT | DIV ;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 
-NAME: LETTER CHAR* ;
-CHAR: LETTER | DIGIT | DASH | UL ;
-NUMBER: DIGIT+ DECIMAL? ;
-DECIMAL: COMMA DIGIT+ ;
-VAR: QM NAME ;
-FUNSYM : NAME ;
+NAME: LETTER CHAR*;
+CHAR: LETTER | DIGIT | DASH | UL;
+NUMBER: DIGIT+ DECIMAL?;
+DECIMAL: POINT DIGIT+;
+VAR: QM NAME;
+FUNSYM : NAME;
 
 WS: [ \t\r\n]+ -> channel(HIDDEN);

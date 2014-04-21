@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Agents
+namespace Agents.Network
 {
     public class Client
     {
@@ -18,14 +18,23 @@ namespace Agents
 
         private int _port;
 
+        private string _programFileName;
+
+        private string _domainFileName;
+
+        private string _problemFileName;
+
         #endregion
 
         #region Constructors
 
-        public Client()
+        public Client(string domainFileName, string problemFileName, string programFileName)
         {
             _host = "127.0.0.1";
             _port = 888;
+            _domainFileName = domainFileName;
+            _problemFileName = problemFileName;
+            _programFileName = programFileName;
         }
 
         #endregion

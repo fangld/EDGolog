@@ -9,6 +9,7 @@ using Antlr4.Runtime.Tree;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 using ObjectWorlds.Planning;
+using ObjectWorlds.Network;
 
 namespace ObjectWorlds
 {
@@ -16,23 +17,32 @@ namespace ObjectWorlds
     {
         private const int port = 888;
         private const int listenBacklog = 1;
-        
-        public static void Main()
+
+        public static void Main(string[] args)
         {
-            Test1();
+            string domainFileName, problemFileName;
+            if (args.Length == 3)
+            {
+                domainFileName = args[1];
+                problemFileName = args[2];
+            }
+            else
+            {
+                domainFileName = "d1.pddl";
+                problemFileName = "p1.pddl";
+            }
+
+
+            Test1(domainFileName, problemFileName);
             //Test2();
         }
 
-        static void Test1()
+        static void Test1(string domainFileName, string problemFileName)
         {
             CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
 
-            //CUDDNode x0 = CUDD.Var(0);
-            //CUDDNode x1 = CUDD.Var(1);
-
-
             // Create a TextReader that reads from a file
-            TextReader tr = new StreamReader(@"d1.pddl");
+            TextReader tr = new StreamReader(domainFileName);
 
             // create a CharStream that reads from standard input
             AntlrInputStream input = new AntlrInputStream(tr);
@@ -56,7 +66,7 @@ namespace ObjectWorlds
             domain.ShowInfo();
 
             // Create a TextReader that reads from a file
-            tr = new StreamReader(@"p1.pddl");
+            tr = new StreamReader(problemFileName);
 
             // create a CharStream that reads from standard input
             input = new AntlrInputStream(tr);

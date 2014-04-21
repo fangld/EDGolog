@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>8c9d6842</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr4.Runtime.v4.5">
+      <HintPath>..\packages\Antlr4.Runtime.4.2.2-alpha001\lib\net45\Antlr4.Runtime.v4.5.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,12 +46,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
+    <Compile Include="HighLevelPrograms\HighLevelProgramBaseListener.cs" />
+    <Compile Include="HighLevelPrograms\HighLevelProgramBaseVisitor.cs" />
+    <Compile Include="HighLevelPrograms\HighLevelProgramLexer.cs" />
+    <Compile Include="HighLevelPrograms\HighLevelProgramListener.cs" />
+    <Compile Include="HighLevelPrograms\HighLevelProgramParser.cs" />
+    <Compile Include="HighLevelPrograms\HighLevelProgramVisitor.cs" />
+    <Compile Include="HighLevelPrograms\ProgramInterpretor.cs" />
+    <Compile Include="Network\Client.cs" />
+    <Compile Include="Planning\PlanningBaseListener.cs" />
+    <Compile Include="Planning\PlanningBaseVisitor.cs" />
+    <Compile Include="Planning\PlanningLexer.cs" />
+    <Compile Include="Planning\PlanningListener.cs" />
+    <Compile Include="Planning\PlanningParser.cs" />
+    <Compile Include="Planning\PlanningVisitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="program.edp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

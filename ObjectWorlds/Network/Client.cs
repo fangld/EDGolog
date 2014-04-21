@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using ObjectWorlds.Planning;
 
-namespace ObjectWorlds
+namespace ObjectWorlds.Network
 {
     public class Client
     {
