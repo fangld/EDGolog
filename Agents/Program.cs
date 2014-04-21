@@ -10,7 +10,7 @@ namespace Agents
     {
         static void Main(string[] args)
         {
-            Agent agent = new Agent();
+            Client agent = new Client();
             agent.Connect();
             do
             {

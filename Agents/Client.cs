@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Agents
 {
-    public class Agent
+    public class Client
     {
         #region Fields
 
@@ -22,7 +22,7 @@ namespace Agents
 
         #region Constructors
 
-        public Agent()
+        public Client()
         {
             _host = "127.0.0.1";
             _port = 888;
