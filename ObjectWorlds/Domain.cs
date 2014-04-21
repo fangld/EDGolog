@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
+namespace ObjectWorlds
 {
-    public class DomainLoader : PlanningBaseListener
+    public class Domain
     {
         #region Fields
 
         private List<string> _typeList;
 
         private Dictionary<string, Predicate> _predDict;
-        
+
         private Dictionary<string, Action> _actionDict;
 
         #endregion
@@ -25,8 +24,6 @@ namespace Planning
         public string Name { get; set; }
 
         public int CurrentCuddIndex { get; set; }
-
-        //public Requirements Requirements { get; set; }
 
         public IReadOnlyList<string> TypeList
         {
@@ -46,9 +43,10 @@ namespace Planning
         #endregion
 
         #region Constructors
-        public DomainLoader()
+
+        public Domain()
         {
-            _typeList = new List<string> {VariableContainer.DefaultType};
+            _typeList = new List<string> { VariableContainer.DefaultType };
             _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
             CurrentCuddIndex = 0;
@@ -56,71 +54,29 @@ namespace Planning
 
         #endregion
 
-        #region Overriden Methods
+        #region Methods
 
-        public override void EnterDomain(PlanningParser.DomainContext context)
+        public void AddToTypeList(string type)
         {
-            Name = context.NAME().GetText();
-            Console.WriteLine("Name: {0}", Name);
+            _typeList.Add(type);
         }
 
-        //public override void EnterRequireDefine(PlanningParser.RequireDefineContext context)
-        //{
-        //    Requirements.Strips = false;
-
-        //    foreach (var requirment in context.requireKey())
-        //    {
-        //        if (requirment.GetText() == ":typing")
-        //        {
-        //            Requirements.Typing = true;
-        //        }
-
-        //        else if (requirment.GetText() == ":strips")
-        //        {
-        //            Requirements.Strips = true;
-        //        }
-        //    }
-        //}
-
-        public override void EnterTypeDefine(PlanningParser.TypeDefineContext context)
+        public void AddToPredicateDict(Predicate predicate)
         {
-            foreach (var type in context.listName().NAME())
-            {
-                _typeList.Add(type.GetText());
-                Console.WriteLine("type: {0}", type);
-            }
+            _predDict.Add(predicate.Name, predicate);
         }
 
-        public override void EnterPredicatesDefine(PlanningParser.PredicatesDefineContext context)
+        public void AddToActionDict(Action action)
         {
-            foreach (var atomicFormulaSkeleton in context.atomicFormulaSkeleton())
-            {
-                Predicate pred = Predicate.FromContext(atomicFormulaSkeleton);
-                _predDict.Add(pred.Name, pred);
-            }
-        }
-
-        public override void EnterActionDefine(PlanningParser.ActionDefineContext context)
-        {
-            Action action = Action.FromContext(CurrentCuddIndex, context, _predDict);
             _actionDict.Add(action.Name, action);
             CurrentCuddIndex = action.CurrentCuddIndex;
         }
-
-        #endregion
-
-        #region Methods
 
         public void ShowInfo()
         {
             const string barline = "----------------";
 
             Console.WriteLine("Name: {0}", Name);
-            Console.WriteLine(barline);
-
-            //Console.WriteLine("Requirment:");
-            //Console.WriteLine("  strips: {0}", Requirements.Strips);
-            //Console.WriteLine("  typing: {0}", Requirements.Typing);
             Console.WriteLine(barline);
 
             Console.Write("Types: ");

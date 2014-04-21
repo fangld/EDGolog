@@ -9,7 +9,7 @@ using Antlr4.Runtime.Tree;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
+namespace ObjectWorlds
 {
     public class Program
     {
@@ -51,6 +51,8 @@ namespace Planning
             DomainLoader domainLoader = new DomainLoader();
             walker.Walk(domainLoader, tree);
             tr.Close();
+            Domain domain = domainLoader.Domain;
+            domain.ShowInfo();
 
             // Create a TextReader that reads from a file
             tr = new StreamReader(@"E:\EDGolog\Planning\p1.pddl");
@@ -70,14 +72,13 @@ namespace Planning
             // Create a generic parse tree walker that can trigger callbacks 
             walker = new ParseTreeWalker();
             // Walk the tree created during the parse, trigger callbacks 
-            ProblemLoader problemLoader = new ProblemLoader(domainLoader);
+            ProblemLoader problemLoader = new ProblemLoader(domain);
             walker.Walk(problemLoader, tree);
+            tr.Close();
+            Problem problem = problemLoader.Problem;
+            problem.ShowInfo();
 
-
-            //CUDDNode node = CUDD.Var(0);
-
-            Server server = new Server(port, listenBacklog, domainLoader, problemLoader);
-            server.ShowInfo();
+            Server server = new Server(port, listenBacklog, problem);
             server.Run();
             Console.ReadLine();
         }

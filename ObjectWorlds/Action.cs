@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
+namespace ObjectWorlds
 {
     public class Action : VariableContainer
     {
@@ -57,7 +57,7 @@ namespace Planning
 
         #region Methods for creating an instance
 
-        public static Action FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context, Dictionary<string, Predicate> predDict)
+        public static Action FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             Action result = new Action(initialCuddIndex);
             result.Name = context.actionSymbol().GetText();
@@ -72,7 +72,7 @@ namespace Planning
 
         #region Methods for generating abstract predicates
 
-        private void GenerateAbstractPredicates(PlanningParser.ActionDefBodyContext context, Dictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.ActionDefBodyContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             if (context.PRE() != null)
             {
@@ -94,7 +94,7 @@ namespace Planning
             }
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, Dictionary<string, AbstractPredicate> abstractPredDict, Dictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, Dictionary<string, AbstractPredicate> abstractPredDict, IReadOnlyDictionary<string, Predicate> predDict)
         {
             var abstractPredicate = CreateAbstractPredicate(context, predDict);
             if (!abstractPredDict.ContainsKey(abstractPredicate.ToString()))
@@ -105,12 +105,12 @@ namespace Planning
             }
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.LiteralTermContext context, Dictionary<string, AbstractPredicate> abstractPredDict, Dictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.LiteralTermContext context, Dictionary<string, AbstractPredicate> abstractPredDict, IReadOnlyDictionary<string, Predicate> predDict)
         {
             GenerateAbstractPredicates(context.atomicFormulaTerm(), abstractPredDict, predDict);
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.GdContext context, Dictionary<string, AbstractPredicate> abstractPredDict, Dictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.GdContext context, Dictionary<string, AbstractPredicate> abstractPredDict, IReadOnlyDictionary<string, Predicate> predDict)
         {
             if (context.atomicFormulaTerm() != null)
             {
@@ -129,7 +129,7 @@ namespace Planning
             }
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.CEffectContext context, Dictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.CEffectContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             if (context.WHEN() != null)
             {
@@ -144,8 +144,8 @@ namespace Planning
                 GenerateAbstractPredicates(context.literalTerm(), _sucAbstractPredDict, predDict);
             }
         }
-        
-        private AbstractPredicate CreateAbstractPredicate(PlanningParser.AtomicFormulaTermContext context, Dictionary<string, Predicate> predDict)
+
+        private AbstractPredicate CreateAbstractPredicate(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             List<string> constantList = new List<string>();
             for (int i = 0; i < context.term().Count; i++)
@@ -180,7 +180,7 @@ namespace Planning
             return GetAbstractPredicate(context.atomicFormulaTerm());
         }
 
-        private void GeneratePrecondition(PlanningParser.ActionDefineContext context, Dictionary<string, Predicate> predDict)
+        private void GeneratePrecondition(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             Precondition = CUDD.ONE;
 
@@ -197,7 +197,7 @@ namespace Planning
 
         #region Methods for generating effect
 
-        private void GenerateEffect(PlanningParser.ActionDefineContext context, Dictionary<string, Predicate> predDict)
+        private void GenerateEffect(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             PlanningParser.EmptyOrEffectContext emptyOrEffectContext = context.actionDefBody().emptyOrEffect();
             if (emptyOrEffectContext != null)
@@ -402,7 +402,7 @@ namespace Planning
         //    return result;
         //}
 
-        private CUDDNode Visit(PlanningParser.AtomicFormulaTermContext context, Dictionary<string, Predicate> predDict, bool isPrevious)
+        private CUDDNode Visit(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict, bool isPrevious)
         {
             //Console.WriteLine("Before Atomic Formula: {0}, count: {1}", context.GetText(), _variablesCount);
             AbstractPredicate abstractPredicate = GetAbstractPredicate(context);
@@ -420,7 +420,7 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode Visit(PlanningParser.LiteralTermContext context, Dictionary<string, Predicate> predDict, bool isPrevious)
+        private CUDDNode Visit(PlanningParser.LiteralTermContext context, IReadOnlyDictionary<string, Predicate> predDict, bool isPrevious)
         {
             //Console.WriteLine("Before Literal: {0}, count: {1}", context.GetText(), _variablesCount);
             CUDDNode subNode = Visit(context.atomicFormulaTerm(), predDict, isPrevious);
@@ -442,7 +442,7 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode Visit(PlanningParser.GdContext context, Dictionary<string, Predicate> predDict, bool isPrevious)
+        private CUDDNode Visit(PlanningParser.GdContext context, IReadOnlyDictionary<string, Predicate> predDict, bool isPrevious)
         {
             //Console.WriteLine("Before Gd: {0}", context.GetText());
             CUDDNode result = null;

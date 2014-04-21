@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 
-namespace Planning
+namespace ObjectWorlds
 {
     public class Predicate : VariableContainer
     {

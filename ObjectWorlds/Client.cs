@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Planning
+namespace ObjectWorlds
 {
     public class Client
     {
@@ -30,9 +30,7 @@ namespace Planning
 
         //private IReadOnlyDictionary<string, GroundAction> _gndActionDict;
 
-        private DomainLoader _domainLoader;
-
-        private ProblemLoader _problemLoader;
+        private Problem _problem;
 
         #endregion
 
@@ -62,15 +60,21 @@ namespace Planning
         /// <summary>
         /// Create new connected peer with socket
         /// </summary>
-        public Client(Socket socket, DomainLoader domainLoader, ProblemLoader problemLoader)
+        public Client(Socket socket, Problem problem)
         {
             _socket = socket;
             IPEndPoint ipEndPoint = (IPEndPoint) socket.RemoteEndPoint;
             Host = ipEndPoint.Address.ToString();
             Port = ipEndPoint.Port;
             IsConnected = true;
-            _domainLoader = domainLoader;
-            _problemLoader = problemLoader;
+            _problem = problem;
+        }
+
+        public Client(Problem problem, string name)
+        {
+            Name = name;
+            _problem = problem;
+            IsConnected = false;
         }
 
         #endregion
@@ -114,7 +118,7 @@ namespace Planning
             }
 
             string actionFullName = VariableContainer.GetFullName(actionName, constantList);
-            return _problemLoader.GroundActionDict[actionFullName];
+            return _problem.GroundActionDict[actionFullName];
         }
 
         private byte[] ReceiveBuffer()

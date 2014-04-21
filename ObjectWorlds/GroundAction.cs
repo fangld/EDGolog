@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
+namespace ObjectWorlds
 {
     public class GroundAction : Ground<Action>
     {
