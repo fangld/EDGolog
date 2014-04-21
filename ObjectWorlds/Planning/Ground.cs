@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ObjectWorlds
+namespace ObjectWorlds.Planning
 {
     public class Ground<T> where T : VariableContainer
     {

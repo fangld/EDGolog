@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace ObjectWorlds
+namespace ObjectWorlds.Planning
 {
     public class Action : VariableContainer
     {

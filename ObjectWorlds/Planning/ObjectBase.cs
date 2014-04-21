@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PAT.Common.Classes.CUDDLib;
 
-namespace ObjectWorlds
+namespace ObjectWorlds.Planning
 {
     public class ObjectBase
     {

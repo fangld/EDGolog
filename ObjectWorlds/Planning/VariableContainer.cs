@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 
-namespace ObjectWorlds
+namespace ObjectWorlds.Planning
 {
     public abstract class VariableContainer
     {
