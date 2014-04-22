@@ -44,6 +44,17 @@ public partial class HighLevelProgramBaseVisitor<Result> : AbstractParseTreeVisi
 	public virtual Result VisitListName([NotNull] HighLevelProgramParser.ListNameContext context) { return VisitChildren(context); }
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.subjectFormula"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitSubjectFormula([NotNull] HighLevelProgramParser.SubjectFormulaContext context) { return VisitChildren(context); }
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.program"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -77,7 +88,7 @@ public partial class HighLevelProgramBaseVisitor<Result> : AbstractParseTreeVisi
 	public virtual Result VisitAction([NotNull] HighLevelProgramParser.ActionContext context) { return VisitChildren(context); }
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.formula"/>.
+	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.objectFormula"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -85,6 +96,6 @@ public partial class HighLevelProgramBaseVisitor<Result> : AbstractParseTreeVisi
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitFormula([NotNull] HighLevelProgramParser.FormulaContext context) { return VisitChildren(context); }
+	public virtual Result VisitObjectFormula([NotNull] HighLevelProgramParser.ObjectFormulaContext context) { return VisitChildren(context); }
 }
 } // namespace LanguageRecognition

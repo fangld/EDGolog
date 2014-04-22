@@ -9,20 +9,12 @@ namespace Agents.Planning
 {
     public class GroundAction : Ground<Action>
     {
-        #region Fields
-
-        private List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>> _effect;
-
-        #endregion
 
         #region Properties
 
         public CUDDNode Precondition { get; set; }
 
-        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>> Effect
-        {
-            get { return _effect; }
-        }
+        public CUDDNode Effect { get; set; }
 
         #endregion
 
@@ -30,7 +22,6 @@ namespace Agents.Planning
 
         private GroundAction(Action action, IEnumerable<string> constantList) : base(action, constantList)
         {
-            _effect = new List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>>(Container.Effect.Count);
         }
 
         #endregion

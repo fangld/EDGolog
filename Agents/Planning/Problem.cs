@@ -38,7 +38,7 @@ namespace Agents.Planning
 
         public string DomainName { get; set; }
 
-        public string HostId { get; set; }
+        public string AgentId { get; set; }
 
         public Domain Domain { get; set; }
 

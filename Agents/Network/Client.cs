@@ -94,7 +94,7 @@ namespace Agents.Network
             // create a parser that feeds off the tokens buffer
             parser = new PlanningParser(tokens);
 
-            tree = parser.problem();// begin parsing at init rule
+            tree = parser.clientProblem();// begin parsing at init rule
 
             // Create a generic parse tree walker that can trigger callbacks 
             walker = new ParseTreeWalker();
@@ -102,8 +102,7 @@ namespace Agents.Network
             ProblemLoader problemLoader = new ProblemLoader(domain);
             walker.Walk(problemLoader, tree);
             tr.Close();
-            Problem problem = problemLoader.Problem;
-
+            _problem = problemLoader.Problem;
 
             // Create a TextReader that reads from a file
             tr = new StreamReader(programFileName);
@@ -119,14 +118,14 @@ namespace Agents.Network
             var programParser = new HighLevelProgramParser(tokens);
 
             _programContext = programParser.program();// begin parsing at program rule
-            _interpretor.EnterProgram(_programContext);
+            //_interpretor.EnterProgram(_programContext);
             Console.WriteLine("------------------");
         }
 
         public void Connect()
         {
             _serverSocket.Connect(_host, _port);
-            SendMessage("a1");
+            SendMessage(_problem.AgentId);
         }
 
         public void ExecuteActions()
@@ -155,7 +154,7 @@ namespace Agents.Network
 
         private void Execute(HighLevelProgramParser.ProgramContext context)
         {
-            Console.WriteLine("Program: {0}", context.GetText());
+            //Console.WriteLine("Program: {0}", context.GetText());
             if (context.action() != null)
             {
                 Execute(context.action());
@@ -183,9 +182,9 @@ namespace Agents.Network
         private void Execute(HighLevelProgramParser.ActionContext context)
         {
             Console.WriteLine("Action: {0}", context.GetText());
-            SendMessage(context.GetText());
-            Console.WriteLine("Press enter to the next action.");
+            Console.WriteLine("Press enter to excute this action and show the infomation of the next action.");
             Console.ReadLine();
+            SendMessage(context.GetText());
         }
 
         private void SendMessage(string message)

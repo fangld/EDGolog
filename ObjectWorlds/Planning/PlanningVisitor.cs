@@ -52,13 +52,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitPredicate([NotNull] PlanningParser.PredicateContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.hostId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitHostId([NotNull] PlanningParser.HostIdContext context);
-
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.listVariable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -101,6 +94,13 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitActionDefBody([NotNull] PlanningParser.ActionDefBodyContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.initBelief"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitInitBelief([NotNull] PlanningParser.InitBeliefContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.structureDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -113,6 +113,13 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitPredicatesDefine([NotNull] PlanningParser.PredicatesDefineContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.clientProblem"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitClientProblem([NotNull] PlanningParser.ClientProblemContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.literalTerm"/>.
@@ -134,6 +141,13 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitCondEffect([NotNull] PlanningParser.CondEffectContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.initKnowledge"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitInitKnowledge([NotNull] PlanningParser.InitKnowledgeContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.actionDefine"/>.
@@ -185,6 +199,20 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitCEffect([NotNull] PlanningParser.CEffectContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.serverProblem"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitServerProblem([NotNull] PlanningParser.ServerProblemContext context);
+
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.agentId"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAgentId([NotNull] PlanningParser.AgentIdContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.init"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -197,13 +225,6 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitDomainName([NotNull] PlanningParser.DomainNameContext context);
-
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="PlanningParser.problem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitProblem([NotNull] PlanningParser.ProblemContext context);
 
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.objectDeclaration"/>.

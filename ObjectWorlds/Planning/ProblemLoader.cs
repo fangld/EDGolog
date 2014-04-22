@@ -28,11 +28,10 @@ namespace ObjectWorlds.Planning
 
         #region Overriden Methods
 
-        public override void EnterProblem(PlanningParser.ProblemContext context)
+        public override void EnterServerProblem(PlanningParser.ServerProblemContext context)
         {
             Problem.Name = context.problemName().GetText();
             Problem.DomainName = context.domainName().GetText();
-            Problem.HostId = context.hostId().GetText();
         }
 
         public override void EnterAgentDefine(PlanningParser.AgentDefineContext context)

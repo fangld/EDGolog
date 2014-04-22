@@ -47,6 +47,19 @@ public partial class HighLevelProgramBaseListener : IHighLevelProgramListener {
 	public virtual void ExitListName([NotNull] HighLevelProgramParser.ListNameContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.subjectFormula"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSubjectFormula([NotNull] HighLevelProgramParser.SubjectFormulaContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="HighLevelProgramParser.subjectFormula"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSubjectFormula([NotNull] HighLevelProgramParser.SubjectFormulaContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.program"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -86,17 +99,17 @@ public partial class HighLevelProgramBaseListener : IHighLevelProgramListener {
 	public virtual void ExitAction([NotNull] HighLevelProgramParser.ActionContext context) { }
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.formula"/>.
+	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.objectFormula"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFormula([NotNull] HighLevelProgramParser.FormulaContext context) { }
+	public virtual void EnterObjectFormula([NotNull] HighLevelProgramParser.ObjectFormulaContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="HighLevelProgramParser.formula"/>.
+	/// Exit a parse tree produced by <see cref="HighLevelProgramParser.objectFormula"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFormula([NotNull] HighLevelProgramParser.FormulaContext context) { }
+	public virtual void ExitObjectFormula([NotNull] HighLevelProgramParser.ObjectFormulaContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>

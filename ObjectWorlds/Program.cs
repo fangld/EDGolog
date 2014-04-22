@@ -79,7 +79,7 @@ namespace ObjectWorlds
             // create a parser that feeds off the tokens buffer
             parser = new PlanningParser(tokens);
 
-            tree = parser.problem();// begin parsing at init rule
+            tree = parser.serverProblem();// begin parsing at init rule
 
             // Create a generic parse tree walker that can trigger callbacks 
             walker = new ParseTreeWalker();

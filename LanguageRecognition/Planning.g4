@@ -74,22 +74,17 @@ condEffect: LB AND literalTerm+ RB
 
 //functionTerm: FUNSYM term* ;
 
-// Problem description
-problem: LB DEF LB PROM problemName RB
+// Server problem description
+serverProblem: LB DEF LB PROM problemName RB
 		   LB COLON DOM domainName RB
-		   LB COLON HOSTID hostId RB
 		   agentDefine
-		   //requireDefine?
 		   objectDeclaration?
 		   init
 		 RB;
 
 problemName: NAME;
 domainName: NAME;
-hostId: NAME;
-
 agentDefine: LB COLON AGENTS NAME+ RB;
-
 objectDeclaration: LB COLON OBJS listName RB;
 
 init: LB COLON INIT gdName RB;
@@ -105,6 +100,18 @@ atomicFormulaName: LB predicate NAME* RB;
              //| LB EQ NAME* RB;
 literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
 
+// Client problem description
+clientProblem: LB DEF LB PROM problemName RB
+		   LB COLON DOM domainName RB
+		   agentDefine
+		   LB COLON AGENTID agentId RB		   
+		   objectDeclaration?
+		   initKnowledge?
+		   initBelief?
+		 RB;
+initKnowledge: LB COLON INITKNOWLEDGE gdName RB;
+initBelief: LB COLON INITBELIEF gdName RB;
+agentId: NAME;
 
 /*initEl: literalName
       | LB AT NUMBER literalName RB
@@ -125,7 +132,7 @@ functionSymbol: NAME;*/
 DOM: 'domain';
 PROM: 'problem';
 DEF: 'define';
-HOSTID: 'hostid';
+AGENTID: 'agentid';
 //REQ: 'requirements';
 TYPE: 'types';
 PRED: 'predicates';
@@ -135,6 +142,8 @@ PRE: 'precondition';
 EFF: 'effect';
 OBJ: 'object';
 EITHER: 'either';
+INITKNOWLEDGE: 'initknowledge';
+INITBELIEF: 'initbelief';
 
 OBJS: 'objects';
 INIT: 'init';

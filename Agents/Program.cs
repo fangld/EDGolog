@@ -25,7 +25,7 @@ namespace Agents
         private static void Test1()
         {
             string domainFileName = "d1.pddl";
-            string problomFileName = "p1.pddl";
+            string problomFileName = "a1.pddl";
 
             string programFileName = "program.edp";
             Client agent = new Client(domainFileName, problomFileName, programFileName);

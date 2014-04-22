@@ -6,15 +6,21 @@ grammar HighLevelProgram;
 
 program: action
        | program SEMICOLON program
-	   | IF formula THEN program ELSE program ENDIF
-	   | IF formula THEN program ENDIF
-	   | WHILE formula DO program ENDWHILE;
+	   | IF subjectFormula THEN program ELSE program ENDIF
+	   | IF subjectFormula THEN program ENDIF
+	   | WHILE subjectFormula DO program ENDWHILE;
 
-formula: predicate
-       | LB formula RB
-       | NOT formula
-       | formula AND formula
-	   | formula OR formula;
+subjectFormula: KNOW LB objectFormula RB
+              | BEL LB objectFormula RB
+			  | NOT subjectFormula
+			  | subjectFormula AND subjectFormula
+			  | subjectFormula OR subjectFormula;
+
+objectFormula: predicate
+       | LB objectFormula RB
+       | NOT objectFormula
+       | objectFormula AND objectFormula
+	   | objectFormula OR objectFormula;
 predicate: NAME LB listName RB;
 
 action: NAME LB listName RB;
@@ -33,6 +39,8 @@ ENDIF: 'endif';
 WHILE: 'while';
 DO: 'do';
 ENDWHILE: 'endwhile';
+KNOW: 'know';
+BEL: 'bel';
 LB: '(';
 RB: ')';
 COLON: ':';

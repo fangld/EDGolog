@@ -11,7 +11,7 @@ namespace Agents.HighLevelPrograms
     {
         public override void EnterProgram(HighLevelProgramParser.ProgramContext context)
         {
-            Console.WriteLine(context.GetText());
+            //Console.WriteLine(context.GetText());
             if (context.action() != null)
             {
                 EnterAction(context.action());
@@ -38,7 +38,7 @@ namespace Agents.HighLevelPrograms
 
         public override void EnterAction(HighLevelProgramParser.ActionContext context)
         {
-            Console.WriteLine(context.GetText());
+            //Console.WriteLine(context.GetText());
         }
     }
 }

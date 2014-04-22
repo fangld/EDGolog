@@ -41,6 +41,17 @@ public interface IHighLevelProgramListener : IParseTreeListener {
 	void ExitListName([NotNull] HighLevelProgramParser.ListNameContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.subjectFormula"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSubjectFormula([NotNull] HighLevelProgramParser.SubjectFormulaContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="HighLevelProgramParser.subjectFormula"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSubjectFormula([NotNull] HighLevelProgramParser.SubjectFormulaContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.program"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -74,14 +85,14 @@ public interface IHighLevelProgramListener : IParseTreeListener {
 	void ExitAction([NotNull] HighLevelProgramParser.ActionContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.formula"/>.
+	/// Enter a parse tree produced by <see cref="HighLevelProgramParser.objectFormula"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterFormula([NotNull] HighLevelProgramParser.FormulaContext context);
+	void EnterObjectFormula([NotNull] HighLevelProgramParser.ObjectFormulaContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="HighLevelProgramParser.formula"/>.
+	/// Exit a parse tree produced by <see cref="HighLevelProgramParser.objectFormula"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitFormula([NotNull] HighLevelProgramParser.FormulaContext context);
+	void ExitObjectFormula([NotNull] HighLevelProgramParser.ObjectFormulaContext context);
 }
 } // namespace LanguageRecognition

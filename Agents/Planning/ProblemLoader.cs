@@ -28,11 +28,11 @@ namespace Agents.Planning
 
         #region Overriden Methods
 
-        public override void EnterProblem(PlanningParser.ProblemContext context)
+        public override void EnterClientProblem(PlanningParser.ClientProblemContext context)
         {
             Problem.Name = context.problemName().GetText();
             Problem.DomainName = context.domainName().GetText();
-            Problem.HostId = context.hostId().GetText();
+            Problem.AgentId = context.agentId().GetText();
         }
 
         public override void EnterAgentDefine(PlanningParser.AgentDefineContext context)

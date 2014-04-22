@@ -63,17 +63,6 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitPredicate([NotNull] PlanningParser.PredicateContext context);
 
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.hostId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterHostId([NotNull] PlanningParser.HostIdContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.hostId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitHostId([NotNull] PlanningParser.HostIdContext context);
-
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.listVariable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -140,6 +129,17 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitActionDefBody([NotNull] PlanningParser.ActionDefBodyContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.initBelief"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterInitBelief([NotNull] PlanningParser.InitBeliefContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.initBelief"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitInitBelief([NotNull] PlanningParser.InitBeliefContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.structureDefine"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -160,6 +160,17 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitPredicatesDefine([NotNull] PlanningParser.PredicatesDefineContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.clientProblem"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterClientProblem([NotNull] PlanningParser.ClientProblemContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.clientProblem"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitClientProblem([NotNull] PlanningParser.ClientProblemContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.literalTerm"/>.
@@ -193,6 +204,17 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitCondEffect([NotNull] PlanningParser.CondEffectContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.initKnowledge"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterInitKnowledge([NotNull] PlanningParser.InitKnowledgeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.initKnowledge"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitInitKnowledge([NotNull] PlanningParser.InitKnowledgeContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.actionDefine"/>.
@@ -272,6 +294,28 @@ public interface IPlanningListener : IParseTreeListener {
 	void ExitCEffect([NotNull] PlanningParser.CEffectContext context);
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.serverProblem"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterServerProblem([NotNull] PlanningParser.ServerProblemContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.serverProblem"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitServerProblem([NotNull] PlanningParser.ServerProblemContext context);
+
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.agentId"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterAgentId([NotNull] PlanningParser.AgentIdContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.agentId"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitAgentId([NotNull] PlanningParser.AgentIdContext context);
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.init"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -292,17 +336,6 @@ public interface IPlanningListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitDomainName([NotNull] PlanningParser.DomainNameContext context);
-
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="PlanningParser.problem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterProblem([NotNull] PlanningParser.ProblemContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="PlanningParser.problem"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitProblem([NotNull] PlanningParser.ProblemContext context);
 
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.objectDeclaration"/>.

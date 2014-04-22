@@ -38,6 +38,13 @@ public interface IHighLevelProgramVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitListName([NotNull] HighLevelProgramParser.ListNameContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.subjectFormula"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitSubjectFormula([NotNull] HighLevelProgramParser.SubjectFormulaContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.program"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -59,10 +66,10 @@ public interface IHighLevelProgramVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitAction([NotNull] HighLevelProgramParser.ActionContext context);
 
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.formula"/>.
+	/// Visit a parse tree produced by <see cref="HighLevelProgramParser.objectFormula"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitFormula([NotNull] HighLevelProgramParser.FormulaContext context);
+	Result VisitObjectFormula([NotNull] HighLevelProgramParser.ObjectFormulaContext context);
 }
 } // namespace LanguageRecognition

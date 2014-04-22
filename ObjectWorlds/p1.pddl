@@ -1,6 +1,5 @@
 (define (problem bomb-3-2)
    (:domain bomb)
-   (:hostid server)
    (:agents a1)
    (:objects  
        bomb1  bomb2  bomb3 - bomb 

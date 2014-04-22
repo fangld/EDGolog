@@ -52,6 +52,7 @@
     <Compile Include="HighLevelPrograms\HighLevelProgramListener.cs" />
     <Compile Include="HighLevelPrograms\HighLevelProgramParser.cs" />
     <Compile Include="HighLevelPrograms\HighLevelProgramVisitor.cs" />
+    <Compile Include="HighLevelPrograms\MentalAttitude.cs" />
     <Compile Include="HighLevelPrograms\ProgramInterpretor.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Planning\AbstractPredicate.cs" />
@@ -81,7 +82,7 @@
     <None Include="d1.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="p1.pddl">
+    <None Include="a1.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

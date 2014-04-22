@@ -12,8 +12,6 @@ namespace Agents.Planning
 
         private List<ConditionalEffect> _conditionalEffects;
 
-        public static readonly Effect TrueEffect;
-
         #endregion
 
         #region Properties
@@ -26,12 +24,6 @@ namespace Agents.Planning
         #endregion
 
         #region Constructors
-
-        static Effect()
-        {
-            TrueEffect = new Effect();
-            TrueEffect.AddConditionalEffect(ConditionalEffect.ObservableEffect);
-        }
 
         public Effect()
         {
