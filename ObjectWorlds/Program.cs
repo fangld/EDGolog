@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
-using PAT.Common.Classes.CUDDLib;
-using ObjectWorlds.Planning;
 using ObjectWorlds.Network;
+using ObjectWorlds.Planning;
+using PAT.Common.Classes.CUDDLib;
 
 namespace ObjectWorlds
 {
@@ -35,6 +35,7 @@ namespace ObjectWorlds
 
             Test1(domainFileName, problemFileName);
             //Test2();
+            Console.ReadLine();
         }
 
         static void Test1(string domainFileName, string problemFileName)

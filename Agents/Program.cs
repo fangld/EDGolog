@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Agents.Network;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using LanguageRecognition;
+using Agents.HighLevelPrograms;
 
 namespace Agents
 {
@@ -13,30 +16,22 @@ namespace Agents
     {
         static void Main(string[] args)
         {
-            string programFileName = @"program.edp";
-            Test2(programFileName);
+            //string programFileName = @"program.edp";
+            //Test2(programFileName);
+            Test1();
+            Console.ReadLine();
         }
 
         private static void Test1()
         {
-            Client agent = new Client();
-            agent.Connect();
-            do
-            {
-                string action = Console.ReadLine();
-                if (action[0] == 'd')
-                {
-                    string bombName = string.Format("bomb{0}", action[1]);
-                    string toiletName = string.Format("toilet{0}", action[2]);
+            string domainFileName = "d1.pddl";
+            string problomFileName = "p1.pddl";
 
-                    agent.ExecutionAction("dunk", bombName, toiletName);
-                }
-                else if (action[0] == 'f')
-                {
-                    string toiletName = string.Format("toilet{0}", action[1]);
-                    agent.ExecutionAction("flush", toiletName);
-                }
-            } while (true);
+            string programFileName = "program.edp";
+            Client agent = new Client(domainFileName, problomFileName, programFileName);
+            agent.Connect();
+            agent.ExecuteActions();
+            
         }
 
         private static void Test2(string programFileName)
@@ -47,19 +42,17 @@ namespace Agents
             AntlrInputStream input = new AntlrInputStream(tr);
             // create a lexer that feeds off of input CharStream
 
-            PlanningLexer lexer = new PlanningLexer(input);
+            HighLevelProgramLexer lexer = new HighLevelProgramLexer(input);
             // create a buffer of tokens pulled from the lexer
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             // create a parser that feeds off the tokens buffer
-            PlanningParser parser = new PlanningParser(tokens);
+            HighLevelProgramParser parser = new HighLevelProgramParser(tokens);
 
-            IParseTree tree = parser.domain();// begin parsing at init rule
+            HighLevelProgramParser.ProgramContext programContext = parser.program();// begin parsing at init rule
+            ProgramInterpretor interpretor = new ProgramInterpretor();
+            interpretor.EnterProgram(programContext);
+            //Console.WriteLine(programContext.GetText());
 
-            // Create a generic parse tree walker that can trigger callbacks 
-            ParseTreeWalker walker = new ParseTreeWalker();
-            // Walk the tree created during the parse, trigger callbacks 
-            DomainLoader domainLoader = new DomainLoader();
-            walker.Walk(domainLoader, tree);
             tr.Close();
         }
     }

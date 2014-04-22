@@ -75,8 +75,9 @@ condEffect: LB AND literalTerm+ RB
 //functionTerm: FUNSYM term* ;
 
 // Problem description
-problem: LB DEF LB PROM problemName RB 
+problem: LB DEF LB PROM problemName RB
 		   LB COLON DOM domainName RB
+		   LB COLON HOSTID hostId RB
 		   agentDefine
 		   //requireDefine?
 		   objectDeclaration?
@@ -85,6 +86,7 @@ problem: LB DEF LB PROM problemName RB
 
 problemName: NAME;
 domainName: NAME;
+hostId: NAME;
 
 agentDefine: LB COLON AGENTS NAME+ RB;
 
@@ -123,6 +125,7 @@ functionSymbol: NAME;*/
 DOM: 'domain';
 PROM: 'problem';
 DEF: 'define';
+HOSTID: 'hostid';
 //REQ: 'requirements';
 TYPE: 'types';
 PRED: 'predicates';

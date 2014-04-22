@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace ObjectWorlds.Planning
+namespace Agents.Planning
 {
     public class ProblemLoader : PlanningBaseListener
     {
@@ -53,7 +53,7 @@ namespace ObjectWorlds.Planning
 
         public override void EnterInit(PlanningParser.InitContext context)
         {
-            Problem.BuildTruePredicateSet(context);
+            //Problem.BuildTruePredicateSet(context);
         }
 
         #endregion

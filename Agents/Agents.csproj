@@ -54,21 +54,46 @@
     <Compile Include="HighLevelPrograms\HighLevelProgramVisitor.cs" />
     <Compile Include="HighLevelPrograms\ProgramInterpretor.cs" />
     <Compile Include="Network\Client.cs" />
+    <Compile Include="Planning\AbstractPredicate.cs" />
+    <Compile Include="Planning\Action.cs" />
+    <Compile Include="Planning\ConditionalEffect.cs" />
+    <Compile Include="Planning\Domain.cs" />
+    <Compile Include="Planning\DomainLoader.cs" />
+    <Compile Include="Planning\Effect.cs" />
+    <Compile Include="Planning\Ground.cs" />
+    <Compile Include="Planning\GroundAction.cs" />
+    <Compile Include="Planning\ObjectBase.cs" />
     <Compile Include="Planning\PlanningBaseListener.cs" />
     <Compile Include="Planning\PlanningBaseVisitor.cs" />
     <Compile Include="Planning\PlanningLexer.cs" />
     <Compile Include="Planning\PlanningListener.cs" />
     <Compile Include="Planning\PlanningParser.cs" />
     <Compile Include="Planning\PlanningVisitor.cs" />
+    <Compile Include="Planning\Predicate.cs" />
+    <Compile Include="Planning\Problem.cs" />
+    <Compile Include="Planning\ProblemLoader.cs" />
+    <Compile Include="Planning\VariableContainer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="d1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="p1.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="program.edp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PAT.BDD\PAT.BDD.csproj">
+      <Project>{ebb3ad28-953a-4c12-add4-4a6752628280}</Project>
+      <Name>PAT.BDD</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

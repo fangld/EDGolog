@@ -52,6 +52,13 @@ public interface IPlanningVisitor<Result> : IParseTreeVisitor<Result> {
 	Result VisitPredicate([NotNull] PlanningParser.PredicateContext context);
 
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="PlanningParser.hostId"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitHostId([NotNull] PlanningParser.HostIdContext context);
+
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="PlanningParser.listVariable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

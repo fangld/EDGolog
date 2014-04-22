@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace ObjectWorlds.Planning
+namespace Agents.Planning
 {
     public class Problem
     {

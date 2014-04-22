@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Agents.HighLevelPrograms;
+using Agents.Planning;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
+using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
 
 namespace Agents.Network
 {
@@ -24,6 +31,12 @@ namespace Agents.Network
 
         private string _problemFileName;
 
+        private Problem _problem;
+
+        private HighLevelProgramParser.ProgramContext _programContext;
+
+        private ProgramInterpretor _interpretor;
+
         #endregion
 
         #region Constructors
@@ -32,19 +45,93 @@ namespace Agents.Network
         {
             _host = "127.0.0.1";
             _port = 888;
-            _domainFileName = domainFileName;
-            _problemFileName = problemFileName;
-            _programFileName = programFileName;
+            _interpretor = new ProgramInterpretor();
+            Initial(domainFileName, problemFileName, programFileName);
         }
 
         #endregion
 
         #region Methods
 
+        private void Initial(string domainFileName, string problemFileName, string programFileName)
+        {
+            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+
+            // Create a TextReader that reads from a file
+            TextReader tr = new StreamReader(domainFileName);
+
+            // create a CharStream that reads from standard input
+            AntlrInputStream input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
+
+            ITokenSource lexer = new PlanningLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            PlanningParser parser = new PlanningParser(tokens);
+
+            IParseTree tree = parser.domain();// begin parsing at init rule
+
+            // Create a generic parse tree walker that can trigger callbacks 
+            ParseTreeWalker walker = new ParseTreeWalker();
+            // Walk the tree created during the parse, trigger callbacks 
+            DomainLoader domainLoader = new DomainLoader();
+            walker.Walk(domainLoader, tree);
+            tr.Close();
+            Domain domain = domainLoader.Domain;
+            domain.ShowInfo();
+
+            // Create a TextReader that reads from a file
+            tr = new StreamReader(problemFileName);
+
+            // create a CharStream that reads from standard input
+            input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
+
+            lexer = new PlanningLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            parser = new PlanningParser(tokens);
+
+            tree = parser.problem();// begin parsing at init rule
+
+            // Create a generic parse tree walker that can trigger callbacks 
+            walker = new ParseTreeWalker();
+            // Walk the tree created during the parse, trigger callbacks 
+            ProblemLoader problemLoader = new ProblemLoader(domain);
+            walker.Walk(problemLoader, tree);
+            tr.Close();
+            Problem problem = problemLoader.Problem;
+
+
+            // Create a TextReader that reads from a file
+            tr = new StreamReader(programFileName);
+
+            // create a CharStream that reads from standard input
+            input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
+
+            lexer = new HighLevelProgramLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            var programParser = new HighLevelProgramParser(tokens);
+
+            _programContext = programParser.program();// begin parsing at program rule
+            _interpretor.EnterProgram(_programContext);
+            Console.WriteLine("------------------");
+        }
+
         public void Connect()
         {
             _serverSocket.Connect(_host, _port);
             SendMessage("a1");
+        }
+
+        public void ExecuteActions()
+        {
+            Execute(_programContext);
         }
 
         public void ExecutionAction(string name, params string[] parmList)
@@ -64,6 +151,41 @@ namespace Agents.Network
                 sb.AppendFormat("{0}()", name);
             }
             SendMessage(sb.ToString());
+        }
+
+        private void Execute(HighLevelProgramParser.ProgramContext context)
+        {
+            Console.WriteLine("Program: {0}", context.GetText());
+            if (context.action() != null)
+            {
+                Execute(context.action());
+            }
+            else if (context.SEMICOLON() != null)
+            {
+                Execute(context.program()[0]);
+                Execute(context.program()[1]);
+            }
+            else if (context.IF() != null)
+            {
+                throw new NotImplementedException();
+                if (context.ELSE() == null)
+                {
+                    Execute(context.program()[0]);
+                }
+            }
+            else if (context.WHILE() != null)
+            {
+                throw new NotImplementedException();
+            }
+            //Console.WriteLine(context.GetText());
+        }
+
+        private void Execute(HighLevelProgramParser.ActionContext context)
+        {
+            Console.WriteLine("Action: {0}", context.GetText());
+            SendMessage(context.GetText());
+            Console.WriteLine("Press enter to the next action.");
+            Console.ReadLine();
         }
 
         private void SendMessage(string message)

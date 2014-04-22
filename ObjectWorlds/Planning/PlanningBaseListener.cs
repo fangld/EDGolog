@@ -73,6 +73,19 @@ public partial class PlanningBaseListener : IPlanningListener {
 	public virtual void ExitPredicate([NotNull] PlanningParser.PredicateContext context) { }
 
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="PlanningParser.hostId"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterHostId([NotNull] PlanningParser.HostIdContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="PlanningParser.hostId"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitHostId([NotNull] PlanningParser.HostIdContext context) { }
+
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="PlanningParser.listVariable"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
