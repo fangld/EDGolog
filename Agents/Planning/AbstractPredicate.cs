@@ -28,7 +28,7 @@ namespace Agents.Planning
 
         #endregion
 
-        #region Constructors
+        #region Methods
 
         #region Methods
 
