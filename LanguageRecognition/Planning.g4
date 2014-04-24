@@ -87,14 +87,15 @@ domainName: NAME;
 agentDefine: LB COLON AGENTS NAME+ RB;
 objectDeclaration: LB COLON OBJS listName RB;
 
-init: LB COLON INIT gdName RB;
+init: LB COLON INIT atomicFormulaName* RB;
 gdName: atomicFormulaName
   | literalName
   | LB AND gdName+ RB
   | LB OR gdName+ RB
+  | LB NOT gdName RB
   | LB IMPLY gdName gdName RB
-  | LB EXISTS LB listVariable RB gd RB
-  | LB FORALL LB listVariable RB gd RB;
+  /*| LB EXISTS LB listVariable RB gd RB
+  | LB FORALL LB listVariable RB gd RB*/;
 
 atomicFormulaName: LB predicate NAME* RB;
              //| LB EQ NAME* RB;

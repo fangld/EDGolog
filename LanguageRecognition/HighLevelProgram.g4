@@ -23,7 +23,7 @@ objectFormula: predicate
 	   | objectFormula OR objectFormula;
 predicate: NAME LB listName RB;
 
-action: NAME LB listName RB;
+action: NAME LB listName? RB;
 
 listName: NAME | NAME COMMA listName;
 

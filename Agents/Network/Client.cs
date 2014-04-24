@@ -37,6 +37,8 @@ namespace Agents.Network
 
         private ProgramInterpretor _interpretor;
 
+        private MentalAttitude _mentalAttitude;
+
         #endregion
 
         #region Constructors
@@ -47,6 +49,7 @@ namespace Agents.Network
             _port = 888;
             _interpretor = new ProgramInterpretor();
             Initial(domainFileName, problemFileName, programFileName);
+            _mentalAttitude = new MentalAttitude(_problem);
         }
 
         #endregion
@@ -103,6 +106,7 @@ namespace Agents.Network
             walker.Walk(problemLoader, tree);
             tr.Close();
             _problem = problemLoader.Problem;
+            _problem.ShowInfo();
 
             // Create a TextReader that reads from a file
             tr = new StreamReader(programFileName);
@@ -126,6 +130,7 @@ namespace Agents.Network
         {
             _serverSocket.Connect(_host, _port);
             SendMessage(_problem.AgentId);
+            _mentalAttitude.ShowInfo();
         }
 
         public void ExecuteActions()
@@ -154,7 +159,6 @@ namespace Agents.Network
 
         private void Execute(HighLevelProgramParser.ProgramContext context)
         {
-            //Console.WriteLine("Program: {0}", context.GetText());
             if (context.action() != null)
             {
                 Execute(context.action());
@@ -166,25 +170,34 @@ namespace Agents.Network
             }
             else if (context.IF() != null)
             {
-                throw new NotImplementedException();
-                if (context.ELSE() == null)
+                if (_mentalAttitude.Implies(context.subjectFormula().objectFormula()))
                 {
                     Execute(context.program()[0]);
+                }
+                else if (context.ELSE() == null)
+                {
+                    Execute(context.program()[1]);
                 }
             }
             else if (context.WHILE() != null)
             {
-                throw new NotImplementedException();
+                if (_mentalAttitude.Implies(context.subjectFormula().objectFormula()))
+                {
+                    Execute(context.program()[0]);
+                }
             }
-            //Console.WriteLine(context.GetText());
         }
 
         private void Execute(HighLevelProgramParser.ActionContext context)
         {
-            Console.WriteLine("Action: {0}", context.GetText());
-            Console.WriteLine("Press enter to excute this action and show the infomation of the next action.");
+            string gndActionName = context.GetText();
+            Console.WriteLine("Action: {0}", gndActionName);
+            Console.WriteLine("Press enter to execute this action and show the infomation of the next action.");
             Console.ReadLine();
+            GroundAction gndAction = _problem.GroundActionDict[gndActionName];
             SendMessage(context.GetText());
+            _mentalAttitude.Update(gndAction);
+            _mentalAttitude.ShowInfo();
         }
 
         private void SendMessage(string message)

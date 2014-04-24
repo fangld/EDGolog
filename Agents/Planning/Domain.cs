@@ -112,17 +112,12 @@ namespace Agents.Planning
                         action.VariableList[i].Item2);
                 }
 
-                Console.WriteLine("    Previous Abstract Predicates: ");
-                foreach (var pair in action.PreviousAbstractPredicateDict)
+                Console.WriteLine("    Abstract Predicates: ");
+                foreach (var pair in action.AbstractPredicateDict)
                 {
-                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
+                    Console.WriteLine("      Name: {0}, Previous index: {1}, Successor index: {2}", pair.Key, pair.Value.PreviousCuddIndex, pair.Value.SuccessorCuddIndex);
                 }
 
-                Console.WriteLine("    Successive Abstract Predicates: ");
-                foreach (var pair in action.SuccessiveAbstractPredicateDict)
-                {
-                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
-                }
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(action.Precondition);
 
@@ -158,6 +153,9 @@ namespace Agents.Planning
 
                     Console.WriteLine(" }");
                 }
+
+                Console.WriteLine("  Successor state axiom:");
+                CUDD.Print.PrintMinterm(action.SuccessorStateAxiom);
 
                 Console.WriteLine();
             }

@@ -16,9 +16,7 @@ namespace ObjectWorlds.Planning
 
         private Dictionary<string, List<string>> _typeConstantListMap;
 
-        private Dictionary<string, Ground<Predicate>> _preGndPredDict;
-
-        private Dictionary<string, Ground<Predicate>> _sucGndPredDict;
+        private Dictionary<string, Ground<Predicate>> _gndPredDict;
 
         private Dictionary<string, GroundAction> _gndActionDict;
 
@@ -59,9 +57,9 @@ namespace ObjectWorlds.Planning
             get { return _typeConstantListMap; }
         }
 
-        public IReadOnlyDictionary<string, Ground<Predicate>> PreviousGroundPredicateDict
+        public IReadOnlyDictionary<string, Ground<Predicate>> GroundPredicateDict
         {
-            get { return _preGndPredDict; }
+            get { return _gndPredDict; }
         }
 
         public IReadOnlyDictionary<string, GroundAction> GroundActionDict
@@ -82,8 +80,7 @@ namespace ObjectWorlds.Planning
             Domain = domain;
             _predDict = domain.PredicateDict;
             _actionDict = domain.ActionDict;
-            _preGndPredDict = new Dictionary<string, Ground<Predicate>>();
-            _sucGndPredDict = new Dictionary<string, Ground<Predicate>>();
+            _gndPredDict = new Dictionary<string, Ground<Predicate>>();
             _gndActionDict = new Dictionary<string, GroundAction>();
             _currentCuddIndex = domain.CurrentCuddIndex;
         }
@@ -117,15 +114,9 @@ namespace ObjectWorlds.Planning
             Console.WriteLine(barline);
 
             Console.WriteLine("Ground predicates:");
-            Console.WriteLine("  Previous:");
-            foreach (var pair in _preGndPredDict)
+            foreach (var pair in _gndPredDict)
             {
-                Console.WriteLine("    Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
-            }
-            Console.WriteLine("  Successive:");
-            foreach (var pair in _sucGndPredDict)
-            {
-                Console.WriteLine("    Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
+                Console.WriteLine("  Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
             }
             Console.WriteLine(barline);
 
@@ -151,8 +142,8 @@ namespace ObjectWorlds.Planning
                 Console.WriteLine("  Effect:");
                 for (int i = 0; i < gndAction.Effect.Count; i++)
                 {
-                    Console.WriteLine("      Index:{0}", i);
-                    Console.WriteLine("      Condition:");
+                    Console.WriteLine("    Index: {0}", i);
+                    Console.WriteLine("    Condition:");
                     CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
 
                     Console.Write("      Literals: { ");
@@ -180,6 +171,7 @@ namespace ObjectWorlds.Planning
 
                     Console.WriteLine(" }");
                 }
+                Console.WriteLine();
             }
         }
 
@@ -231,16 +223,15 @@ namespace ObjectWorlds.Planning
 
         internal void BuildTruePredicateSet(PlanningParser.InitContext context)
         {
-            foreach (var gdNameContext in context.gdName().gdName())
+            foreach (var atomicFormula in context.atomicFormulaName())
             {
-                var afnContext = gdNameContext.atomicFormulaName();
-                var nameNodes = afnContext.NAME();
+                var nameNodes = atomicFormula.NAME();
                 List<string> termList = new List<string>();
                 foreach (var nameNode in nameNodes)
                 {
                     termList.Add(nameNode.GetText());
                 }
-                string gndPredName = VariableContainer.GetFullName(afnContext.predicate().GetText(), termList);
+                string gndPredName = VariableContainer.GetFullName(atomicFormula.predicate().GetText(), termList);
 
                 TruePredSet.Add(gndPredName);
             }
@@ -296,22 +287,17 @@ namespace ObjectWorlds.Planning
         private void AddToGroundPredicateDict(string predName, string[] constantList)
         {
             Predicate pred = _predDict[predName];
-            Ground<Predicate> preGndPred = new Ground<Predicate>(pred, constantList);
-            preGndPred.CuddIndex = _currentCuddIndex;
+            Ground<Predicate> gndPred = new Ground<Predicate>(pred, constantList);
+            gndPred.CuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
-            _preGndPredDict.Add(preGndPred.ToString(), preGndPred);
-
-            Ground<Predicate> sucGndPred = new Ground<Predicate>(pred, constantList);
-            sucGndPred.CuddIndex = _currentCuddIndex;
-            _currentCuddIndex++;
-            _sucGndPredDict.Add(sucGndPred.ToString(), sucGndPred);
+            _gndPredDict.Add(gndPred.ToString(), gndPred);
         }
 
         private void AddToGroundActionDict(string actionName, string[] constantList)
         {
             Action action = _actionDict[actionName];
 
-            GroundAction gndAction = GroundAction.CreateInstance(action, constantList, _preGndPredDict);
+            GroundAction gndAction = GroundAction.CreateInstance(action, constantList, _gndPredDict);
             _gndActionDict.Add(gndAction.ToString(), gndAction);
         }
 

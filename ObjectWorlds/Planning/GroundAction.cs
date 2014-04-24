@@ -37,11 +37,11 @@ namespace ObjectWorlds.Planning
 
         #region Methods
 
-        public static GroundAction CreateInstance(Action action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> preGndPredDict)
+        public static GroundAction CreateInstance(Action action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> gndPredDict)
         {
             GroundAction result = new GroundAction(action, constantList);
-            result.GenerateGroundPrecondition(preGndPredDict);
-            result.GenerateGroundEffect(preGndPredDict);
+            result.GenerateGroundPrecondition(gndPredDict);
+            result.GenerateGroundEffect(gndPredDict);
             return result;
         }
 
@@ -62,7 +62,7 @@ namespace ObjectWorlds.Planning
                 //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
-            foreach (var pair in Container.PreviousAbstractPredicateDict)
+            foreach (var pair in Container.AbstractPredicateDict)
             {
                 oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
                 List<string> collection = new List<string>();
@@ -74,13 +74,9 @@ namespace ObjectWorlds.Planning
                 Ground<Predicate> gndPred = new Ground<Predicate>(pair.Value.Predicate, collection);
                 gndPred = preGndPredDict[gndPred.ToString()];
                 newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
-
-                //Console.WriteLine("  old cuddIndex:{0}, new cuddIndex:{1}", pair.Value.CuddIndex, gndPred.CuddIndex);
             }
 
             CUDDNode abstractPre = Container.Precondition;
-            //Console.WriteLine("  Abstract precondition:");
-            //CUDD.Print.PrintMinterm(abstractPre);
 
             Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
             //Console.WriteLine("  Ground precondition:");
@@ -107,7 +103,7 @@ namespace ObjectWorlds.Planning
                 //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
-            foreach (var pair in Container.PreviousAbstractPredicateDict)
+            foreach (var pair in Container.AbstractPredicateDict)
             {
                 oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
                 List<string> collection = new List<string>();
@@ -127,6 +123,7 @@ namespace ObjectWorlds.Planning
             {
                 CUDDNode abstractCondition = cEffect.Item1;
                 CUDDNode gndCondition = CUDD.Variable.SwapVariables(abstractCondition, oldVars, newVars);
+                CUDD.Ref(gndCondition);
 
                 var gndLiteralList = new List<Tuple<Ground<Predicate>, bool>>();
                 var abstractLiteralList = cEffect.Item2;

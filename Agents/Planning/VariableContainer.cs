@@ -126,6 +126,17 @@ namespace Agents.Planning
             return GetFullName(name, termList);
         }
 
+        public static string GetFullName(PlanningParser.AtomicFormulaNameContext context)
+        {
+            string name = context.predicate().GetText();
+            List<string> constantList = new List<string>();
+            foreach (var nameContext in context.NAME())
+            {
+                constantList.Add(nameContext.GetText());
+            }
+            return GetFullName(name, constantList);
+        }
+
         public static string GetFullName(PlanningParser.ActionDefineContext context)
         {
             string name = context.actionSymbol().GetText();

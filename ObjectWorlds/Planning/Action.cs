@@ -12,9 +12,7 @@ namespace ObjectWorlds.Planning
     {
         #region Fields
 
-        private Dictionary<string, AbstractPredicate> _preAbstractPredDict;
-
-        private Dictionary<string, AbstractPredicate> _sucAbstractPredDict;
+        private Dictionary<string, AbstractPredicate> _abstractPredDict;
 
         private List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> _effect;
 
@@ -31,14 +29,9 @@ namespace ObjectWorlds.Planning
 
         public int CurrentCuddIndex { get; set; }
 
-        public IReadOnlyDictionary<string, AbstractPredicate> PreviousAbstractPredicateDict
+        public IReadOnlyDictionary<string, AbstractPredicate> AbstractPredicateDict
         {
-            get { return _preAbstractPredDict; }
-        }
-
-        public IReadOnlyDictionary<string, AbstractPredicate> SuccessiveAbstractPredicateDict
-        {
-            get { return _sucAbstractPredDict; }
+            get { return _abstractPredDict; }
         }
 
         #endregion
@@ -48,8 +41,7 @@ namespace ObjectWorlds.Planning
         private Action(int initialCuddIndex)
         {
             CurrentCuddIndex = initialCuddIndex;
-            _preAbstractPredDict = new Dictionary<string, AbstractPredicate>();
-            _sucAbstractPredDict = new Dictionary<string, AbstractPredicate>();
+            _abstractPredDict = new Dictionary<string, AbstractPredicate>();
             _effect = new List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>>();
         }
 
@@ -78,7 +70,7 @@ namespace ObjectWorlds.Planning
             {
                 if (context.emptyOrPreGD() != null)
                 {
-                    GenerateAbstractPredicates(context.emptyOrPreGD().gd(), _preAbstractPredDict, predDict);
+                    GenerateAbstractPredicates(context.emptyOrPreGD().gd(), predDict);
                 }
             }
 
@@ -94,37 +86,37 @@ namespace ObjectWorlds.Planning
             }
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, Dictionary<string, AbstractPredicate> abstractPredDict, IReadOnlyDictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             var abstractPredicate = CreateAbstractPredicate(context, predDict);
-            if (!abstractPredDict.ContainsKey(abstractPredicate.ToString()))
+            if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
             {
                 abstractPredicate.CuddIndex = CurrentCuddIndex;
                 CurrentCuddIndex++;
-                abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
+                _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
             }
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.LiteralTermContext context, Dictionary<string, AbstractPredicate> abstractPredDict, IReadOnlyDictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.LiteralTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
-            GenerateAbstractPredicates(context.atomicFormulaTerm(), abstractPredDict, predDict);
+            GenerateAbstractPredicates(context.atomicFormulaTerm(), predDict);
         }
 
-        private void GenerateAbstractPredicates(PlanningParser.GdContext context, Dictionary<string, AbstractPredicate> abstractPredDict, IReadOnlyDictionary<string, Predicate> predDict)
+        private void GenerateAbstractPredicates(PlanningParser.GdContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             if (context.atomicFormulaTerm() != null)
             {
-                GenerateAbstractPredicates(context.atomicFormulaTerm(), abstractPredDict, predDict);
+                GenerateAbstractPredicates(context.atomicFormulaTerm(), predDict);
             }
             else if (context.literalTerm() != null)
             {
-                GenerateAbstractPredicates(context.literalTerm(), abstractPredDict, predDict);
+                GenerateAbstractPredicates(context.literalTerm(), predDict);
             }
             else
             {
                 for (int i = 0; i < context.gd().Count; i++)
                 {
-                    GenerateAbstractPredicates(context.gd()[i], abstractPredDict, predDict);
+                    GenerateAbstractPredicates(context.gd()[i], predDict);
                 }
             }
         }
@@ -133,15 +125,15 @@ namespace ObjectWorlds.Planning
         {
             if (context.WHEN() != null)
             {
-                GenerateAbstractPredicates(context.gd(), _preAbstractPredDict, predDict);
+                GenerateAbstractPredicates(context.gd(), predDict);
                 foreach (var literalTermContext in context.condEffect().literalTerm())
                 {
-                    GenerateAbstractPredicates(literalTermContext, _sucAbstractPredDict, predDict);
+                    GenerateAbstractPredicates(literalTermContext, predDict);
                 }
             }
             else
             {
-                GenerateAbstractPredicates(context.literalTerm(), _sucAbstractPredDict, predDict);
+                GenerateAbstractPredicates(context.literalTerm(), predDict);
             }
         }
 
@@ -165,19 +157,8 @@ namespace ObjectWorlds.Planning
         private AbstractPredicate GetAbstractPredicate(PlanningParser.AtomicFormulaTermContext context)
         {
             string abstractPredName = GetFullName(context);
-            //foreach (var pair in _preAbstractPredDict)
-            //{
-            //    Console.WriteLine("     Key:{0}", pair.Key);
-            //}
-
-            //Console.WriteLine("    Key:{0}", abstractPredName);
-            AbstractPredicate result = _preAbstractPredDict[abstractPredName];
+            AbstractPredicate result = _abstractPredDict[abstractPredName];
             return result;
-        }
-
-        private AbstractPredicate GetAbstractPredicate(PlanningParser.LiteralTermContext context)
-        {
-            return GetAbstractPredicate(context.atomicFormulaTerm());
         }
 
         private void GeneratePrecondition(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
@@ -188,7 +169,7 @@ namespace ObjectWorlds.Planning
             {
                 if (context.actionDefBody().emptyOrPreGD().gd() != null)
                 {
-                    Precondition = Visit(context.actionDefBody().emptyOrPreGD().gd(), predDict, true);
+                    Precondition = GetCuddNode(context.actionDefBody().emptyOrPreGD().gd());
                 }
             }
         }
@@ -327,181 +308,6 @@ namespace ObjectWorlds.Planning
                 CUDD.Deref(gdNode1);
             }
 
-            return result;
-        }
-
-
-        //private CUDDNode Visit(PlanningParser.EffectContext context, Dictionary<string, Predicate> predDict)
-        //{
-        //    CUDDNode result = Visit(context.cEffect()[0], predDict);
-        //    //Console.WriteLine("     CEffNode: {0}", context.cEffect()[0].GetText());
-        //    //Console.WriteLine("     CEffNode minterm:");
-        //    //CUDD.Print.PrintMinterm(result);
-
-        //    for (int i = 1; i < context.cEffect().Count; i++)
-        //    {
-        //        CUDDNode gdNode = Visit(context.cEffect()[i], predDict);
-        //        //Console.WriteLine("     CEffNode: {0}", context.cEffect()[i].GetText());
-        //        //Console.WriteLine("     CEffNode minterm:");
-        //        //CUDD.Print.PrintMinterm(gdNode);
-
-        //        CUDDNode andNode = CUDD.Function.And(result, gdNode);
-        //        CUDD.Deref(result);
-        //        CUDD.Ref(andNode);
-        //        result = andNode;
-        //    }
-
-        //    //Console.WriteLine("     EffNode: {0}", context.GetText());
-        //    //Console.WriteLine("     EffNode minterm:");
-        //    //CUDD.Print.PrintMinterm(result);
-        //    return result;
-        //}
-
-        //private CUDDNode Visit(PlanningParser.CEffectContext context, Dictionary<string, Predicate> predDict)
-        //{
-        //    CUDDNode result;
-
-        //    if (context.WHEN() != null)
-        //    {
-        //        CUDDNode condPreNode = Visit(context.gd(), predDict, true);
-        //        CUDDNode condEffNode = Visit(context.condEffect(), predDict);
-        //        result = CUDD.Function.Implies(condPreNode, condEffNode);
-        //        CUDD.Ref(result);
-        //        CUDD.Deref(condPreNode);
-        //        CUDD.Deref(condEffNode);
-        //    }
-        //    else
-        //    {
-        //        result = Visit(context.literalTerm(), predDict, false);
-        //    }
-        //    return result;
-        //}
-
-        //private CUDDNode Visit(PlanningParser.CondEffectContext context, Dictionary<string, Predicate> predDict)
-        //{
-        //    CUDDNode result = Visit(context.literalTerm()[0], predDict, false);
-        //    //Console.WriteLine("     GdNode: {0}", context.literalTerm()[0].GetText());
-        //    //Console.WriteLine("     GdNode minterm:");
-        //    //CUDD.Print.PrintMinterm(result);
-
-        //    for (int i = 1; i < context.literalTerm().Count; i++)
-        //    {
-        //        CUDDNode gdNode = Visit(context.literalTerm()[i], predDict, false);
-        //        //Console.WriteLine("     GdNode: {0}", context.literalTerm()[i].GetText());
-        //        //Console.WriteLine("     GdNode minterm:");
-        //        //CUDD.Print.PrintMinterm(gdNode);
-        //        CUDDNode andNode = CUDD.Function.And(result, gdNode);
-        //        CUDD.Ref(andNode);
-        //        CUDD.Deref(result);
-        //        CUDD.Deref(gdNode);
-        //        result = andNode;
-        //    }
-
-        //    //Console.WriteLine("  CondEffect minterm:");
-        //    //CUDD.Print.PrintMinterm(result);
-        //    return result;
-        //}
-
-        private CUDDNode Visit(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict, bool isPrevious)
-        {
-            //Console.WriteLine("Before Atomic Formula: {0}, count: {1}", context.GetText(), _variablesCount);
-            AbstractPredicate abstractPredicate = GetAbstractPredicate(context);
-            //AbstractPredicate existingAbstractPredicate = isPrevious
-            //    ? _preAbstractPredicates.Find(ap => ap.Equals(abstractPredicate))
-            //    : _sucAbstractPredicates.Find(ap => ap.Equals(abstractPredicate));
-
-            //Console.WriteLine("Test abstract predicate: {0}", abstractPredicate);
-            //Console.WriteLine("Existing abstract predicate: {0}", existingAbstractPredicate == null);
-
-            int index = abstractPredicate.CuddIndex;
-
-            //Console.WriteLine("After Atomic Formula: {0}, count: {1}", context.GetText(), _variablesCount);
-            CUDDNode result = CUDD.Var(index);
-            return result;
-        }
-
-        private CUDDNode Visit(PlanningParser.LiteralTermContext context, IReadOnlyDictionary<string, Predicate> predDict, bool isPrevious)
-        {
-            //Console.WriteLine("Before Literal: {0}, count: {1}", context.GetText(), _variablesCount);
-            CUDDNode subNode = Visit(context.atomicFormulaTerm(), predDict, isPrevious);
-            CUDDNode result;
-
-            if (context.NOT() != null)
-            {
-                //Console.WriteLine("Before Not literal: {0}, count: {1}", context.GetText(), _variablesCount);
-                result = CUDD.Function.Not(subNode);
-                CUDD.Ref(result);
-                //Console.WriteLine("After Not literal: {0}, count: {1}", context.GetText(), _variablesCount);
-            }
-            else
-            {
-                result = subNode;
-            }
-
-            //Console.WriteLine("After Literal: {0}, count: {1}", context.GetText(), _variablesCount);
-            return result;
-        }
-
-        private CUDDNode Visit(PlanningParser.GdContext context, IReadOnlyDictionary<string, Predicate> predDict, bool isPrevious)
-        {
-            //Console.WriteLine("Before Gd: {0}", context.GetText());
-            CUDDNode result = null;
-
-            if (context.atomicFormulaTerm() != null)
-            {
-                result = Visit(context.atomicFormulaTerm(), predDict, isPrevious);
-            }
-            else if (context.literalTerm() != null)
-            {
-                //Console.WriteLine("Before Literal gd: {0}", context.GetText());
-                result = Visit(context.literalTerm(), predDict, isPrevious);
-                //Console.WriteLine("After Literal gd: {0}", context.GetText());
-            }
-            else if (context.AND() != null)
-            {
-                result = Visit(context.gd()[0], predDict, isPrevious);
-                for (int i = 1; i < context.gd().Count; i++)
-                {
-                    CUDDNode gdNode = Visit(context.gd()[i], predDict, isPrevious);
-                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                    CUDD.Ref(andNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
-                    result = andNode;
-                }
-            }
-            else if (context.OR() != null)
-            {
-                result = Visit(context.gd()[0], predDict, isPrevious);
-                for (int i = 1; i < context.gd().Count; i++)
-                {
-                    CUDDNode gdNode = Visit(context.gd()[i], predDict, isPrevious);
-                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                    CUDD.Ref(orNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
-                    result = orNode;
-                }
-            }
-            else if (context.NOT() != null)
-            {
-                CUDDNode gdNode = Visit(context.gd()[0], predDict, isPrevious);
-                result = CUDD.Function.Not(gdNode);
-                CUDD.Ref(result);
-                CUDD.Deref(gdNode);
-            }
-            else if (context.IMPLY() != null)
-            {
-                CUDDNode gdNode0 = Visit(context.gd()[0], predDict, isPrevious);
-                CUDDNode gdNode1 = Visit(context.gd()[1], predDict, isPrevious);
-
-                result = CUDD.Function.Implies(gdNode0, gdNode1);
-                CUDD.Ref(result);
-                CUDD.Deref(gdNode0);
-                CUDD.Deref(gdNode1);
-            }
-
-            //Console.WriteLine("After Gd: {0}", context.GetText());
             return result;
         }
 

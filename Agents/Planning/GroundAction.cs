@@ -9,12 +9,22 @@ namespace Agents.Planning
 {
     public class GroundAction : Ground<Action>
     {
+        #region Fields
+
+        private List<GroundPredicate> _gndPredList;
+
+        #endregion
 
         #region Properties
 
         public CUDDNode Precondition { get; set; }
 
-        public CUDDNode Effect { get; set; }
+        public CUDDNode SuccessorStateAxiom { get; set; }
+
+        public IReadOnlyList<GroundPredicate> GroundPredicateList
+        {
+            get { return _gndPredList; }
+        }
 
         #endregion
 
@@ -22,21 +32,23 @@ namespace Agents.Planning
 
         private GroundAction(Action action, IEnumerable<string> constantList) : base(action, constantList)
         {
+            _gndPredList = new List<GroundPredicate>();
         }
 
         #endregion
 
         #region Methods
 
-        public static GroundAction CreateInstance(Action action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> preGndPredDict)
+        public static GroundAction CreateInstance(Action action, IEnumerable<string> constantList, Dictionary<string, GroundPredicate> gndPredDict)
         {
             GroundAction result = new GroundAction(action, constantList);
-            result.GenerateGroundPrecondition(preGndPredDict);
-            result.GenerateGroundEffect(preGndPredDict);
+            result.GenerateGroundPrecondition(gndPredDict);
+            result.GenerateGroundSuccessorStateAxiom(gndPredDict);
+            //result.GenerateGroundEffect(preGndPredDict);
             return result;
         }
 
-        private void GenerateGroundPrecondition(Dictionary<string, Ground<Predicate>> preGndPredDict)
+        private void GenerateGroundPrecondition(Dictionary<string, GroundPredicate> gndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
@@ -53,18 +65,18 @@ namespace Agents.Planning
                 //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
-            foreach (var pair in Container.PreviousAbstractPredicateDict)
+            foreach (var pair in Container.AbstractPredicateDict)
             {
-                oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
+                oldVars.AddVar(CUDD.Var(pair.Value.PreviousCuddIndex));
                 List<string> collection = new List<string>();
                 foreach (var parm in pair.Value.ParameterList)
                 {
                     collection.Add(abstractParmMap[parm]);
                 }
 
-                Ground<Predicate> gndPred = new Ground<Predicate>(pair.Value.Predicate, collection);
-                gndPred = preGndPredDict[gndPred.ToString()];
-                newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
+                GroundPredicate gndPred = new GroundPredicate(pair.Value.Predicate, collection);
+                gndPred = gndPredDict[gndPred.ToString()];
+                newVars.AddVar(CUDD.Var(gndPred.PreviousCuddIndex));
 
                 //Console.WriteLine("  old cuddIndex:{0}, new cuddIndex:{1}", pair.Value.CuddIndex, gndPred.CuddIndex);
             }
@@ -81,7 +93,7 @@ namespace Agents.Planning
             //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
         }
 
-        private void GenerateGroundEffect(Dictionary<string, Ground<Predicate>> preGndPredDict)
+        private void GenerateGroundSuccessorStateAxiom(Dictionary<string, GroundPredicate> gndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
@@ -98,9 +110,20 @@ namespace Agents.Planning
                 //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
-            foreach (var pair in Container.PreviousAbstractPredicateDict)
+            AddOldNewVars(oldVars, newVars, Container.AbstractPredicateDict, gndPredDict, abstractParmMap);
+
+            SuccessorStateAxiom = CUDD.Variable.SwapVariables(Container.SuccessorStateAxiom, oldVars, newVars);
+            CUDD.Ref(SuccessorStateAxiom);
+        }
+
+        private void AddOldNewVars(CUDDVars oldVars, CUDDVars newVars,
+            IReadOnlyDictionary<string, AbstractPredicate> abstractPredDict,
+            Dictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> abstractParmMap)
+        {
+            foreach (var pair in abstractPredDict)
             {
-                oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
+                oldVars.AddVar(CUDD.Var(pair.Value.PreviousCuddIndex));
+                oldVars.AddVar(CUDD.Var(pair.Value.SuccessorCuddIndex));
                 List<string> collection = new List<string>();
                 foreach (var parm in pair.Value.ParameterList)
                 {
@@ -108,36 +131,10 @@ namespace Agents.Planning
                 }
 
                 string gndPredFullName = VariableContainer.GetFullName(pair.Value.Predicate.Name, collection);
-                Ground<Predicate> gndPred = preGndPredDict[gndPredFullName];
-                newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
-
-                //Console.WriteLine("  old cuddIndex:{0}, new cuddIndex:{1}", pair.Value.CuddIndex, gndPred.CuddIndex);
-            }
-
-            foreach (var cEffect in Container.Effect)
-            {
-                CUDDNode abstractCondition = cEffect.Item1;
-                CUDDNode gndCondition = CUDD.Variable.SwapVariables(abstractCondition, oldVars, newVars);
-
-                var gndLiteralList = new List<Tuple<Ground<Predicate>, bool>>();
-                var abstractLiteralList = cEffect.Item2;
-                foreach (var abstractLiteral in abstractLiteralList)
-                {
-                    List<string> collection = new List<string>();
-                    foreach (var parm in abstractLiteral.Item1.ParameterList)
-                    {
-                        collection.Add(abstractParmMap[parm]);
-                    }
-
-                    string gndPredFullName = VariableContainer.GetFullName(abstractLiteral.Item1.Predicate.Name,
-                        collection);
-                    Ground<Predicate> gndPred = preGndPredDict[gndPredFullName];
-                    var gndLiteral = new Tuple<Ground<Predicate>, bool>(gndPred, abstractLiteral.Item2);
-                    gndLiteralList.Add(gndLiteral);
-                }
-
-                var gndCEffect = new Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>(gndCondition, gndLiteralList);
-                _effect.Add(gndCEffect);
+                GroundPredicate gndPred = gndPredDict[gndPredFullName];
+                _gndPredList.Add(gndPred);
+                newVars.AddVar(CUDD.Var(gndPred.PreviousCuddIndex));
+                newVars.AddVar(CUDD.Var(gndPred.SuccessorCuddIndex));
             }
         }
 

@@ -18,8 +18,10 @@ namespace Agents.Planning
         #region Properties
 
         public Predicate Predicate { get; set; }
-        
-        public int CuddIndex { get; set; }
+
+        public int PreviousCuddIndex { get; set; }
+
+        public int SuccessorCuddIndex { get; set; }
 
         public IReadOnlyList<string> ParameterList
         {
@@ -27,8 +29,6 @@ namespace Agents.Planning
         }
 
         #endregion
-
-        #region Methods
 
         #region Methods
 
@@ -54,7 +54,7 @@ namespace Agents.Planning
                             return false;
                         }
                     }
-
+                    
                     for (int i = 0; i < Predicate.VariableList.Count; i++)
                     {
                         if (Predicate.VariableList[i] != other.Predicate.VariableList[i])
@@ -72,8 +72,6 @@ namespace Agents.Planning
         {
             return VariableContainer.GetFullName(Predicate.Name, _parameterList);
         }
-
-        #endregion
 
         #endregion
     }

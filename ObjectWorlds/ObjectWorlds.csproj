@@ -49,16 +49,13 @@
     <Compile Include="Planning\AbstractPredicate.cs" />
     <Compile Include="Planning\Action.cs" />
     <Compile Include="Network\Client.cs" />
-    <Compile Include="Planning\ConditionalEffect.cs" />
     <Compile Include="Planning\Domain.cs" />
-    <Compile Include="Planning\Effect.cs" />
     <Compile Include="Planning\Ground.cs" />
     <Compile Include="Planning\GroundAction.cs" />
     <Compile Include="Planning\ObjectBase.cs" />
     <Compile Include="Planning\Problem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Planning\PlanningBaseListener.cs" />
-    <Compile Include="Planning\PlanningBaseVisitor.cs" />
     <Compile Include="Planning\DomainLoader.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -67,7 +64,6 @@
     </Compile>
     <Compile Include="Planning\PlanningListener.cs" />
     <Compile Include="Planning\PlanningParser.cs" />
-    <Compile Include="Planning\PlanningVisitor.cs" />
     <Compile Include="Planning\ProblemLoader.cs" />
     <Compile Include="Planning\Predicate.cs" />
     <Compile Include="Network\Server.cs" />

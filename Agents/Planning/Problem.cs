@@ -16,9 +16,7 @@ namespace Agents.Planning
 
         private Dictionary<string, List<string>> _typeConstantListMap;
 
-        private Dictionary<string, Ground<Predicate>> _preGndPredDict;
-
-        private Dictionary<string, Ground<Predicate>> _sucGndPredDict;
+        private Dictionary<string, GroundPredicate> _gndPredDict;
 
         private Dictionary<string, GroundAction> _gndActionDict;
 
@@ -59,15 +57,20 @@ namespace Agents.Planning
             get { return _typeConstantListMap; }
         }
 
-        public IReadOnlyDictionary<string, Ground<Predicate>> PreviousGroundPredicateDict
+        public IReadOnlyDictionary<string, GroundPredicate> GroundPredicateDict
         {
-            get { return _preGndPredDict; }
+            get { return _gndPredDict; }
         }
 
         public IReadOnlyDictionary<string, GroundAction> GroundActionDict
         {
             get { return _gndActionDict; }
         }
+
+        public CUDDNode Knowledge { get; set; }
+
+        public CUDDNode Belief { get; set; }
+
 
         #endregion
 
@@ -82,8 +85,7 @@ namespace Agents.Planning
             Domain = domain;
             _predDict = domain.PredicateDict;
             _actionDict = domain.ActionDict;
-            _preGndPredDict = new Dictionary<string, Ground<Predicate>>();
-            _sucGndPredDict = new Dictionary<string, Ground<Predicate>>();
+            _gndPredDict = new Dictionary<string, GroundPredicate>();
             _gndActionDict = new Dictionary<string, GroundAction>();
             _currentCuddIndex = domain.CurrentCuddIndex;
         }
@@ -118,14 +120,10 @@ namespace Agents.Planning
 
             Console.WriteLine("Ground predicates:");
             Console.WriteLine("  Previous:");
-            foreach (var pair in _preGndPredDict)
+            foreach (var pair in _gndPredDict)
             {
-                Console.WriteLine("    Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
-            }
-            Console.WriteLine("  Successive:");
-            foreach (var pair in _sucGndPredDict)
-            {
-                Console.WriteLine("    Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
+                Console.WriteLine("    Name: {0}, Previous index: {1}, Successsor index:{2}", pair.Key,
+                    pair.Value.PreviousCuddIndex, pair.Value.SuccessorCuddIndex);
             }
             Console.WriteLine(barline);
 
@@ -148,38 +146,41 @@ namespace Agents.Planning
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(gndAction.Precondition);
 
-                Console.WriteLine("  Effect:");
-                for (int i = 0; i < gndAction.Effect.Count; i++)
-                {
-                    Console.WriteLine("      Index:{0}", i);
-                    Console.WriteLine("      Condition:");
-                    CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
+                Console.WriteLine("  Successor state axiom:");
+                CUDD.Print.PrintMinterm(gndAction.SuccessorStateAxiom);
 
-                    Console.Write("      Literals: { ");
-                    var literal = gndAction.Effect[i].Item2[0];
-                    if (literal.Item2)
-                    {
-                        Console.Write("{0}", literal.Item1);
-                    }
-                    else
-                    {
-                        Console.Write("not {0}", literal.Item1);
-                    }
+                //Console.WriteLine("  Effect:");
+                //for (int i = 0; i < gndAction.Effect.Count; i++)
+                //{
+                //    Console.WriteLine("      Index:{0}", i);
+                //    Console.WriteLine("      Condition:");
+                //    CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
 
-                    for (int j = 1; j < gndAction.Effect[i].Item2.Count; j++)
-                    {
-                        if (literal.Item2)
-                        {
-                            Console.Write(", {0}", literal.Item1);
-                        }
-                        else
-                        {
-                            Console.Write(", not {0}", literal.Item1);
-                        }
-                    }
+                //    Console.Write("      Literals: { ");
+                //    var literal = gndAction.Effect[i].Item2[0];
+                //    if (literal.Item2)
+                //    {
+                //        Console.Write("{0}", literal.Item1);
+                //    }
+                //    else
+                //    {
+                //        Console.Write("not {0}", literal.Item1);
+                //    }
 
-                    Console.WriteLine(" }");
-                }
+                //    for (int j = 1; j < gndAction.Effect[i].Item2.Count; j++)
+                //    {
+                //        if (literal.Item2)
+                //        {
+                //            Console.Write(", {0}", literal.Item1);
+                //        }
+                //        else
+                //        {
+                //            Console.Write(", not {0}", literal.Item1);
+                //        }
+                //    }
+
+                //    Console.WriteLine(" }");
+                //}
             }
         }
 
@@ -226,21 +227,19 @@ namespace Agents.Planning
         internal void BuildGroundAction()
         {
             BuildGround(_actionDict.Values, AddToGroundActionDict);
-
         }
 
         internal void BuildTruePredicateSet(PlanningParser.InitContext context)
         {
-            foreach (var gdNameContext in context.gdName().gdName())
+            foreach (var atomicFormula in context.atomicFormulaName())
             {
-                var afnContext = gdNameContext.atomicFormulaName();
-                var nameNodes = afnContext.NAME();
+                var nameNodes = atomicFormula.NAME();
                 List<string> termList = new List<string>();
                 foreach (var nameNode in nameNodes)
                 {
                     termList.Add(nameNode.GetText());
                 }
-                string gndPredName = VariableContainer.GetFullName(afnContext.predicate().GetText(), termList);
+                string gndPredName = VariableContainer.GetFullName(atomicFormula.predicate().GetText(), termList);
 
                 TruePredSet.Add(gndPredName);
             }
@@ -296,23 +295,128 @@ namespace Agents.Planning
         private void AddToGroundPredicateDict(string predName, string[] constantList)
         {
             Predicate pred = _predDict[predName];
-            Ground<Predicate> preGndPred = new Ground<Predicate>(pred, constantList);
-            preGndPred.CuddIndex = _currentCuddIndex;
+            GroundPredicate gndPred = new GroundPredicate(pred, constantList);
+            gndPred.PreviousCuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
-            _preGndPredDict.Add(preGndPred.ToString(), preGndPred);
-
-            Ground<Predicate> sucGndPred = new Ground<Predicate>(pred, constantList);
-            sucGndPred.CuddIndex = _currentCuddIndex;
+            gndPred.SuccessorCuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
-            _sucGndPredDict.Add(sucGndPred.ToString(), sucGndPred);
+            _gndPredDict.Add(gndPred.ToString(), gndPred);
         }
 
         private void AddToGroundActionDict(string actionName, string[] constantList)
         {
             Action action = _actionDict[actionName];
 
-            GroundAction gndAction = GroundAction.CreateInstance(action, constantList, _preGndPredDict);
+            GroundAction gndAction = GroundAction.CreateInstance(action, constantList, _gndPredDict);
             _gndActionDict.Add(gndAction.ToString(), gndAction);
+        }
+
+        private GroundPredicate GetGroundPredicate(PlanningParser.AtomicFormulaNameContext context)
+        {
+            string gndPredName = VariableContainer.GetFullName(context);
+            GroundPredicate result = _gndPredDict[gndPredName];
+            return result;
+        }
+
+        #endregion
+
+        #region Methods for generating knowledge and belief
+
+        public void GenerateKnowledge(PlanningParser.GdNameContext context)
+        {
+            Knowledge = GetCuddNode(context);
+        }
+
+        public void GenerateBelief(PlanningParser.GdNameContext context)
+        {
+            Belief = GetCuddNode(context);
+        }
+
+        private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaNameContext context)
+        {
+            GroundPredicate gndPred = GetGroundPredicate(context);
+
+            int index = gndPred.PreviousCuddIndex;
+
+            CUDDNode result = CUDD.Var(index);
+            return result;
+        }
+
+        private CUDDNode GetCuddNode(PlanningParser.LiteralNameContext context)
+        {
+            CUDDNode subNode = GetCuddNode(context.atomicFormulaName());
+            CUDDNode result;
+
+            if (context.NOT() != null)
+            {
+                result = CUDD.Function.Not(subNode);
+                CUDD.Ref(result);
+            }
+            else
+            {
+                result = subNode;
+            }
+
+            return result;
+        }
+
+        private CUDDNode GetCuddNode(PlanningParser.GdNameContext context)
+        {
+            CUDDNode result = null;
+
+            if (context.atomicFormulaName() != null)
+            {
+                result = GetCuddNode(context.atomicFormulaName());
+            }
+            else if (context.literalName() != null)
+            {
+                result = GetCuddNode(context.literalName());
+            }
+            else if (context.AND() != null)
+            {
+                result = GetCuddNode(context.gdName()[0]);
+                for (int i = 1; i < context.gdName().Count; i++)
+                {
+                    CUDDNode gdNode = GetCuddNode(context.gdName()[i]);
+                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
+                    CUDD.Ref(andNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = andNode;
+                }
+            }
+            else if (context.OR() != null)
+            {
+                result = GetCuddNode(context.gdName()[0]);
+                for (int i = 1; i < context.gdName().Count; i++)
+                {
+                    CUDDNode gdNode = GetCuddNode(context.gdName()[i]);
+                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
+                    CUDD.Ref(orNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = orNode;
+                }
+            }
+            else if (context.NOT() != null)
+            {
+                CUDDNode gdNode = GetCuddNode(context.gdName()[0]);
+                result = CUDD.Function.Not(gdNode);
+                CUDD.Ref(result);
+                CUDD.Deref(gdNode);
+            }
+            else if (context.IMPLY() != null)
+            {
+                CUDDNode gdNode0 = GetCuddNode(context.gdName()[0]);
+                CUDDNode gdNode1 = GetCuddNode(context.gdName()[1]);
+
+                result = CUDD.Function.Implies(gdNode0, gdNode1);
+                CUDD.Ref(result);
+                CUDD.Deref(gdNode0);
+                CUDD.Deref(gdNode1);
+            }
+
+            return result;
         }
 
         #endregion

@@ -51,9 +51,14 @@ namespace Agents.Planning
             Problem.BuildGroundAction();
         }
 
-        public override void EnterInit(PlanningParser.InitContext context)
+        public override void EnterInitKnowledge(PlanningParser.InitKnowledgeContext context)
         {
-            //Problem.BuildTruePredicateSet(context);
+            Problem.GenerateKnowledge(context.gdName());
+        }
+
+        public override void EnterInitBelief(PlanningParser.InitBeliefContext context)
+        {
+            Problem.GenerateBelief(context.gdName());
         }
 
         #endregion

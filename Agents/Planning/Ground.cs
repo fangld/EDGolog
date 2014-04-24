@@ -18,8 +18,6 @@ namespace Agents.Planning
 
         public T Container { get; set; }
 
-        public int CuddIndex { get; set; }
-
         public IReadOnlyList<string> ConstantList
         {
             get { return _constantList; }

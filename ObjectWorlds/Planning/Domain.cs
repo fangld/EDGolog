@@ -112,14 +112,8 @@ namespace ObjectWorlds.Planning
                         action.VariableList[i].Item2);
                 }
 
-                Console.WriteLine("    Previous Abstract Predicates: ");
-                foreach (var pair in action.PreviousAbstractPredicateDict)
-                {
-                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
-                }
-
-                Console.WriteLine("    Successive Abstract Predicates: ");
-                foreach (var pair in action.SuccessiveAbstractPredicateDict)
+                Console.WriteLine("    Abstract Predicates: ");
+                foreach (var pair in action.AbstractPredicateDict)
                 {
                     Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
                 }
