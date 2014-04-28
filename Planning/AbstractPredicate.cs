@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Planning
 {
-    public class AbstractPredicate : IEquatable<AbstractPredicate>
+    public abstract class AbstractPredicate : IEquatable<AbstractPredicate>
     {
         #region Fields
 
@@ -18,8 +18,6 @@ namespace Planning
         #region Properties
 
         public Predicate Predicate { get; set; }
-        
-        public int CuddIndex { get; set; }
 
         public IReadOnlyList<string> ParameterList
         {
@@ -30,14 +28,14 @@ namespace Planning
 
         #region Constructors
 
-        public AbstractPredicate(List<string> parameterList)
-        {
-            _parameterList = parameterList;
-        }
-
         #endregion
 
         #region Overriden Methods
+
+        public void SetParameterList(List<string> parameterList)
+        {
+            _parameterList = parameterList;
+        }
 
         public bool Equals(AbstractPredicate other)
         {
@@ -72,7 +70,5 @@ namespace Planning
         }
 
         #endregion
-
-
     }
 }

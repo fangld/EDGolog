@@ -6,12 +6,41 @@ using System.Threading.Tasks;
 
 namespace Planning.Services
 {
-    public class ServerAbstractPredicate : AbstractPredicate
+    public class ServerAbstractPredicate : AbstractPredicate, IEquatable<ServerAbstractPredicate>
     {
-        #region Constructors
+        #region Properties
+        
+        public int CuddIndex { get; set; }
 
-        public ServerAbstractPredicate(List<string> parameterList): base(parameterList)
+        #endregion
+
+        #region Overriden Methods
+
+        public bool Equals(ServerAbstractPredicate other)
         {
+            if (Predicate.Name == other.Predicate.Name)
+            {
+                if (ParameterList.Count == other.ParameterList.Count)
+                {
+                    for (int i = 0; i < ParameterList.Count; i++)
+                    {
+                        if (ParameterList[i] != other.ParameterList[i])
+                        {
+                            return false;
+                        }
+                    }
+
+                    for (int i = 0; i < Predicate.VariableList.Count; i++)
+                    {
+                        if (Predicate.VariableList[i] != other.Predicate.VariableList[i])
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
 
         #endregion

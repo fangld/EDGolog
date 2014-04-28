@@ -44,16 +44,9 @@
   <ItemGroup>
     <Compile Include="AbstractPredicate.cs" />
     <Compile Include="Action.cs" />
-    <Compile Include="Clients\AbstractPredicate.cs" />
-    <Compile Include="Clients\Action.cs" />
-    <Compile Include="Clients\Domain.cs" />
-    <Compile Include="Clients\DomainLoader.cs" />
-    <Compile Include="Clients\Ground.cs" />
-    <Compile Include="Clients\GroundAction.cs" />
-    <Compile Include="Clients\GroundPredicate.cs" />
-    <Compile Include="Clients\Predicate.cs" />
-    <Compile Include="Clients\Problem.cs" />
-    <Compile Include="Clients\ProblemLoader.cs" />
+    <Compile Include="Clients\ClientAbstractPredicate.cs" />
+    <Compile Include="Clients\ClientAction.cs" />
+    <Compile Include="Clients\ClientDomain.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="DomainLoader.cs" />
     <Compile Include="Ground.cs" />

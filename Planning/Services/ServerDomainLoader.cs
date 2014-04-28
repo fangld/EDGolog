@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Planning.Services
 {
-    public class ServerDomainLoader : DomainLoader
+    public class ServerDomainLoader : DomainLoader<ServerDomain, ServerAction, ServerAbstractPredicate>
     {
-
     }
 }

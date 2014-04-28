@@ -8,30 +8,36 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public class DomainLoader : PlanningBaseListener
+    public class DomainLoader<TD, TA, TAP>
+        where TD : Domain<TA, TAP>, new()
+        where TA : Action<TAP>, new()
+        where TAP: AbstractPredicate, new()
     {
         #region Properties
 
-        public Domain Domain { get; set; }
+        public TD Domain { get; set; }
 
         #endregion
 
         #region Constructors
         public DomainLoader()
         {
-            Domain = new Domain();
+            Domain = new TD();
         }
 
         #endregion
 
         #region Overriden Methods
 
-        public override void EnterDomain(PlanningParser.DomainContext context)
+        public void HandleDomain(PlanningParser.DomainContext context)
         {
             Domain.Name = context.NAME().GetText();
+            HandleTypeDefine(context.typeDefine());
+            HandlePredicatesDefine(context.predicatesDefine());
+            HandleActionsDefine(context.actionDefine());
         }
 
-        public override void EnterTypeDefine(PlanningParser.TypeDefineContext context)
+        private void HandleTypeDefine(PlanningParser.TypeDefineContext context)
         {
             foreach (var type in context.listName().NAME())
             {
@@ -39,7 +45,7 @@ namespace Planning
             }
         }
 
-        public override void EnterPredicatesDefine(PlanningParser.PredicatesDefineContext context)
+        private void HandlePredicatesDefine(PlanningParser.PredicatesDefineContext context)
         {
             foreach (var atomicFormulaSkeleton in context.atomicFormulaSkeleton())
             {
@@ -48,10 +54,14 @@ namespace Planning
             }
         }
 
-        public override void EnterActionDefine(PlanningParser.ActionDefineContext context)
+        private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
         {
-            Action action = Action.FromContext(Domain.CurrentCuddIndex, context, Domain.PredicateDict);
-            Domain.AddToActionDict(action);
+            foreach (var actionDefineContext in contexts)
+            {
+                TA action = new TA();
+                action.FromContext(Domain.CurrentCuddIndex, actionDefineContext, Domain.PredicateDict);
+                Domain.AddToActionDict(action);
+            }
         }
 
         #endregion

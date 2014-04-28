@@ -115,6 +115,17 @@ namespace Planning
             return sb.ToString();
         }
 
+        public static string GetFullName(PlanningParser.AtomicFormulaNameContext context)
+        {
+            string name = context.predicate().GetText();
+            List<string> constantList = new List<string>();
+            foreach (var nameContext in context.NAME())
+            {
+                constantList.Add(nameContext.GetText());
+            }
+            return GetFullName(name, constantList);
+        }
+
         public static string GetFullName(PlanningParser.AtomicFormulaTermContext context)
         {
             string name = context.predicate().GetText();
