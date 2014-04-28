@@ -51,18 +51,6 @@ namespace Planning
         public abstract void FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context,
             IReadOnlyDictionary<string, Predicate> predDict);
 
-        //public Action<TAP> FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
-        //{
-        //    Action<TAP> result = new Action<TAP>();
-        //    result.CurrentCuddIndex = initialCuddIndex;
-        //    result.Name = context.actionSymbol().GetText();
-        //    result.GenerateVariableList(context.listVariable());
-        //    result.GenerateAbstractPredicates(context.actionDefBody(), predDict);
-        //    result.GeneratePrecondition(context, predDict);
-        //    result.GenerateEffect(context, predDict);
-        //    return result;
-        //}
-
         #endregion
 
         #region Methods for generating abstract predicates
@@ -91,15 +79,6 @@ namespace Planning
 
         protected abstract void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context,
             IReadOnlyDictionary<string, Predicate> predDict);
-        //{
-        //    var abstractPredicate = CreateAbstractPredicate(context, predDict);
-        //    if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
-        //    {
-        //        abstractPredicate.CuddIndex = CurrentCuddIndex;
-        //        CurrentCuddIndex++;
-        //        _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
-        //    }
-        //}
 
         private void GenerateAbstractPredicates(PlanningParser.LiteralTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
@@ -158,6 +137,8 @@ namespace Planning
         #endregion
 
         #region Methods for generating precondition
+
+        protected abstract CUDDNode GetCuddNode(PlanningParser.GdContext context);
 
         protected void GeneratePrecondition(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
@@ -231,84 +212,9 @@ namespace Planning
             return new Tuple<TAP, bool>(abstractPredicate, isPositive);
         }
 
-        protected abstract CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context);
+        //protected abstract CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context);
 
-        private CUDDNode GetCuddNode(PlanningParser.LiteralTermContext context)
-        {
-            CUDDNode subNode = GetCuddNode(context.atomicFormulaTerm());
-            CUDDNode result;
-
-            if (context.NOT() != null)
-            {
-                result = CUDD.Function.Not(subNode);
-                CUDD.Ref(result);
-            }
-            else
-            {
-                result = subNode;
-            }
-
-            return result;
-        }
-
-        private CUDDNode GetCuddNode(PlanningParser.GdContext context)
-        {
-            CUDDNode result = null;
-
-            if (context.atomicFormulaTerm() != null)
-            {
-                result = GetCuddNode(context.atomicFormulaTerm());
-            }
-            else if (context.literalTerm() != null)
-            {
-                result = GetCuddNode(context.literalTerm());
-            }
-            else if (context.AND() != null)
-            {
-                result = GetCuddNode(context.gd()[0]);
-                for (int i = 1; i < context.gd().Count; i++)
-                {
-                    CUDDNode gdNode = GetCuddNode(context.gd()[i]);
-                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                    CUDD.Ref(andNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
-                    result = andNode;
-                }
-            }
-            else if (context.OR() != null)
-            {
-                result = GetCuddNode(context.gd()[0]);
-                for (int i = 1; i < context.gd().Count; i++)
-                {
-                    CUDDNode gdNode = GetCuddNode(context.gd()[i]);
-                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                    CUDD.Ref(orNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
-                    result = orNode;
-                }
-            }
-            else if (context.NOT() != null)
-            {
-                CUDDNode gdNode = GetCuddNode(context.gd()[0]);
-                result = CUDD.Function.Not(gdNode);
-                CUDD.Ref(result);
-                CUDD.Deref(gdNode);
-            }
-            else if (context.IMPLY() != null)
-            {
-                CUDDNode gdNode0 = GetCuddNode(context.gd()[0]);
-                CUDDNode gdNode1 = GetCuddNode(context.gd()[1]);
-
-                result = CUDD.Function.Implies(gdNode0, gdNode1);
-                CUDD.Ref(result);
-                CUDD.Deref(gdNode0);
-                CUDD.Deref(gdNode1);
-            }
-
-            return result;
-        }
+        
 
         #endregion
     }

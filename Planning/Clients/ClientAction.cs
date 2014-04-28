@@ -44,30 +44,214 @@ namespace Planning.Clients
 
         #endregion
 
-        #region Methods for generating precondition
+        #region Methods for getting cudd nodes
 
-        private void GeneratePrecondition(PlanningParser.ActionDefineContext context)
+        protected override CUDDNode GetCuddNode(PlanningParser.GdContext context)
         {
-            Precondition = CUDD.ONE;
+            return GetCuddNode(context, true);
+        }
 
-            if (context.actionDefBody().emptyOrPreGD() != null)
+        private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context, bool isPrevious)
+        {
+            ClientAbstractPredicate abstractPredicate = GetAbstractPredicate(context);
+
+            int index = isPrevious ? abstractPredicate.PreviousCuddIndex : abstractPredicate.SuccessorCuddIndex;
+
+            CUDDNode result = CUDD.Var(index);
+            return result;
+        }
+
+        private CUDDNode GetCuddNode(PlanningParser.LiteralTermContext context, bool isPrevious)
+        {
+            CUDDNode subNode = GetCuddNode(context.atomicFormulaTerm(), isPrevious);
+            CUDDNode result;
+
+            if (context.NOT() != null)
             {
-                if (context.actionDefBody().emptyOrPreGD().gd() != null)
+                result = CUDD.Function.Not(subNode);
+                CUDD.Ref(result);
+            }
+            else
+            {
+                result = subNode;
+            }
+
+            return result;
+        }
+
+        private CUDDNode GetCuddNode(PlanningParser.GdContext context, bool isPrevious)
+        {
+            CUDDNode result = null;
+
+            if (context.atomicFormulaTerm() != null)
+            {
+                result = GetCuddNode(context.atomicFormulaTerm(), isPrevious);
+            }
+            else if (context.literalTerm() != null)
+            {
+                result = GetCuddNode(context.literalTerm(), isPrevious);
+            }
+            else if (context.AND() != null)
+            {
+                result = GetCuddNode(context.gd()[0], isPrevious);
+                for (int i = 1; i < context.gd().Count; i++)
                 {
-                    Precondition = GetCuddNode(context.actionDefBody().emptyOrPreGD().gd(), true);
+                    CUDDNode gdNode = GetCuddNode(context.gd()[i], isPrevious);
+                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
+                    CUDD.Ref(andNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = andNode;
                 }
             }
+            else if (context.OR() != null)
+            {
+                result = GetCuddNode(context.gd()[0], isPrevious);
+                for (int i = 1; i < context.gd().Count; i++)
+                {
+                    CUDDNode gdNode = GetCuddNode(context.gd()[i], isPrevious);
+                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
+                    CUDD.Ref(orNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = orNode;
+                }
+            }
+            else if (context.NOT() != null)
+            {
+                CUDDNode gdNode = GetCuddNode(context.gd()[0], isPrevious);
+                result = CUDD.Function.Not(gdNode);
+                CUDD.Ref(result);
+                CUDD.Deref(gdNode);
+            }
+            else if (context.IMPLY() != null)
+            {
+                CUDDNode gdNode0 = GetCuddNode(context.gd()[0], isPrevious);
+                CUDDNode gdNode1 = GetCuddNode(context.gd()[1], isPrevious);
+
+                result = CUDD.Function.Implies(gdNode0, gdNode1);
+                CUDD.Ref(result);
+                CUDD.Deref(gdNode0);
+                CUDD.Deref(gdNode1);
+            }
+
+            return result;
         }
 
         #endregion
 
-        #region Methods for getting cudd nodes
-
-        private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context, bool isPrevious = true)
+        #region Methods for generating successor state axiom
+        private void GenerateSuccessorStateAxiom()
         {
-            ClientAbstractPredicate abstractPredicate = GetAbstractPredicate(context);
-            int index = isPrevious ? abstractPredicate.PreviousCuddIndex : abstractPredicate.SuccessorCuddIndex;
-            CUDDNode result = CUDD.Var(index);
+            CUDDNode effectNode = CUDD.ONE;
+            foreach (var cEffect in Effect)
+            {
+                CUDDNode intermediateNode = effectNode;
+                CUDDNode cEffectNode = GetEffectNode(cEffect);
+                Console.WriteLine("Action:{0}    cEffect:", Name);
+                CUDD.Print.PrintMinterm(cEffectNode);
+                effectNode = CUDD.Function.And(intermediateNode, cEffectNode);
+                CUDD.Ref(effectNode);
+                CUDD.Deref(intermediateNode);
+                CUDD.Deref(cEffectNode);
+            }
+
+            CUDDNode frame = GetFrameNode();
+
+            //Console.WriteLine(Name);
+            //Console.WriteLine("       Effect:");
+            //CUDD.Print.PrintMinterm(effectNode);
+
+            //Console.WriteLine("       Frame:");
+            //CUDD.Print.PrintMinterm(frame);
+
+            SuccessorStateAxiom = CUDD.Function.And(effectNode, frame);
+            //Console.WriteLine("       Successor state axiom:");
+            //CUDD.Print.PrintMinterm(SuccessorStateAxiom);
+
+            CUDD.Ref(SuccessorStateAxiom);
+            CUDD.Deref(effectNode);
+            CUDD.Deref(frame);
+        }
+
+        private CUDDNode GetFrameNode()
+        {
+            CUDDNode result = CUDD.ONE;
+            //Console.WriteLine("    Previous abstract predicate count:{0}", _preAbstractPredDict.Count);
+            foreach (var abstractPredPair in _abstractPredDict)
+            {
+                CUDDNode frameCondition = CUDD.ONE;
+                foreach (var cEffect in Effect)
+                {
+                    //Console.Write("    Literals:");
+                    //for (int i = 0; i < cEffect.Item2.Count; i++)
+                    //{
+                    //    Console.Write("{0}, ", cEffect.Item2[i].Item1);
+                    //}
+                    //Console.WriteLine();
+                    //Console.WriteLine("    Abstract predicate:{0}", abstractPredicate.Key);
+                    //Console.WriteLine(cEffect.Item2.Exists(literal => literal.Item1.Equals(abstractPredicate.Value)));
+
+                    if (cEffect.Item2.Exists(literal => literal.Item1.Equals(abstractPredPair.Value)))
+                    {
+                        CUDDNode intermediate = frameCondition;
+                        CUDDNode negCondition = CUDD.Function.Not(cEffect.Item1);
+                        CUDD.Ref(negCondition);
+                        frameCondition = CUDD.Function.And(intermediate, negCondition);
+                        CUDD.Ref(frameCondition);
+                        CUDD.Deref(intermediate);
+                        CUDD.Deref(negCondition);
+                    }
+                }
+
+                CUDDNode preAbstractPredNode = CUDD.Var(abstractPredPair.Value.PreviousCuddIndex);
+                //AbstractPredicate sucAbstractPredicate = _sucAbstractPredDict[abstractPredicate.Key];
+                CUDDNode sucAbstractPredNode = CUDD.Var(abstractPredPair.Value.SuccessorCuddIndex);
+
+                CUDDNode invariant = CUDD.Function.Equal(preAbstractPredNode, sucAbstractPredNode);
+
+                //Console.WriteLine("       Frame condition:");
+                //CUDD.Print.PrintMinterm(frameCondition);
+                //Console.WriteLine("       Invariant:");
+                //CUDD.Print.PrintMinterm(invariant);
+                CUDD.Ref(invariant);
+                CUDDNode frame = CUDD.Function.Implies(frameCondition, invariant);
+                CUDD.Ref(frame);
+                CUDD.Deref(frameCondition);
+                CUDD.Deref(invariant);
+
+                CUDDNode conjunct = result;
+                result = CUDD.Function.And(conjunct, frame);
+                CUDD.Ref(result);
+                CUDD.Deref(conjunct);
+            }
+
+            return result;
+        }
+
+        private CUDDNode GetEffectNode(Tuple<CUDDNode, List<Tuple<ClientAbstractPredicate, bool>>> cEffect)
+        {
+            CUDDNode effect = CUDD.ONE;
+
+            foreach (var literal in cEffect.Item2)
+            {
+                CUDDNode intermediate = effect;
+                CUDDNode abstractPred = CUDD.Var(literal.Item1.SuccessorCuddIndex);
+                CUDDNode literalNode = literal.Item2 ? abstractPred : CUDD.Function.Not(abstractPred);
+                effect = CUDD.Function.And(intermediate, literalNode);
+                CUDD.Ref(effect);
+                CUDD.Deref(intermediate);
+            }
+
+            //Console.WriteLine("    Condition:");
+            //CUDD.Print.PrintMinterm(cEffect.Item1);
+            //Console.WriteLine("    Effect:");
+            //CUDD.Print.PrintMinterm(effect);
+
+            CUDDNode result = CUDD.Function.Implies(cEffect.Item1, effect);
+            CUDD.Ref(result);
+            CUDD.Deref(effect);
+
             return result;
         }
 

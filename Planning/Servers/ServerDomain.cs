@@ -5,90 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Agents.Planning
+namespace Planning.Servers
 {
-    public class Domain
+    public class ServerDomain : Domain<ServerAction, ServerAbstractPredicate>
     {
-        #region Fields
-
-        private List<string> _typeList;
-
-        private Dictionary<string, Predicate> _predDict;
-
-        private Dictionary<string, Action> _actionDict;
-
-        #endregion
-
-        #region Properties
-
-        public string Name { get; set; }
-
-        public int CurrentCuddIndex { get; set; }
-
-        public IReadOnlyList<string> TypeList
+        public override void ShowInfo()
         {
-            get { return _typeList; }
-        }
-
-        public IReadOnlyDictionary<string, Predicate> PredicateDict
-        {
-            get { return _predDict; }
-        }
-
-        public IReadOnlyDictionary<string, Action> ActionDict
-        {
-            get { return _actionDict; }
-        }
-
-        #endregion
-
-        #region Constructors
-
-        public Domain()
-        {
-            _typeList = new List<string> { VariableContainer.DefaultType };
-            _predDict = new Dictionary<string, Predicate>();
-            _actionDict = new Dictionary<string, Action>();
-            CurrentCuddIndex = 0;
-        }
-
-        #endregion
-
-        #region Methods
-
-        public void AddToTypeList(string type)
-        {
-            _typeList.Add(type);
-        }
-
-        public void AddToPredicateDict(Predicate predicate)
-        {
-            _predDict.Add(predicate.Name, predicate);
-        }
-
-        public void AddToActionDict(Action action)
-        {
-            _actionDict.Add(action.Name, action);
-            CurrentCuddIndex = action.CurrentCuddIndex;
-        }
-
-        public void ShowInfo()
-        {
-            const string barline = "----------------";
-
             Console.WriteLine("Name: {0}", Name);
-            Console.WriteLine(barline);
+            Console.WriteLine(BarLine);
 
             Console.Write("Types: ");
-            for (int i = 0; i < _typeList.Count - 1; i++)
+            for (int i = 0; i < TypeList.Count - 1; i++)
             {
-                Console.Write("{0}, ", _typeList[i]);
+                Console.Write("{0}, ", TypeList[i]);
             }
-            Console.WriteLine("{0}", _typeList[_typeList.Count - 1]);
-            Console.WriteLine(barline);
+            Console.WriteLine("{0}", TypeList[TypeList.Count - 1]);
+            Console.WriteLine(BarLine);
 
             Console.WriteLine("Predicates:");
-            foreach (var pred in _predDict.Values)
+            foreach (var pred in PredicateDict.Values)
             {
                 Console.WriteLine("  Name: {0}", pred.Name);
                 Console.WriteLine("  Variable: {0}", pred.Count);
@@ -99,10 +34,10 @@ namespace Agents.Planning
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine(barline);
+            Console.WriteLine(BarLine);
 
             Console.WriteLine("Actions:");
-            foreach (var action in _actionDict.Values)
+            foreach (var action in ActionDict.Values)
             {
                 Console.WriteLine("  Name: {0}", action.Name);
                 Console.WriteLine("  Variable: {0}", action.Count);
@@ -115,9 +50,8 @@ namespace Agents.Planning
                 Console.WriteLine("    Abstract Predicates: ");
                 foreach (var pair in action.AbstractPredicateDict)
                 {
-                    Console.WriteLine("      Name: {0}, Previous index: {1}, Successor index: {2}", pair.Key, pair.Value.PreviousCuddIndex, pair.Value.SuccessorCuddIndex);
+                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
                 }
-
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(action.Precondition);
 
@@ -154,13 +88,8 @@ namespace Agents.Planning
                     Console.WriteLine(" }");
                 }
 
-                Console.WriteLine("  Successor state axiom:");
-                CUDD.Print.PrintMinterm(action.SuccessorStateAxiom);
-
                 Console.WriteLine();
             }
         }
-
-        #endregion
     }
 }
