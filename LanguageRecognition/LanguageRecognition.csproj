@@ -69,6 +69,7 @@
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
       <Visitor>False</Visitor>
+      <Listener>False</Listener>
     </Antlr4>
   </ItemGroup>
   <ItemGroup>

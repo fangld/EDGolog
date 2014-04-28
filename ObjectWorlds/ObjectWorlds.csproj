@@ -46,29 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Planning\AbstractPredicate.cs" />
-    <Compile Include="Planning\Action.cs" />
     <Compile Include="Network\Client.cs" />
-    <Compile Include="Planning\Domain.cs" />
-    <Compile Include="Planning\Ground.cs" />
-    <Compile Include="Planning\GroundAction.cs" />
-    <Compile Include="Planning\ObjectBase.cs" />
-    <Compile Include="Planning\Problem.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Planning\PlanningBaseListener.cs" />
-    <Compile Include="Planning\DomainLoader.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Planning\PlanningLexer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Planning\PlanningListener.cs" />
-    <Compile Include="Planning\PlanningParser.cs" />
-    <Compile Include="Planning\ProblemLoader.cs" />
-    <Compile Include="Planning\Predicate.cs" />
     <Compile Include="Network\Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Planning\VariableContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="d1.pddl">
@@ -83,6 +64,10 @@
     <ProjectReference Include="..\PAT.BDD\PAT.BDD.csproj">
       <Project>{ebb3ad28-953a-4c12-add4-4a6752628280}</Project>
       <Name>PAT.BDD</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Planning\Planning.csproj">
+      <Project>{a4203db4-85ba-4225-b437-ee889999467c}</Project>
+      <Name>Planning</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

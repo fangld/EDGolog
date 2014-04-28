@@ -9,7 +9,7 @@ domain: LB DEF LB DOM NAME RB
 		   //requireDefine?
 		   typeDefine?
 		   predicatesDefine?
-		   structureDefine* 
+		   actionDefine* 
 		RB;
 
 /*requireDefine: LB COLON REQ requireKey+ RB;
@@ -26,7 +26,7 @@ predicate: NAME;
 primitiveType: OBJ | NAME;
 type: primitiveType | LB EITHER primitiveType+ RB;
 
-structureDefine: actionDefine;
+//structureDefine: actionDefine;
 
 actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
