@@ -17,8 +17,6 @@ namespace Planning.Servers
 
         #region Properties
 
-        public CUDDNode Precondition { get; set; }
-
         public IReadOnlyList<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>> Effect
         {
             get { return _effect; }
@@ -28,57 +26,35 @@ namespace Planning.Servers
 
         #region Constructors
 
-        protected ServerGroundAction(ServerAction action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> preGndPredDict)
-            : base(action, constantList)
+        public ServerGroundAction()
         {
-            _effect = new List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>>(Container.Effect.Count);
-            GenerateGroundPrecondition(preGndPredDict);
-            GenerateGroundEffect(preGndPredDict);
+            _effect = new List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>>();
         }
+
+
+        //protected ServerGroundAction(ServerAction action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> preGndPredDict)
+        //    : base(action, constantList)
+        //{
+        //    _effect = new List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>>(Container.Effect.Count);
+        //    GenerateGroundPrecondition(preGndPredDict);
+        //    GenerateGroundEffect(preGndPredDict);
+        //}
 
         #endregion
 
         #region Methods
 
-        private void GenerateGroundPrecondition(Dictionary<string, Ground<Predicate>> preGndPredDict)
+        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> gndPredDict)
         {
-            CUDDVars oldVars = new CUDDVars();
-            CUDDVars newVars = new CUDDVars();
+            Container = action;
+            SetConstantList(constantList);
+            GenerateGroundPrecondition(gndPredDict);
+            GenerateGroundEffect(gndPredDict);
+        }
 
-            Dictionary<string, string> abstractParmMap = new Dictionary<string, string>();
-
-            //Console.WriteLine("  Ground action constant list count:{0}", gndAction.ConstantList.Count);
-
-            for (int i = 0; i < ConstantList.Count; i++)
-            {
-                string abstractParm = Container.VariableList[i].Item1;
-                string gndParm = ConstantList[i];
-                abstractParmMap.Add(abstractParm, gndParm);
-                //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
-            }
-
-            foreach (var pair in Container.AbstractPredicateDict)
-            {
-                oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
-                List<string> collection = new List<string>();
-                foreach (var parm in pair.Value.ParameterList)
-                {
-                    collection.Add(abstractParmMap[parm]);
-                }
-
-                Ground<Predicate> gndPred = new Ground<Predicate>(pair.Value.Predicate, collection);
-                gndPred = preGndPredDict[gndPred.ToString()];
-                newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
-            }
-
-            CUDDNode abstractPre = Container.Precondition;
-
-            Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
-            //Console.WriteLine("  Ground precondition:");
-            //CUDD.Print.PrintMinterm(gndAction.Precondition);
-
-            //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
-            //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
+        protected override int GetPreconditionCuddIndex(ServerAbstractPredicate abstractPred)
+        {
+            return abstractPred.CuddIndex;
         }
 
         private void GenerateGroundEffect(Dictionary<string, Ground<Predicate>> preGndPredDict)

@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
+using ObjectWorlds.Network;
 using PAT.Common.Classes.CUDDLib;
+using Planning;
 using Planning.Servers;
 
 namespace ObjectWorlds
@@ -61,32 +63,30 @@ namespace ObjectWorlds
             var domain = domainLoader.Domain;
             domain.ShowInfo();
 
-            //// Create a TextReader that reads from a file
-            //tr = new StreamReader(problemFileName);
+            // Create a TextReader that reads from a file
+            tr = new StreamReader(problemFileName);
 
-            //// create a CharStream that reads from standard input
-            //input = new AntlrInputStream(tr);
-            //// create a lexer that feeds off of input CharStream
+            // create a CharStream that reads from standard input
+            input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
 
-            //lexer = new PlanningLexer(input);
-            //// create a buffer of tokens pulled from the lexer
-            //tokens = new CommonTokenStream(lexer);
-            //// create a parser that feeds off the tokens buffer
-            //parser = new PlanningParser(tokens);
+            lexer = new PlanningLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            parser = new PlanningParser(tokens);
 
-            //tree = parser.serverProblem();// begin parsing at init rule
+            var serverProblem = parser.serverProblem();// begin parsing at init rule
 
-            //// Create a generic parse tree walker that can trigger callbacks 
-            //walker = new ParseTreeWalker();
-            //// Walk the tree created during the parse, trigger callbacks 
-            //ProblemLoader problemLoader = new ProblemLoader(domain);
-            //walker.Walk(problemLoader, tree);
-            //tr.Close();
-            //Problem problem = problemLoader.Problem;
-            //problem.ShowInfo();
+            // Walk the tree created during the parse, trigger callbacks 
+            ServerProblemLoader problemLoader = new ServerProblemLoader(domain);
+            problemLoader.HandleServerProblem(serverProblem);
+            tr.Close();
+            ServerProblem problem = problemLoader.Problem;
+            problem.ShowInfo();
 
-            //Server server = new Server(port, listenBacklog, problem);
-            //server.Run();
+            Server server = new Server(port, listenBacklog, problem);
+            server.Run();
             Console.ReadLine();
         }
 

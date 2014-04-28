@@ -1,60 +1,69 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Security;
-//using System.Text;
-//using System.Threading.Tasks;
-//using LanguageRecognition;
-//using PAT.Common.Classes.CUDDLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
 
-//namespace Planning
-//{
-//    public class ProblemLoader : PlanningBaseListener
-//    {
-//        #region Properties
+namespace Planning
+{
+    public class ProblemLoader<TP, TD, TA, TAP, TGAP>
+        where TP : Problem<TD, TA, TAP, TGAP>, new()
+        where TD : Domain<TA, TAP>, new()
+        where TA : Action<TAP>, new()
+        where TAP : AbstractPredicate, new()
+        where TGAP : GroundAction<TA, TAP>, new()
+    {
+        #region Properties
 
-//        public Problem Problem { get; set; }
+        public TP Problem { get; set; }
 
-//        #endregion
+        #endregion
 
-//        #region Constructors
+        #region Constructors
 
-//        public ProblemLoader(Domain domain)
-//        {
-//            Problem = new Problem(domain);
-//        }
+        public ProblemLoader(TD domain)
+        {
+            Problem = new TP();
+            Problem.From(domain);
+        }
 
-//        #endregion
+        #endregion
 
-//        #region Overriden Methods
+        #region Overriden Methods
 
-//        public override void EnterServerProblem(PlanningParser.ServerProblemContext context)
-//        {
-//            Problem.Name = context.problemName().GetText();
-//            Problem.DomainName = context.domainName().GetText();
-//        }
+        public void HandleServerProblem(PlanningParser.ServerProblemContext context)
+        {
+            Problem.Name = context.problemName().GetText();
+            Problem.DomainName = context.domainName().GetText();
+            HandleAgentDefine(context.agentDefine());
+            HandleObjectDeclaration(context.objectDeclaration());
+            HandleInit(context.init());
+        }
 
-//        public override void EnterAgentDefine(PlanningParser.AgentDefineContext context)
-//        {
-//            foreach (var nameNode in context.NAME())
-//            {
-//                Problem.AddAgent(nameNode.GetText());
-//            }
-//        }
+        private void HandleAgentDefine(PlanningParser.AgentDefineContext context)
+        {
+            foreach (var nameNode in context.NAME())
+            {
+                Problem.AddAgent(nameNode.GetText());
+            }
+        }
 
-//        public override void EnterObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
-//        {
-//            var listNameContext = context.listName();
-//            Problem.BuildConstantTypeMap(listNameContext);
-//            Problem.BuildGroundPredicate();
-//            Problem.BuildGroundAction();
-//        }
+        private void HandleObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
+        {
+            var listNameContext = context.listName();
+            Problem.BuildConstantTypeMap(listNameContext);
+            Problem.BuildGroundPredicate();
+            Problem.BuildGroundAction();
+        }
 
-//        public override void EnterInit(PlanningParser.InitContext context)
-//        {
-//            Problem.BuildTruePredicateSet(context);
-//        }
+        private void HandleInit(PlanningParser.InitContext context)
+        {
+            Problem.BuildTruePredicateSet(context);
+        }
 
-//        #endregion
-//    }
-//}
+        #endregion
+    }
+}

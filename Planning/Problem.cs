@@ -8,7 +8,11 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public class Problem
+    public abstract class Problem<TD, TA, TAP, TGAP>
+        where TD : Domain<TA, TAP>
+        where TA : Action<TAP>, new()
+        where TAP : AbstractPredicate, new()
+        where TGAP : GroundAction<TA, TAP>, new()
     {
         #region Fields
 
@@ -18,11 +22,11 @@ namespace Planning
 
         private Dictionary<string, Ground<Predicate>> _gndPredDict;
 
-        private Dictionary<string, GroundAction> _gndActionDict;
+        private Dictionary<string, TGAP> _gndActionDict;
 
         private IReadOnlyDictionary<string, Predicate> _predDict;
 
-        private IReadOnlyDictionary<string, Action> _actionDict;
+        private IReadOnlyDictionary<string, TA> _actionDict;
 
         private List<string> _agentList;
 
@@ -38,7 +42,7 @@ namespace Planning
 
         public string HostId { get; set; }
 
-        public Domain Domain { get; set; }
+        public TD Domain { get; set; }
 
         public HashSet<string> TruePredSet { get; set; }
 
@@ -62,16 +66,16 @@ namespace Planning
             get { return _gndPredDict; }
         }
 
-        public IReadOnlyDictionary<string, GroundAction> GroundActionDict
+        public IReadOnlyDictionary<string, TGAP> GroundActionDict
         {
             get { return _gndActionDict; }
         }
 
         #endregion
 
-        #region Constructors
+        #region Methods
 
-        public Problem(Domain domain)
+        public void From(TD domain)
         {
             _constantTypeMap = new Dictionary<string, string>();
             _typeConstantListMap = new Dictionary<string, List<string>>();
@@ -81,98 +85,8 @@ namespace Planning
             _predDict = domain.PredicateDict;
             _actionDict = domain.ActionDict;
             _gndPredDict = new Dictionary<string, Ground<Predicate>>();
-            _gndActionDict = new Dictionary<string, GroundAction>();
+            _gndActionDict = new Dictionary<string, TGAP>();
             _currentCuddIndex = domain.CurrentCuddIndex;
-        }
-
-        #endregion
-
-        #region Methods
-
-        public void ShowInfo()
-        {
-            const string barline = "----------------";
-
-            Console.WriteLine("Name: {0}", Name);
-            Console.WriteLine(barline);
-
-            Console.WriteLine("Domain name: {0}", DomainName);
-            Console.WriteLine(barline);
-
-            Console.WriteLine("Agents:");
-            foreach (var agent in _agentList)
-            {
-                Console.WriteLine("  {0}", agent);
-            }
-            Console.WriteLine(barline);
-
-            Console.WriteLine("Variables:");
-            foreach (var pair in _constantTypeMap)
-            {
-                Console.WriteLine("  {0} - {1}", pair.Key, pair.Value);
-            }
-            Console.WriteLine(barline);
-
-            Console.WriteLine("Ground predicates:");
-            foreach (var pair in _gndPredDict)
-            {
-                Console.WriteLine("  Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
-            }
-            Console.WriteLine(barline);
-
-            Console.WriteLine("Initial state:");
-            foreach (var pred in TruePredSet)
-            {
-                Console.WriteLine("  {0}", pred);
-            }
-            Console.WriteLine(barline);
-
-            Console.WriteLine("Ground actions:");
-            foreach (var gndAction in _gndActionDict.Values)
-            {
-                Console.WriteLine("  Name: {0}", gndAction.Container.Name);
-                Console.WriteLine("  Variable: {0}", gndAction.Container.Count);
-                for (int i = 0; i < gndAction.ConstantList.Count; i++)
-                {
-                    Console.WriteLine("    Index: {0}, Name: {1}", i, gndAction.ConstantList[i]);
-                }
-                Console.WriteLine("  Precondition:");
-                CUDD.Print.PrintMinterm(gndAction.Precondition);
-
-                Console.WriteLine("  Effect:");
-                for (int i = 0; i < gndAction.Effect.Count; i++)
-                {
-                    Console.WriteLine("    Index: {0}", i);
-                    Console.WriteLine("    Condition:");
-                    CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
-
-                    Console.Write("      Literals: { ");
-                    var literal = gndAction.Effect[i].Item2[0];
-                    if (literal.Item2)
-                    {
-                        Console.Write("{0}", literal.Item1);
-                    }
-                    else
-                    {
-                        Console.Write("not {0}", literal.Item1);
-                    }
-
-                    for (int j = 1; j < gndAction.Effect[i].Item2.Count; j++)
-                    {
-                        if (literal.Item2)
-                        {
-                            Console.Write(", {0}", literal.Item1);
-                        }
-                        else
-                        {
-                            Console.Write(", not {0}", literal.Item1);
-                        }
-                    }
-
-                    Console.WriteLine(" }");
-                }
-                Console.WriteLine();
-            }
         }
 
         internal void AddAgent(string name)
@@ -295,11 +209,15 @@ namespace Planning
 
         private void AddToGroundActionDict(string actionName, string[] constantList)
         {
-            Action action = _actionDict[actionName];
-
-            GroundAction gndAction = GroundAction.CreateInstance(action, constantList, _gndPredDict);
+            TA action = _actionDict[actionName];
+            TGAP gndAction = new TGAP();
+            gndAction.From(action, constantList, _gndPredDict);
+            //Console.WriteLine("Ground action: {0}", gndAction);
+            //CUDD.Print.PrintMinterm(gndAction.Precondition);
             _gndActionDict.Add(gndAction.ToString(), gndAction);
         }
+
+        public abstract void ShowInfo();
 
         #endregion
     }

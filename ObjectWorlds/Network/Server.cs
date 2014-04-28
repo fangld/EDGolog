@@ -1,101 +1,103 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Data;
-//using System.IO;
-//using System.Linq;
-//using System.Net;
-//using System.Net.Sockets;
-//using System.Text;
-//using System.Threading.Tasks;
-//using Antlr4.Runtime;
-//using Antlr4.Runtime.Tree;
-//using LanguageRecognition;
-//using PAT.Common.Classes.CUDDLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
+using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
+using Planning;
+using Planning.Servers;
 
-//namespace ObjectWorlds.Network
-//{
-//    public class Server
-//    {
-//        #region Fields
-        
-//        private Socket _socket;
+namespace ObjectWorlds.Network
+{
+    public class Server
+    {
+        #region Fields
 
-//        private int _backLog;
+        private Socket _socket;
 
-//        private int _port;
+        private int _backLog;
 
-//        private Problem _problem;
+        private int _port;
 
-//        private ObjectBase _objectBase;
-        
-//        private Dictionary<string, Client> _agentClientDict;
+        private ServerProblem _problem;
 
-//        #endregion
+        private ObjectBase _objectBase;
 
-//        #region Events
+        private Dictionary<string, Client> _agentClientDict;
 
-//        public event EventHandler<Client> NewClient;
+        #endregion
 
-//        #endregion
+        #region Events
 
-//        #region Constructors
+        public event EventHandler<Client> NewClient;
 
-//        public Server(int port, int backlog, Problem problem)
-//        {
-//            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-//            _port = port;
-//            _backLog = backlog;
-//            _objectBase = new ObjectBase(problem);
-//            _problem = problem;
-//            _agentClientDict = new Dictionary<string, Client>();
-//        }
+        #endregion
 
-//        #endregion
+        #region Constructors
 
-//        #region Methods
+        public Server(int port, int backlog, ServerProblem problem)
+        {
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            _port = port;
+            _backLog = backlog;
+            _objectBase = new ObjectBase(problem);
+            _problem = problem;
+            _agentClientDict = new Dictionary<string, Client>();
+        }
 
-//        public void Run()
-//        {
-//            _objectBase.ShowInfo();
-//            Listen();
-//            ReceiveActions();
-//        }
+        #endregion
 
-//        public void Listen()
-//        {
-//            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, _port);
-//            _socket.Bind(localEndPoint);
-//            _socket.Listen(_backLog);
+        #region Methods
 
-//            int i = 0;
-//            do
-//            {
-//                Socket newSocket = _socket.Accept();
-//                Client client = new Client(newSocket, _problem);
-//                client.Handshake();
-//                _agentClientDict.Add(client.Name, client);
-//                Console.WriteLine("Agent {0} connected!", client.Name);
+        public void Run()
+        {
+            _objectBase.ShowInfo();
+            Listen();
+            ReceiveActions();
+        }
 
-//                i++;
-//            } while (i < _problem.AgentList.Count);
+        public void Listen()
+        {
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, _port);
+            _socket.Bind(localEndPoint);
+            _socket.Listen(_backLog);
 
-//            Console.WriteLine("All agents connected!");
-//        }
+            int i = 0;
+            do
+            {
+                Socket newSocket = _socket.Accept();
+                Client client = new Client(newSocket, _problem);
+                client.Handshake();
+                _agentClientDict.Add(client.Name, client);
+                Console.WriteLine("Agent {0} connected!", client.Name);
 
-//        public void ReceiveActions()
-//        {
-//            do
-//            {
-//                foreach (var agent in _problem.AgentList)
-//                {
-//                    GroundAction gndAction = _agentClientDict[agent].GetAction();
-//                    Console.WriteLine(gndAction);
-//                    _objectBase.Update(gndAction);
-//                    _objectBase.ShowInfo();
-//                }
-//            } while (true);
-//        }
+                i++;
+            } while (i < _problem.AgentList.Count);
 
-//        #endregion
-//    }
-//}
+            Console.WriteLine("All agents connected!");
+        }
+
+        public void ReceiveActions()
+        {
+            do
+            {
+                foreach (var agent in _problem.AgentList)
+                {
+                    ServerGroundAction gndAction = _agentClientDict[agent].GetAction();
+                    Console.WriteLine(gndAction);
+                    _objectBase.Update(gndAction);
+                    _objectBase.ShowInfo();
+                }
+            } while (true);
+        }
+
+        #endregion
+    }
+}

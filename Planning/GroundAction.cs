@@ -17,24 +17,17 @@ namespace Planning
 
         #region Constructors
 
-        protected GroundAction(TA action, IEnumerable<string> constantList)
-            : base(action, constantList)
-        {
-        }
 
         #endregion
 
         #region Methods
 
-        public GroundAction<TA, TAP> From(TA action, IEnumerable<string> constantList,
-            Dictionary<string, Ground<Predicate>> gndPredDict)
-        {
-            result.GenerateGroundPrecondition(gndPredDict);
-            result.GenerateGroundEffect(gndPredDict);
-            return result;
-        }
+        public abstract void From(TA action, IEnumerable<string> constantList,
+            Dictionary<string, Ground<Predicate>> gndPredDict);
 
-        private void GenerateGroundPrecondition(Dictionary<string, Ground<Predicate>> preGndPredDict)
+        protected abstract int GetPreconditionCuddIndex(TAP abstractPred);
+
+        protected void GenerateGroundPrecondition(Dictionary<string, Ground<Predicate>> gndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
@@ -53,7 +46,8 @@ namespace Planning
 
             foreach (var pair in Container.AbstractPredicateDict)
             {
-                oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
+                int index = GetPreconditionCuddIndex(pair.Value);
+                oldVars.AddVar(CUDD.Var(index));
                 List<string> collection = new List<string>();
                 foreach (var parm in pair.Value.ParameterList)
                 {
@@ -61,7 +55,7 @@ namespace Planning
                 }
 
                 Ground<Predicate> gndPred = new Ground<Predicate>(pair.Value.Predicate, collection);
-                gndPred = preGndPredDict[gndPred.ToString()];
+                gndPred = gndPredDict[gndPred.ToString()];
                 newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
             }
 
@@ -69,7 +63,7 @@ namespace Planning
 
             Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
             //Console.WriteLine("  Ground precondition:");
-            //CUDD.Print.PrintMinterm(gndAction.Precondition);
+            //CUDD.Print.PrintMinterm(Precondition);
 
             //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
             //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);

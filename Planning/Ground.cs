@@ -29,6 +29,8 @@ namespace Planning
 
         #region Constructors
 
+        public Ground(){}
+
         public Ground(T container, IEnumerable<string> constantList)
         {
             Container = container;
@@ -37,7 +39,12 @@ namespace Planning
 
         #endregion
 
-        #region Overriden Methods
+        #region Methods
+
+        protected void SetConstantList(IEnumerable<string> constantList)
+        {
+            _constantList = new List<string>(constantList);
+        }
 
         public override string ToString()
         {

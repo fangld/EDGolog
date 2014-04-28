@@ -59,6 +59,7 @@
     <Compile Include="Problem.cs" />
     <Compile Include="ProblemLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Servers\ObjectBase.cs" />
     <Compile Include="Servers\ServerAction.cs" />
     <Compile Include="Servers\ServerAbstractPredicate.cs" />
     <Compile Include="Servers\ServerDomain.cs" />

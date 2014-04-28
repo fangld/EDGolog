@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Planning.Servers
 {
-    class ServerProblemLoader
+    public class ServerProblemLoader: ProblemLoader<ServerProblem, ServerDomain, ServerAction, ServerAbstractPredicate, ServerGroundAction>
     {
+        #region Constructors
+
+        public ServerProblemLoader(ServerDomain domain) : base(domain)
+        {
+        }
+
+        #endregion
     }
 }

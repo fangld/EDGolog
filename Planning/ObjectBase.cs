@@ -12,7 +12,7 @@
 //    {
 //        #region Fields
 
-//        private Problem _problem;
+//        private ServerProblem _problem;
 
 //        private Dictionary<string, bool> _predBooleanMap;
 
