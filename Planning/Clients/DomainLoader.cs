@@ -8,7 +8,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Clients
 {
-    public class DomainLoader : PlanningBaseListener
+    public class DomainLoader
     {
         #region Properties
 
