@@ -48,11 +48,11 @@
     <Compile Include="Clients\ClientAction.cs" />
     <Compile Include="Clients\ClientDomain.cs" />
     <Compile Include="Clients\ClientDomainLoader.cs" />
+    <Compile Include="Clients\MentalAttitude.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="DomainLoader.cs" />
     <Compile Include="Ground.cs" />
     <Compile Include="GroundAction.cs" />
-    <Compile Include="ObjectBase.cs" />
     <Compile Include="PlanningLexer.cs" />
     <Compile Include="PlanningParser.cs" />
     <Compile Include="Predicate.cs" />

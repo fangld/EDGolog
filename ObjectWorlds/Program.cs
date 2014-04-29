@@ -35,7 +35,6 @@ namespace ObjectWorlds
 
 
             Test1(domainFileName, problemFileName);
-            //Test2();
             Console.ReadLine();
         }
 
