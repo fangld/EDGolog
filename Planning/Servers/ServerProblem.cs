@@ -49,13 +49,7 @@ namespace Planning.Servers
             foreach (var gndAction in GroundActionDict.Values)
             {
                 Console.WriteLine("  Name: {0}", gndAction);
-                //Console.WriteLine("  Variable: {0}", gndAction.Container.Count);
-                //for (int i = 0; i < gndAction.ConstantList.Count; i++)
-                //{
-                    //Console.WriteLine("    Index: {0}, Name: {1}", i, gndAction.ConstantList[i]);
-                //}
                 Console.WriteLine("  Precondition:");
-                //Console.WriteLine(gndAction.Precondition == null);
                 CUDD.Print.PrintMinterm(gndAction.Precondition);
 
                 Console.WriteLine("  Effect:");

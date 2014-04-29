@@ -31,15 +31,6 @@ namespace Planning.Servers
             _effect = new List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>>();
         }
 
-
-        //protected ServerGroundAction(ServerAction action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> preGndPredDict)
-        //    : base(action, constantList)
-        //{
-        //    _effect = new List<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>>(Container.Effect.Count);
-        //    GenerateGroundPrecondition(preGndPredDict);
-        //    GenerateGroundEffect(preGndPredDict);
-        //}
-
         #endregion
 
         #region Methods
