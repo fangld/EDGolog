@@ -24,11 +24,10 @@ namespace Planning.Servers
         #region Constructors
 
         private ServerProblem(Domain<ServerAction> domain, PlanningParser.ServerProblemContext context)
-            : base(domain, context)
+            : base(domain)
         {
             TruePredSet = new HashSet<string>();
             HandleServerProblem(context);
-
         }
 
         #endregion

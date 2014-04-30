@@ -75,7 +75,7 @@ namespace Planning
 
         #region Constructors
 
-        protected Problem(Domain<TA> domain, PlanningParser.ServerProblemContext context)
+        protected Problem(Domain<TA> domain)
         {
             _constantTypeMap = new Dictionary<string, string>();
             _typeConstantListMap = new Dictionary<string, List<string>>();
@@ -91,11 +91,6 @@ namespace Planning
         #endregion
 
         #region Methods
-
-        private void AddAgent(string name)
-        {
-            _agentList.Add(name);
-        }
 
         internal void BuildConstantTypeMap(PlanningParser.ListNameContext listNameContext)
         {
@@ -135,10 +130,7 @@ namespace Planning
         internal void BuildGroundAction()
         {
             BuildGround(_actionDict.Values, AddToGroundActionDict);
-
         }
-
-
 
         private void BuildGround<T>(IEnumerable<T> containters, Action<string, string[]> action) where T : VariableContainer
         {
@@ -223,7 +215,8 @@ namespace Planning
         {
             foreach (var nameNode in context.NAME())
             {
-                AddAgent(nameNode.GetText());
+                _agentList.Add(nameNode.GetText());
+                //AddAgent(nameNode.GetText());
             }
         }
 

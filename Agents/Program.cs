@@ -58,29 +58,24 @@ namespace Agents
             var domain = Domain<ClientAction>.CreateInstance(domainContext);
             ShowDomainInfo(domain);
 
-            //// Create a TextReader that reads from a file
-            //tr = new StreamReader(problemFileName);
+            // Create a TextReader that reads from a file
+            tr = new StreamReader(problemFileName);
 
-            //// create a CharStream that reads from standard input
-            //input = new AntlrInputStream(tr);
-            //// create a lexer that feeds off of input CharStream
+            // create a CharStream that reads from standard input
+            input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
 
-            //lexer = new PlanningLexer(input);
-            //// create a buffer of tokens pulled from the lexer
-            //tokens = new CommonTokenStream(lexer);
-            //// create a parser that feeds off the tokens buffer
-            //parser = new PlanningParser(tokens);
+            lexer = new PlanningLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            parser = new PlanningParser(tokens);
 
-            //tree = parser.serverProblem();// begin parsing at init rule
+            var problemContext = parser.clientProblem();// begin parsing at init rule
+            tr.Close();
 
-            //// Create a generic parse tree walker that can trigger callbacks 
-            //walker = new ParseTreeWalker();
-            //// Walk the tree created during the parse, trigger callbacks 
-            //ProblemLoader problemLoader = new ProblemLoader(domain);
-            //walker.Walk(problemLoader, tree);
-            //tr.Close();
-            //Problem problem = problemLoader.Problem;
-            //problem.ShowInfo();
+            ClientProblem problem = ClientProblem.CreateInstance(domain, problemContext);
+            problem.ShowInfo();
 
             //Server server = new Server(port, listenBacklog, problem);
             //server.Run();

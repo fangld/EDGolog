@@ -11,10 +11,10 @@ namespace Planning.Servers
     public class ObjectBase
     {
         #region Fields
-
-        private ServerProblem _problem;
-
+        
         private Dictionary<string, bool> _predBooleanMap;
+
+        private IReadOnlyDictionary<string, GroundPredicate> _gndPredicateDict;
 
         #endregion
 
@@ -22,11 +22,11 @@ namespace Planning.Servers
 
         public ObjectBase(ServerProblem problem)
         {
-            _problem = problem;
             _predBooleanMap = new Dictionary<string, bool>();
-            foreach (var gndPred in _problem.GroundPredicateDict.Keys)
+            _gndPredicateDict = problem.GroundPredicateDict;
+            foreach (var gndPred in _gndPredicateDict.Keys)
             {
-                bool value = _problem.TruePredSet.Contains(gndPred);
+                bool value = problem.TruePredSet.Contains(gndPred);
                 _predBooleanMap.Add(gndPred, value);
             }
         }
@@ -35,14 +35,14 @@ namespace Planning.Servers
 
         #region Methods
 
-        public CUDDNode GetKnowledgeBase()
+        private CUDDNode GetCuddNode()
         {
             List<CUDDNode> literalNodes = new List<CUDDNode>();
 
             foreach (var gndPred in _predBooleanMap)
             {
                 string name = gndPred.Key;
-                int index = _problem.GroundPredicateDict[name].CuddIndexList[0];
+                int index = _gndPredicateDict[name].CuddIndexList[0];
                 CUDDNode node;
 
                 if (gndPred.Value)
@@ -71,7 +71,7 @@ namespace Planning.Servers
 
         public void Update(ServerGroundAction gndAction)
         {
-            CUDDNode kbNode = GetKnowledgeBase();
+            CUDDNode kbNode = GetCuddNode();
             CUDDNode preconditionNode = CUDD.Function.Implies(kbNode, gndAction.Precondition);
 
             CUDD.Print.PrintMinterm(kbNode);
@@ -113,7 +113,7 @@ namespace Planning.Servers
 
         public void ShowInfo()
         {
-            Console.WriteLine("Knowledge base:");
+            Console.WriteLine("Object base:");
             foreach (var pair in _predBooleanMap)
             {
                 Console.WriteLine("  Predicate: {0}, Value: {1}", pair.Key, pair.Value);
