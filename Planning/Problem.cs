@@ -8,8 +8,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Problem<TD, TA, TGA>
-        where TD : Domain<TA>
+    public abstract class Problem<TA, TGA>
         where TA : Action, new()
         where TGA : GroundAction<TA>, new()
     {
@@ -43,7 +42,7 @@ namespace Planning
 
         public string HostId { get; set; }
 
-        public TD Domain { get; set; }
+        public Domain<TA> Domain { get; set; }
 
         public HashSet<string> TruePredSet { get; set; }
 
@@ -76,7 +75,7 @@ namespace Planning
 
         #region Constructors
 
-        protected Problem(TD domain, PlanningParser.ServerProblemContext context)
+        protected Problem(Domain<TA> domain, PlanningParser.ServerProblemContext context)
         {
             _constantTypeMap = new Dictionary<string, string>();
             _typeConstantListMap = new Dictionary<string, List<string>>();

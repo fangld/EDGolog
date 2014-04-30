@@ -46,8 +46,6 @@
     <Compile Include="Action.cs" />
     <Compile Include="Clients\ClientAbstractPredicate.cs" />
     <Compile Include="Clients\ClientAction.cs" />
-    <Compile Include="Clients\ClientDomain.cs" />
-    <Compile Include="Clients\ClientDomainLoader.cs" />
     <Compile Include="Clients\ClientGroundAction.cs" />
     <Compile Include="Clients\ClientGroundPredicate.cs" />
     <Compile Include="Clients\ClientProblem.cs" />

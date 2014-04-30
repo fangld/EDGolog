@@ -8,8 +8,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Domain<TA> 
-        where TA: Action, new()
+    public class Domain<TA> where TA: Action, new()
     {
         #region Fields
 
@@ -19,7 +18,7 @@ namespace Planning
 
         private Dictionary<string, TA> _actionDict;
 
-        internal const string BarLine = "----------------";
+        public const string BarLine = "----------------";
 
         #endregion
 
@@ -48,7 +47,7 @@ namespace Planning
 
         #region Constructors
 
-        protected Domain(PlanningParser.DomainContext context)
+        private  Domain(PlanningParser.DomainContext context)
         {
             _typeList = new List<string> { VariableContainer.DefaultType };
             _predDict = new Dictionary<string, Predicate>();
@@ -61,28 +60,11 @@ namespace Planning
 
         #region Methods
 
-        public void AddToTypeList(string type)
+        public static Domain<TA> CreateInstance(PlanningParser.DomainContext context)
         {
-            _typeList.Add(type);
+            Domain<TA> result = new Domain<TA>(context);
+            return result;
         }
-
-        public void AddToPredicateDict(Predicate predicate)
-        {
-            _predDict.Add(predicate.Name, predicate);
-        }
-
-        public void AddToActionDict(TA action)
-        {
-            _actionDict.Add(action.Name, action);
-            CurrentCuddIndex = action.CurrentCuddIndex;
-        }
-
-        public void FromContext(PlanningParser.DomainContext context)
-        {
-            
-        }
-
-        public abstract void ShowInfo();
 
         #endregion
 
@@ -100,7 +82,7 @@ namespace Planning
         {
             foreach (var type in context.listName().NAME())
             {
-                AddToTypeList(type.GetText());
+                _typeList.Add(type.GetText());
             }
         }
 
@@ -109,7 +91,7 @@ namespace Planning
             foreach (var atomicFormulaSkeleton in context.atomicFormulaSkeleton())
             {
                 Predicate pred = Predicate.FromContext(atomicFormulaSkeleton);
-                AddToPredicateDict(pred);
+                _predDict.Add(pred.Name, pred);
             }
         }
 
@@ -119,7 +101,8 @@ namespace Planning
             {
                 TA action = new TA();
                 action.FromContext(CurrentCuddIndex, actionDefineContext, PredicateDict);
-                AddToActionDict(action);
+                _actionDict.Add(action.Name, action);
+                CurrentCuddIndex = action.CurrentCuddIndex;
             }
         }
 
