@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Planning.Clients
 {
-    public class ClientDomainLoader : DomainLoader<ClientDomain, ClientAction, ClientAbstractPredicate>
+    public class ClientDomainLoader : DomainLoader<ClientDomain, ClientAction>
     {
     }
 }

@@ -46,6 +46,11 @@ namespace Planning
 
         #region Overriden Methods
 
+        public void SetCuddIndex(int listIndex, int cuddIndex)
+        {
+            _cuddIndexList[listIndex] = cuddIndex;
+        }
+
         //public void From(int cuddIndexNumber, List<string> parameterList)
         //{
         //    _cuddIndexs = new int[cuddIndexNumber];

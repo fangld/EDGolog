@@ -65,11 +65,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servers\ObjectBase.cs" />
     <Compile Include="Servers\ServerAction.cs" />
-    <Compile Include="Servers\ServerAbstractPredicate.cs" />
     <Compile Include="Servers\ServerDomain.cs" />
     <Compile Include="Servers\ServerDomainLoader.cs" />
     <Compile Include="Servers\ServerGroundAction.cs" />
-    <Compile Include="Servers\ServerGroundPredicate.cs" />
     <Compile Include="Servers\ServerProblem.cs" />
     <Compile Include="Servers\ServerProblemLoader.cs" />
     <Compile Include="VariableContainer.cs" />

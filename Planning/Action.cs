@@ -8,29 +8,31 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Action<TAP> : VariableContainer 
-        where TAP: AbstractPredicate, new ()
+    public abstract class Action : VariableContainer 
     {
         #region Fields
 
-        protected Dictionary<string, TAP> _abstractPredDict;
+        protected Dictionary<string, AbstractPredicate> _abstractPredDict;
 
-        private List<Tuple<CUDDNode, List<Tuple<TAP, bool>>>> _effect;
+        private List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> _effect;
 
         #endregion
 
         #region Properties
 
+        protected abstract int PredicateCuddIndexNumber { get; }
+
         public CUDDNode Precondition { get; set; }
 
-        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<TAP, bool>>>> Effect
+
+        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> Effect
         {
             get { return _effect; }
         }
 
         public int CurrentCuddIndex { get; set; }
 
-        public IReadOnlyDictionary<string, TAP> AbstractPredicateDict
+        public IReadOnlyDictionary<string, AbstractPredicate> AbstractPredicateDict
         {
             get { return _abstractPredDict; }
         }
@@ -41,8 +43,8 @@ namespace Planning
 
         protected Action()
         {
-            _abstractPredDict = new Dictionary<string, TAP>();
-            _effect = new List<Tuple<CUDDNode, List<Tuple<TAP, bool>>>>();
+            _abstractPredDict = new Dictionary<string, AbstractPredicate>();
+            _effect = new List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>>();
         }
 
         #endregion
@@ -78,8 +80,20 @@ namespace Planning
             }
         }
 
-        protected abstract void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context,
-            IReadOnlyDictionary<string, Predicate> predDict);
+        private void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context,
+            IReadOnlyDictionary<string, Predicate> predDict)
+        {
+            var abstractPredicate = CreateAbstractPredicate(context, predDict);
+            if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
+            {
+                for (int i = 0; i < PredicateCuddIndexNumber; i++)
+                {
+                    abstractPredicate.SetCuddIndex(i, CurrentCuddIndex);
+                    CurrentCuddIndex++;
+                }
+                _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
+            }
+        }
 
         private void GenerateAbstractPredicates(PlanningParser.LiteralTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
@@ -121,7 +135,7 @@ namespace Planning
             }
         }
 
-        protected TAP CreateAbstractPredicate(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        protected AbstractPredicate CreateAbstractPredicate(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             List<string> constantList = new List<string>();
             for (int i = 0; i < context.term().Count; i++)
@@ -129,9 +143,10 @@ namespace Planning
                 constantList.Add(context.term()[i].GetText());
             }
 
-            TAP abstractPredicate = new TAP();
-            abstractPredicate.SetParameterList(constantList);
-            abstractPredicate.Predicate = predDict[context.predicate().GetText()];
+            Predicate pred = predDict[context.predicate().GetText()];
+
+            AbstractPredicate abstractPredicate = new AbstractPredicate(PredicateCuddIndexNumber, pred, constantList);
+
             return abstractPredicate;
         }
 
@@ -154,10 +169,10 @@ namespace Planning
             }
         }
 
-        protected TAP GetAbstractPredicate(PlanningParser.AtomicFormulaTermContext context)
+        protected AbstractPredicate GetAbstractPredicate(PlanningParser.AtomicFormulaTermContext context)
         {
             string abstractPredName = GetFullName(context);
-            TAP result = _abstractPredDict[abstractPredName];
+            AbstractPredicate result = _abstractPredDict[abstractPredName];
             return result;
         }
 
@@ -182,10 +197,10 @@ namespace Planning
             }
         }
 
-        private Tuple<CUDDNode, List<Tuple<TAP, bool>>> GetCondEffect(PlanningParser.CEffectContext context)
+        private Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>> GetCondEffect(PlanningParser.CEffectContext context)
         {
             CUDDNode condition;
-            var abstractLiterals = new List<Tuple<TAP, bool>>();
+            var abstractLiterals = new List<Tuple<AbstractPredicate, bool>>();
             if (context.literalTerm() != null)
             {
                 condition = CUDD.ONE;
@@ -202,21 +217,17 @@ namespace Planning
                 }
             }
 
-            var result = new Tuple<CUDDNode, List<Tuple<TAP, bool>>>(condition, abstractLiterals);
+            var result = new Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>(condition, abstractLiterals);
             return result;
         }
 
-        private Tuple<TAP, bool> GetAbstractLiteral(PlanningParser.LiteralTermContext context)
+        private Tuple<AbstractPredicate, bool> GetAbstractLiteral(PlanningParser.LiteralTermContext context)
         {
-            TAP abstractPredicate = GetAbstractPredicate(context.atomicFormulaTerm());
+            AbstractPredicate abstractPredicate = GetAbstractPredicate(context.atomicFormulaTerm());
             bool isPositive = context.NOT() == null;
-            return new Tuple<TAP, bool>(abstractPredicate, isPositive);
+            return new Tuple<AbstractPredicate, bool>(abstractPredicate, isPositive);
         }
-
-        //protected abstract CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context);
-
         
-
         #endregion
     }
 }

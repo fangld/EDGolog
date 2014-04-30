@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Planning.Servers
 {
-    public class ServerProblemLoader: ProblemLoader<ServerProblem, ServerDomain, ServerAction, ServerAbstractPredicate, ServerGroundPredicate, ServerGroundAction>
+    public class ServerProblemLoader: ProblemLoader<ServerProblem, ServerDomain, ServerAction, ServerGroundAction>
     {
         #region Constructors
 

@@ -7,9 +7,14 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Clients
 {
-    public class ClientProblem : Problem<ClientDomain, ClientAction, ClientAbstractPredicate, ClientGroundPredicate, ClientGroundAction>
+    public class ClientProblem : Problem<ClientDomain, ClientAction, ClientGroundAction>
     {
         #region Properties
+
+        protected override int PredicateCuddIndexNumber
+        {
+            get { return 2; }
+        }
 
         public CUDDNode Knowledge { get; set; }
 
@@ -46,7 +51,7 @@ namespace Planning.Clients
             foreach (var pair in GroundPredicateDict)
             {
                 Console.WriteLine("    Name: {0}, Previous index: {1}, Successsor index:{2}", pair.Key,
-                    pair.Value.PreviousCuddIndex, pair.Value.SuccessorCuddIndex);
+                    pair.Value.CuddIndexList[0], pair.Value.CuddIndexList[1]);
             }
             Console.WriteLine(ClientDomain.BarLine);
 
@@ -75,5 +80,7 @@ namespace Planning.Clients
 
             #endregion
         }
+
+
     }
 }

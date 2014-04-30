@@ -8,9 +8,9 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public class DomainLoader<TD, TA, TAP>
-        where TD : Domain<TA, TAP>, new()
-        where TA : Action<TAP>, new()
+    public class DomainLoader<TD, TA>
+        where TD : Domain<TA>, new()
+        where TA : Action, new()
     {
         #region Properties
 

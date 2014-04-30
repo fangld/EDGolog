@@ -7,9 +7,8 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Domain<TA, TAP> 
-        where TA: Action<TAP> 
-        where TAP: AbstractPredicate, new()
+    public abstract class Domain<TA> 
+        where TA: Action
     {
         #region Fields
 

@@ -7,7 +7,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerGroundAction : GroundAction<ServerAction, ServerAbstractPredicate, ServerGroundPredicate>
+    public class ServerGroundAction : GroundAction<ServerAction>
     {
         #region Fields
 
@@ -35,25 +35,25 @@ namespace Planning.Servers
 
         #region Methods
 
-        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, ServerGroundPredicate> gndPredDict)
-        {
-            Container = action;
-            SetConstantList(constantList);
-            GenerateGroundPrecondition(gndPredDict);
-            GenerateGroundEffect(gndPredDict);
-        }
+        //public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, ServerGroundPredicate> gndPredDict)
+        //{
+        //    Container = action;
+        //    SetConstantList(constantList);
+        //    GenerateGroundPrecondition(gndPredDict);
+        //    GenerateGroundEffect(gndPredDict);
+        //}
 
-        protected override int GetPreconditionCuddIndex(ServerAbstractPredicate abstractPred)
-        {
-            return abstractPred.CuddIndex;
-        }
+        //protected override int GetPreconditionCuddIndex(ServerAbstractPredicate abstractPred)
+        //{
+        //    return abstractPred.CuddIndex;
+        //}
 
-        protected override int GetPreconditionCuddIndex(ServerGroundPredicate gndPred)
-        {
-            return gndPred.CuddIndex;
-        }
+        //protected override int GetPreconditionCuddIndex(ServerGroundPredicate gndPred)
+        //{
+        //    return gndPred.CuddIndex;
+        //}
 
-        private void GenerateGroundEffect(Dictionary<string, ServerGroundPredicate> preGndPredDict)
+        private void GenerateGroundEffect(Dictionary<string, GroundPredicate> preGndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
@@ -69,7 +69,7 @@ namespace Planning.Servers
 
             foreach (var pair in Container.AbstractPredicateDict)
             {
-                oldVars.AddVar(CUDD.Var(pair.Value.CuddIndex));
+                oldVars.AddVar(CUDD.Var(pair.Value.CuddIndexList[0]));
                 List<string> collection = new List<string>();
                 foreach (var parm in pair.Value.ParameterList)
                 {
@@ -77,8 +77,8 @@ namespace Planning.Servers
                 }
 
                 string gndPredFullName = VariableContainer.GetFullName(pair.Value.Predicate.Name, collection);
-                ServerGroundPredicate gndPred = preGndPredDict[gndPredFullName];
-                newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
+                GroundPredicate gndPred = preGndPredDict[gndPredFullName];
+                newVars.AddVar(CUDD.Var(gndPred.CuddIndexList[0]));
             }
 
             foreach (var cEffect in Container.Effect)
@@ -110,5 +110,10 @@ namespace Planning.Servers
         }
 
         #endregion
+
+        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, GroundPredicate> gndPredDict)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

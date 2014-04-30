@@ -8,12 +8,10 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Problem<TD, TA, TAP, TGP, TGA>
-        where TD : Domain<TA, TAP>
-        where TA : Action<TAP>, new()
-        where TAP : AbstractPredicate, new()
-        where TGP : GroundPredicate, new()
-        where TGA : GroundAction<TA, TAP, TGP>, new()
+    public abstract class Problem<TD, TA, TGA>
+        where TD : Domain<TA>
+        where TA : Action, new()
+        where TGA : GroundAction<TA>, new()
     {
         #region Fields
 
@@ -21,7 +19,7 @@ namespace Planning
 
         private Dictionary<string, List<string>> _typeConstantListMap;
 
-        private Dictionary<string, TGP> _gndPredDict;
+        private Dictionary<string, GroundPredicate> _gndPredDict;
 
         private Dictionary<string, TGA> _gndActionDict;
 
@@ -36,6 +34,8 @@ namespace Planning
         #endregion
 
         #region Properties
+
+        protected abstract int PredicateCuddIndexNumber { get; }
 
         public string Name { get; set; }
 
@@ -62,7 +62,7 @@ namespace Planning
             get { return _typeConstantListMap; }
         }
 
-        public IReadOnlyDictionary<string, TGP> GroundPredicateDict
+        public IReadOnlyDictionary<string, GroundPredicate> GroundPredicateDict
         {
             get { return _gndPredDict; }
         }
@@ -85,7 +85,7 @@ namespace Planning
             Domain = domain;
             _predDict = domain.PredicateDict;
             _actionDict = domain.ActionDict;
-            _gndPredDict = new Dictionary<string, TGP>();
+            _gndPredDict = new Dictionary<string, GroundPredicate>();
             _gndActionDict = new Dictionary<string, TGA>();
             _currentCuddIndex = domain.CurrentCuddIndex;
         }
@@ -204,10 +204,12 @@ namespace Planning
         private void AddToGroundPredicateDict(string predName, string[] constantList)
         {
             Predicate pred = _predDict[predName];
-            TGP gndPred = new TGP();
-            gndPred.From(pred, constantList);
-            gndPred.CuddIndex = _currentCuddIndex;
-            _currentCuddIndex++;
+            GroundPredicate gndPred = new GroundPredicate(PredicateCuddIndexNumber, pred, constantList);
+            for (int i = 0; i < gndPred.CuddIndexList.Count; i++)
+            {
+                gndPred.SetCuddIndex(i, _currentCuddIndex);
+                _currentCuddIndex++;
+            }
             _gndPredDict.Add(gndPred.ToString(), gndPred);
         }
 

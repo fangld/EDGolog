@@ -7,8 +7,18 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerProblem : Problem<ServerDomain, ServerAction, ServerAbstractPredicate, ServerGroundPredicate, ServerGroundAction>
+    public class ServerProblem : Problem<ServerDomain, ServerAction, ServerGroundAction>
     {
+        #region Properties
+
+        protected override int PredicateCuddIndexNumber
+        {
+            get { return 1; }
+        }
+
+        #endregion
+
+        #region Methods
         public override void ShowInfo()
         {
             Console.WriteLine("Name: {0}", Name);
@@ -34,7 +44,7 @@ namespace Planning.Servers
             Console.WriteLine("Ground predicates:");
             foreach (var pair in GroundPredicateDict)
             {
-                Console.WriteLine("  Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndex);
+                Console.WriteLine("  Name: {0}, Index: {1}", pair.Key, pair.Value.CuddIndexList[0]);
             }
             Console.WriteLine(ServerDomain.BarLine);
 
@@ -87,5 +97,7 @@ namespace Planning.Servers
                 Console.WriteLine();
             }
         }
+
+        #endregion
     }
 }

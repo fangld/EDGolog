@@ -7,7 +7,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Clients
 {
-    public class ClientDomain : Domain<ClientAction, ClientAbstractPredicate>
+    public class ClientDomain : Domain<ClientAction>
     {
         #region Methods
 
@@ -54,7 +54,7 @@ namespace Planning.Clients
                 Console.WriteLine("    Abstract Predicates: ");
                 foreach (var pair in action.AbstractPredicateDict)
                 {
-                    Console.WriteLine("      Name: {0}, Previous index: {1}, Successor index: {2}", pair.Key, pair.Value.PreviousCuddIndex, pair.Value.SuccessorCuddIndex);
+                    Console.WriteLine("      Name: {0}, Previous index: {1}, Successor index: {2}", pair.Key, pair.Value.CuddIndexList[0], pair.Value.CuddIndexList[1]);
                 }
 
                 Console.WriteLine("  Precondition:");

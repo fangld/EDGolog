@@ -42,7 +42,7 @@ namespace Planning.Servers
             foreach (var gndPred in _predBooleanMap)
             {
                 string name = gndPred.Key;
-                int index = _problem.GroundPredicateDict[name].CuddIndex;
+                int index = _problem.GroundPredicateDict[name].CuddIndexList[0];
                 CUDDNode node;
 
                 if (gndPred.Value)

@@ -8,7 +8,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerAction : Action<ServerAbstractPredicate>
+    public class ServerAction : Action
     {
 
         #region Methods for creating an instance
@@ -88,8 +88,8 @@ namespace Planning.Servers
 
         private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context)
         {
-            ServerAbstractPredicate abstractPredicate = GetAbstractPredicate(context);
-            int index = abstractPredicate.CuddIndex;
+            AbstractPredicate abstractPredicate = GetAbstractPredicate(context);
+            int index = abstractPredicate.CuddIndexList[0];
             CUDDNode result = CUDD.Var(index);
             return result;
         }
@@ -112,17 +112,22 @@ namespace Planning.Servers
             return result;
         }
 
-        protected override void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
-        {
-            var abstractPredicate = CreateAbstractPredicate(context, predDict);
-            if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
-            {
-                abstractPredicate.CuddIndex = CurrentCuddIndex;
-                CurrentCuddIndex++;
-                _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
-            }
-        }
+        //protected override void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        //{
+        //    var abstractPredicate = CreateAbstractPredicate(context, predDict);
+        //    if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
+        //    {
+        //        abstractPredicate.CuddIndexList[0] = CurrentCuddIndex;
+        //        CurrentCuddIndex++;
+        //        _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
+        //    }
+        //}
 
         #endregion
+
+        protected override int PredicateCuddIndexNumber
+        {
+            get { return 1; }
+        }
     }
 }

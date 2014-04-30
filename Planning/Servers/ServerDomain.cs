@@ -7,7 +7,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerDomain : Domain<ServerAction, ServerAbstractPredicate>
+    public class ServerDomain : Domain<ServerAction>
     {
         public override void ShowInfo()
         {
@@ -50,7 +50,7 @@ namespace Planning.Servers
                 Console.WriteLine("    Abstract Predicates: ");
                 foreach (var pair in action.AbstractPredicateDict)
                 {
-                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndex);
+                    Console.WriteLine("      Name: {0}, CuddIndex: {1}", pair.Key, pair.Value.CuddIndexList[0]);
                 }
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(action.Precondition);

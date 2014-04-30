@@ -8,10 +8,8 @@ using Planning.Servers;
 
 namespace Planning
 {
-    public abstract class GroundAction<TA, TAP, TGP> : Ground<TA> 
-        where TA: Action<TAP>, new() 
-        where TAP : AbstractPredicate, new()
-        where TGP: GroundPredicate, new()
+    public abstract class GroundAction<TA> : Ground<TA> 
+        where TA: Action, new() 
     {
         #region Properties
 
@@ -27,15 +25,15 @@ namespace Planning
         #region Methods
 
         public abstract void From(TA action, IEnumerable<string> constantList,
-            Dictionary<string, TGP> gndPredDict);
+            Dictionary<string, GroundPredicate> gndPredDict);
 
-        protected abstract int GetPreconditionCuddIndex(TAP abstractPred);
+        //protected abstract int GetPreconditionCuddIndex(AbstractPredicate abstractPred);
 
-        protected abstract int GetPreconditionCuddIndex(TGP gndPred);
+        //protected abstract int GetPreconditionCuddIndex(GroundPredicate gndPred);
 
         //protected abstract void GenerateGroundPrecondition(Dictionary<string, TGP> gndPredDict);
 
-        protected void GenerateGroundPrecondition(Dictionary<string, TGP> gndPredDict)
+        protected void GenerateGroundPrecondition(Dictionary<string, GroundPredicate> gndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
@@ -51,7 +49,7 @@ namespace Planning
 
             foreach (var pair in Container.AbstractPredicateDict)
             {
-                int abstractIndex = GetPreconditionCuddIndex(pair.Value);
+                int abstractIndex = pair.Value.CuddIndexList[0];
                 oldVars.AddVar(CUDD.Var(abstractIndex));
                 List<string> collection = new List<string>();
                 foreach (var parm in pair.Value.ParameterList)
@@ -61,8 +59,8 @@ namespace Planning
 
                 string gndPredName = VariableContainer.GetFullName(pair.Value.Predicate.Name, collection);
 
-                TGP gndPred = gndPredDict[gndPredName];
-                int gndindex = GetPreconditionCuddIndex(gndPred);
+                GroundPredicate gndPred = gndPredDict[gndPredName];
+                int gndindex = gndPred.CuddIndexList[0];
                 newVars.AddVar(CUDD.Var(gndindex));
             }
 

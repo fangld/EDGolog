@@ -8,9 +8,14 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Clients
 {
-    public class ClientAction : Action<ClientAbstractPredicate>
+    public class ClientAction : Action
     {
         #region Properties
+
+        protected override int PredicateCuddIndexNumber
+        {
+            get { return 1; }
+        }
 
         public CUDDNode SuccessorStateAxiom { get; set; }
 
@@ -29,18 +34,18 @@ namespace Planning.Clients
             GenerateSuccessorStateAxiom();
         }
 
-        protected override void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
-        {
-            var abstractPredicate = CreateAbstractPredicate(context, predDict);
-            if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
-            {
-                abstractPredicate.PreviousCuddIndex = CurrentCuddIndex;
-                CurrentCuddIndex++;
-                abstractPredicate.SuccessorCuddIndex = CurrentCuddIndex;
-                CurrentCuddIndex++;
-                _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
-            }
-        }
+        //protected override void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        //{
+        //    var abstractPredicate = CreateAbstractPredicate(context, predDict);
+        //    if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
+        //    {
+        //        abstractPredicate.PreviousCuddIndex = CurrentCuddIndex;
+        //        CurrentCuddIndex++;
+        //        abstractPredicate.SuccessorCuddIndex = CurrentCuddIndex;
+        //        CurrentCuddIndex++;
+        //        _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
+        //    }
+        //}
 
         #endregion
 
@@ -53,9 +58,9 @@ namespace Planning.Clients
 
         private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context, bool isPrevious)
         {
-            ClientAbstractPredicate abstractPredicate = GetAbstractPredicate(context);
+            AbstractPredicate abstractPredicate = GetAbstractPredicate(context);
 
-            int index = isPrevious ? abstractPredicate.PreviousCuddIndex : abstractPredicate.SuccessorCuddIndex;
+            int index = isPrevious ? abstractPredicate.CuddIndexList[0] : abstractPredicate.CuddIndexList[1];
 
             CUDDNode result = CUDD.Var(index);
             return result;
@@ -204,9 +209,8 @@ namespace Planning.Clients
                     }
                 }
 
-                CUDDNode preAbstractPredNode = CUDD.Var(abstractPredPair.Value.PreviousCuddIndex);
-                //AbstractPredicate sucAbstractPredicate = _sucAbstractPredDict[abstractPredicate.Key];
-                CUDDNode sucAbstractPredNode = CUDD.Var(abstractPredPair.Value.SuccessorCuddIndex);
+                CUDDNode preAbstractPredNode = CUDD.Var(abstractPredPair.Value.CuddIndexList[0]);
+                CUDDNode sucAbstractPredNode = CUDD.Var(abstractPredPair.Value.CuddIndexList[1]);
 
                 CUDDNode invariant = CUDD.Function.Equal(preAbstractPredNode, sucAbstractPredNode);
 
@@ -229,14 +233,14 @@ namespace Planning.Clients
             return result;
         }
 
-        private CUDDNode GetEffectNode(Tuple<CUDDNode, List<Tuple<ClientAbstractPredicate, bool>>> cEffect)
+        private CUDDNode GetEffectNode(Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>> cEffect)
         {
             CUDDNode effect = CUDD.ONE;
 
             foreach (var literal in cEffect.Item2)
             {
                 CUDDNode intermediate = effect;
-                CUDDNode abstractPred = CUDD.Var(literal.Item1.SuccessorCuddIndex);
+                CUDDNode abstractPred = CUDD.Var(literal.Item1.CuddIndexList[1]);
                 CUDDNode literalNode = literal.Item2 ? abstractPred : CUDD.Function.Not(abstractPred);
                 effect = CUDD.Function.And(intermediate, literalNode);
                 CUDD.Ref(effect);
