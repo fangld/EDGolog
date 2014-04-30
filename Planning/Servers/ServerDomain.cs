@@ -3,12 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
     public class ServerDomain : Domain<ServerAction>
     {
+        #region Constructors
+
+        public ServerDomain(PlanningParser.DomainContext context)
+            : base(context)
+        {
+        }
+
+        #endregion
+
+        #region Methods
+
         public override void ShowInfo()
         {
             Console.WriteLine("Name: {0}", Name);
@@ -91,5 +103,7 @@ namespace Planning.Servers
                 Console.WriteLine();
             }
         }
+
+        #endregion
     }
 }

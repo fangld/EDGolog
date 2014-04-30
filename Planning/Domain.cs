@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
     public abstract class Domain<TA> 
-        where TA: Action
+        where TA: Action, new()
     {
         #region Fields
 
@@ -47,12 +48,13 @@ namespace Planning
 
         #region Constructors
 
-        public Domain()
+        protected Domain(PlanningParser.DomainContext context)
         {
             _typeList = new List<string> { VariableContainer.DefaultType };
             _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, TA>();
             CurrentCuddIndex = 0;
+            HandleDomain(context);
         }
 
         #endregion
@@ -75,7 +77,51 @@ namespace Planning
             CurrentCuddIndex = action.CurrentCuddIndex;
         }
 
+        public void FromContext(PlanningParser.DomainContext context)
+        {
+            
+        }
+
         public abstract void ShowInfo();
+
+        #endregion
+
+        #region Methods for generating from context
+
+        private void HandleDomain(PlanningParser.DomainContext context)
+        {
+            Name = context.NAME().GetText();
+            HandleTypeDefine(context.typeDefine());
+            HandlePredicatesDefine(context.predicatesDefine());
+            HandleActionsDefine(context.actionDefine());
+        }
+
+        private void HandleTypeDefine(PlanningParser.TypeDefineContext context)
+        {
+            foreach (var type in context.listName().NAME())
+            {
+                AddToTypeList(type.GetText());
+            }
+        }
+
+        private void HandlePredicatesDefine(PlanningParser.PredicatesDefineContext context)
+        {
+            foreach (var atomicFormulaSkeleton in context.atomicFormulaSkeleton())
+            {
+                Predicate pred = Predicate.FromContext(atomicFormulaSkeleton);
+                AddToPredicateDict(pred);
+            }
+        }
+
+        private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
+        {
+            foreach (var actionDefineContext in contexts)
+            {
+                TA action = new TA();
+                action.FromContext(CurrentCuddIndex, actionDefineContext, PredicateDict);
+                AddToActionDict(action);
+            }
+        }
 
         #endregion
     }

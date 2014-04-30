@@ -3,12 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Clients
 {
     public class ClientDomain : Domain<ClientAction>
     {
+        #region Constructors
+
+        public ClientDomain(PlanningParser.DomainContext context)
+            : base(context)
+        {
+        }
+
+        #endregion
+
         #region Methods
 
         public override void ShowInfo()

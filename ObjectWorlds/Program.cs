@@ -55,11 +55,9 @@ namespace ObjectWorlds
             // create a parser that feeds off the tokens buffer
             PlanningParser parser = new PlanningParser(tokens);
 
-            var doaminContext = parser.domain();// begin parsing at init rule
-            ServerDomainLoader domainLoader = new ServerDomainLoader();
-            domainLoader.HandleDomain(doaminContext);
+            var domainContext = parser.domain();// begin parsing at init rule
             tr.Close();
-            var domain = domainLoader.Domain;
+            var domain = new ServerDomain(domainContext);
             domain.ShowInfo();
 
             // Create a TextReader that reads from a file
@@ -76,12 +74,8 @@ namespace ObjectWorlds
             parser = new PlanningParser(tokens);
 
             var serverProblem = parser.serverProblem();// begin parsing at init rule
-
-            // Walk the tree created during the parse, trigger callbacks 
-            ServerProblemLoader problemLoader = new ServerProblemLoader(domain);
-            problemLoader.HandleServerProblem(serverProblem);
             tr.Close();
-            ServerProblem problem = problemLoader.Problem;
+            ServerProblem problem = new ServerProblem(domain, serverProblem);
             problem.ShowInfo();
 
             Server server = new Server(port, listenBacklog, problem);

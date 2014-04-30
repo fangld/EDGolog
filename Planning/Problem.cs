@@ -74,9 +74,9 @@ namespace Planning
 
         #endregion
 
-        #region Methods
+        #region Constructors
 
-        public void From(TD domain)
+        protected Problem(TD domain, PlanningParser.ServerProblemContext context)
         {
             _constantTypeMap = new Dictionary<string, string>();
             _typeConstantListMap = new Dictionary<string, List<string>>();
@@ -88,9 +88,14 @@ namespace Planning
             _gndPredDict = new Dictionary<string, GroundPredicate>();
             _gndActionDict = new Dictionary<string, TGA>();
             _currentCuddIndex = domain.CurrentCuddIndex;
+            HandleServerProblem(context);
         }
 
-        internal void AddAgent(string name)
+        #endregion
+
+        #region Methods
+
+        private void AddAgent(string name)
         {
             _agentList.Add(name);
         }
@@ -224,6 +229,40 @@ namespace Planning
         }
 
         public abstract void ShowInfo();
+
+        #endregion
+
+        #region Methods for generating from context
+
+        private void HandleServerProblem(PlanningParser.ServerProblemContext context)
+        {
+            Name = context.problemName().GetText();
+            DomainName = context.domainName().GetText();
+            HandleAgentDefine(context.agentDefine());
+            HandleObjectDeclaration(context.objectDeclaration());
+            HandleInit(context.init());
+        }
+
+        private void HandleAgentDefine(PlanningParser.AgentDefineContext context)
+        {
+            foreach (var nameNode in context.NAME())
+            {
+                AddAgent(nameNode.GetText());
+            }
+        }
+
+        private void HandleObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
+        {
+            var listNameContext = context.listName();
+            BuildConstantTypeMap(listNameContext);
+            BuildGroundPredicate();
+            BuildGroundAction();
+        }
+
+        private void HandleInit(PlanningParser.InitContext context)
+        {
+            BuildTruePredicateSet(context);
+        }
 
         #endregion
     }

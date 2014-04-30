@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Clients
@@ -19,6 +20,15 @@ namespace Planning.Clients
         public CUDDNode Knowledge { get; set; }
 
         public CUDDNode Belief { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        public ClientProblem(ClientDomain domain, PlanningParser.ServerProblemContext context) : base(domain, context)
+        {
+
+        }
 
         #endregion
 

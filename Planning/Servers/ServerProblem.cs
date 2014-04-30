@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
@@ -14,6 +15,16 @@ namespace Planning.Servers
         protected override int PredicateCuddIndexNumber
         {
             get { return 1; }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        public ServerProblem(ServerDomain domain, PlanningParser.ServerProblemContext context)
+            : base(domain, context)
+        {
+
         }
 
         #endregion

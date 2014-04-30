@@ -35,23 +35,13 @@ namespace Planning.Servers
 
         #region Methods
 
-        //public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, ServerGroundPredicate> gndPredDict)
-        //{
-        //    Container = action;
-        //    SetConstantList(constantList);
-        //    GenerateGroundPrecondition(gndPredDict);
-        //    GenerateGroundEffect(gndPredDict);
-        //}
-
-        //protected override int GetPreconditionCuddIndex(ServerAbstractPredicate abstractPred)
-        //{
-        //    return abstractPred.CuddIndex;
-        //}
-
-        //protected override int GetPreconditionCuddIndex(ServerGroundPredicate gndPred)
-        //{
-        //    return gndPred.CuddIndex;
-        //}
+        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, GroundPredicate> gndPredDict)
+        {
+            Container = action;
+            SetConstantList(constantList);
+            GenerateGroundPrecondition(gndPredDict);
+            GenerateGroundEffect(gndPredDict);
+        }
 
         private void GenerateGroundEffect(Dictionary<string, GroundPredicate> preGndPredDict)
         {
@@ -110,10 +100,5 @@ namespace Planning.Servers
         }
 
         #endregion
-
-        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, GroundPredicate> gndPredDict)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
