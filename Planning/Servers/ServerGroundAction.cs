@@ -7,7 +7,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerGroundAction : GroundAction<ServerAction, ServerAbstractPredicate>
+    public class ServerGroundAction : GroundAction<ServerAction, ServerAbstractPredicate, ServerGroundPredicate>
     {
         #region Fields
 
@@ -35,7 +35,7 @@ namespace Planning.Servers
 
         #region Methods
 
-        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, Ground<Predicate>> gndPredDict)
+        public override void From(ServerAction action, IEnumerable<string> constantList, Dictionary<string, ServerGroundPredicate> gndPredDict)
         {
             Container = action;
             SetConstantList(constantList);
@@ -48,21 +48,23 @@ namespace Planning.Servers
             return abstractPred.CuddIndex;
         }
 
-        private void GenerateGroundEffect(Dictionary<string, Ground<Predicate>> preGndPredDict)
+        protected override int GetPreconditionCuddIndex(ServerGroundPredicate gndPred)
+        {
+            return gndPred.CuddIndex;
+        }
+
+        private void GenerateGroundEffect(Dictionary<string, ServerGroundPredicate> preGndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
 
             Dictionary<string, string> abstractParmMap = new Dictionary<string, string>();
 
-            //Console.WriteLine("  Ground action constant list count:{0}", gndAction.ConstantList.Count);
-
             for (int i = 0; i < ConstantList.Count; i++)
             {
                 string abstractParm = Container.VariableList[i].Item1;
                 string gndParm = ConstantList[i];
                 abstractParmMap.Add(abstractParm, gndParm);
-                //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
             foreach (var pair in Container.AbstractPredicateDict)
@@ -75,10 +77,8 @@ namespace Planning.Servers
                 }
 
                 string gndPredFullName = VariableContainer.GetFullName(pair.Value.Predicate.Name, collection);
-                Ground<Predicate> gndPred = preGndPredDict[gndPredFullName];
+                ServerGroundPredicate gndPred = preGndPredDict[gndPredFullName];
                 newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
-
-                //Console.WriteLine("  old cuddIndex:{0}, new cuddIndex:{1}", pair.Value.CuddIndex, gndPred.CuddIndex);
             }
 
             foreach (var cEffect in Container.Effect)

@@ -9,12 +9,13 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public class ProblemLoader<TP, TD, TA, TAP, TGAP>
-        where TP : Problem<TD, TA, TAP, TGAP>, new()
+    public class ProblemLoader<TP, TD, TA, TAP, TGP, TGA>
+        where TP : Problem<TD, TA, TAP, TGP, TGA>, new()
         where TD : Domain<TA, TAP>, new()
         where TA : Action<TAP>, new()
         where TAP : AbstractPredicate, new()
-        where TGAP : GroundAction<TA, TAP>, new()
+        where TGA : GroundAction<TA, TAP, TGP> , new()
+        where TGP: GroundPredicate, new()
     {
         #region Properties
 

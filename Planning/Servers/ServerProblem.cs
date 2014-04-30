@@ -7,7 +7,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerProblem : Problem<ServerDomain, ServerAction, ServerAbstractPredicate, ServerGroundAction>
+    public class ServerProblem : Problem<ServerDomain, ServerAction, ServerAbstractPredicate, ServerGroundPredicate, ServerGroundAction>
     {
         public override void ShowInfo()
         {

@@ -8,9 +8,12 @@ namespace Planning.Servers
 {
     public class ServerAbstractPredicate : AbstractPredicate, IEquatable<ServerAbstractPredicate>
     {
-        #region Properties
-        
-        public int CuddIndex { get; set; }
+        #region Constructors
+
+        public ServerAbstractPredicate() : base(2)
+        {
+            
+        }
 
         #endregion
 

@@ -8,7 +8,8 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Action<TAP> : VariableContainer where TAP: AbstractPredicate, new ()
+    public abstract class Action<TAP> : VariableContainer 
+        where TAP: AbstractPredicate, new ()
     {
         #region Fields
 

@@ -18,7 +18,7 @@ namespace Planning
 
         public T Container { get; set; }
 
-        public int CuddIndex { get; set; }
+        //public int CuddIndex { get; set; }
 
         public IReadOnlyList<string> ConstantList
         {
@@ -29,13 +29,13 @@ namespace Planning
 
         #region Constructors
 
-        public Ground(){}
+        //public Ground(){}
 
-        public Ground(T container, IEnumerable<string> constantList)
-        {
-            Container = container;
-            _constantList = new List<string>(constantList);
-        }
+        //public Ground(T container, IEnumerable<string> constantList)
+        //{
+        //    Container = container;
+        //    _constantList = new List<string>(constantList);
+        //}
 
         #endregion
 

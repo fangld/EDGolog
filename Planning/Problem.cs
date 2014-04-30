@@ -8,11 +8,12 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Problem<TD, TA, TAP, TGAP>
+    public abstract class Problem<TD, TA, TAP, TGP, TGA>
         where TD : Domain<TA, TAP>
         where TA : Action<TAP>, new()
         where TAP : AbstractPredicate, new()
-        where TGAP : GroundAction<TA, TAP>, new()
+        where TGP : GroundPredicate, new()
+        where TGA : GroundAction<TA, TAP, TGP>, new()
     {
         #region Fields
 
@@ -20,9 +21,9 @@ namespace Planning
 
         private Dictionary<string, List<string>> _typeConstantListMap;
 
-        private Dictionary<string, Ground<Predicate>> _gndPredDict;
+        private Dictionary<string, TGP> _gndPredDict;
 
-        private Dictionary<string, TGAP> _gndActionDict;
+        private Dictionary<string, TGA> _gndActionDict;
 
         private IReadOnlyDictionary<string, Predicate> _predDict;
 
@@ -61,12 +62,12 @@ namespace Planning
             get { return _typeConstantListMap; }
         }
 
-        public IReadOnlyDictionary<string, Ground<Predicate>> GroundPredicateDict
+        public IReadOnlyDictionary<string, TGP> GroundPredicateDict
         {
             get { return _gndPredDict; }
         }
 
-        public IReadOnlyDictionary<string, TGAP> GroundActionDict
+        public IReadOnlyDictionary<string, TGA> GroundActionDict
         {
             get { return _gndActionDict; }
         }
@@ -84,8 +85,8 @@ namespace Planning
             Domain = domain;
             _predDict = domain.PredicateDict;
             _actionDict = domain.ActionDict;
-            _gndPredDict = new Dictionary<string, Ground<Predicate>>();
-            _gndActionDict = new Dictionary<string, TGAP>();
+            _gndPredDict = new Dictionary<string, TGP>();
+            _gndActionDict = new Dictionary<string, TGA>();
             _currentCuddIndex = domain.CurrentCuddIndex;
         }
 
@@ -198,10 +199,13 @@ namespace Planning
             } while (true);
         }
 
+        
+
         private void AddToGroundPredicateDict(string predName, string[] constantList)
         {
             Predicate pred = _predDict[predName];
-            Ground<Predicate> gndPred = new Ground<Predicate>(pred, constantList);
+            TGP gndPred = new TGP();
+            gndPred.From(pred, constantList);
             gndPred.CuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
             _gndPredDict.Add(gndPred.ToString(), gndPred);
@@ -210,7 +214,7 @@ namespace Planning
         private void AddToGroundActionDict(string actionName, string[] constantList)
         {
             TA action = _actionDict[actionName];
-            TGAP gndAction = new TGAP();
+            TGA gndAction = new TGA();
             gndAction.From(action, constantList, _gndPredDict);
             //Console.WriteLine("Ground action: {0}", gndAction);
             //CUDD.Print.PrintMinterm(gndAction.Precondition);

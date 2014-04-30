@@ -11,7 +11,6 @@ namespace Planning
     public class DomainLoader<TD, TA, TAP>
         where TD : Domain<TA, TAP>, new()
         where TA : Action<TAP>, new()
-        where TAP: AbstractPredicate, new()
     {
         #region Properties
 

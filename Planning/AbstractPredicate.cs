@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Planning
 {
-    public abstract class AbstractPredicate : IEquatable<AbstractPredicate>
+    public class AbstractPredicate : IEquatable<AbstractPredicate>
     {
         #region Fields
 
         private List<string> _parameterList;
+
+        private int[] _cuddIndexList; 
 
         #endregion
 
@@ -24,18 +26,36 @@ namespace Planning
             get { return _parameterList; }
         }
 
+        public IReadOnlyList<int> CuddIndexList
+        {
+            get { return _cuddIndexList; }
+        }
+
         #endregion
 
         #region Constructors
+
+        public AbstractPredicate(int cuddIndexNumber, Predicate pred, List<string> parameterList)
+        {
+            _cuddIndexList = new int[cuddIndexNumber];
+            Predicate = pred;
+            _parameterList = parameterList;
+        }
 
         #endregion
 
         #region Overriden Methods
 
-        public void SetParameterList(List<string> parameterList)
-        {
-            _parameterList = parameterList;
-        }
+        //public void From(int cuddIndexNumber, List<string> parameterList)
+        //{
+        //    _cuddIndexs = new int[cuddIndexNumber];
+        //    _parameterList = parameterList;
+        //}
+
+        //public void SetParameterList(List<string> parameterList)
+        //{
+        //    _parameterList = parameterList;
+        //}
 
         public bool Equals(AbstractPredicate other)
         {

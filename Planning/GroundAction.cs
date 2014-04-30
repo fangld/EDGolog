@@ -4,10 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PAT.Common.Classes.CUDDLib;
+using Planning.Servers;
 
 namespace Planning
 {
-    public abstract class GroundAction<TA, TAP> : Ground<TA> where TA: Action<TAP>, new() where TAP : AbstractPredicate, new()
+    public abstract class GroundAction<TA, TAP, TGP> : Ground<TA> 
+        where TA: Action<TAP>, new() 
+        where TAP : AbstractPredicate, new()
+        where TGP: GroundPredicate, new()
     {
         #region Properties
 
@@ -23,50 +27,48 @@ namespace Planning
         #region Methods
 
         public abstract void From(TA action, IEnumerable<string> constantList,
-            Dictionary<string, Ground<Predicate>> gndPredDict);
+            Dictionary<string, TGP> gndPredDict);
 
         protected abstract int GetPreconditionCuddIndex(TAP abstractPred);
 
-        protected void GenerateGroundPrecondition(Dictionary<string, Ground<Predicate>> gndPredDict)
+        protected abstract int GetPreconditionCuddIndex(TGP gndPred);
+
+        //protected abstract void GenerateGroundPrecondition(Dictionary<string, TGP> gndPredDict);
+
+        protected void GenerateGroundPrecondition(Dictionary<string, TGP> gndPredDict)
         {
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
 
             Dictionary<string, string> abstractParmMap = new Dictionary<string, string>();
 
-            //Console.WriteLine("  Ground action constant list count:{0}", gndAction.ConstantList.Count);
-
             for (int i = 0; i < ConstantList.Count; i++)
             {
                 string abstractParm = Container.VariableList[i].Item1;
                 string gndParm = ConstantList[i];
                 abstractParmMap.Add(abstractParm, gndParm);
-                //Console.WriteLine("    Parameter:{0}, constant:{1}", abstractParm, gndParm);
             }
 
             foreach (var pair in Container.AbstractPredicateDict)
             {
-                int index = GetPreconditionCuddIndex(pair.Value);
-                oldVars.AddVar(CUDD.Var(index));
+                int abstractIndex = GetPreconditionCuddIndex(pair.Value);
+                oldVars.AddVar(CUDD.Var(abstractIndex));
                 List<string> collection = new List<string>();
                 foreach (var parm in pair.Value.ParameterList)
                 {
                     collection.Add(abstractParmMap[parm]);
                 }
 
-                Ground<Predicate> gndPred = new Ground<Predicate>(pair.Value.Predicate, collection);
-                gndPred = gndPredDict[gndPred.ToString()];
-                newVars.AddVar(CUDD.Var(gndPred.CuddIndex));
+                string gndPredName = VariableContainer.GetFullName(pair.Value.Predicate.Name, collection);
+
+                TGP gndPred = gndPredDict[gndPredName];
+                int gndindex = GetPreconditionCuddIndex(gndPred);
+                newVars.AddVar(CUDD.Var(gndindex));
             }
 
             CUDDNode abstractPre = Container.Precondition;
 
             Precondition = CUDD.Variable.SwapVariables(abstractPre, oldVars, newVars);
-            //Console.WriteLine("  Ground precondition:");
-            //CUDD.Print.PrintMinterm(Precondition);
-
-            //CUDDNode abstractEff = gndAction.VariableContainer.Effect;
-            //gndAction.VariableContainer.Effect = CUDD.Variable.SwapVariables(abstractEff, oldVars, newVars);
         }
 
         #endregion
