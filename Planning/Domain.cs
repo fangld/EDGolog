@@ -100,7 +100,7 @@ namespace Planning
             foreach (var actionDefineContext in contexts)
             {
                 TA action = new TA();
-                action.FromContext(CurrentCuddIndex, actionDefineContext, PredicateDict);
+                action.From(CurrentCuddIndex, actionDefineContext, PredicateDict);
                 _actionDict.Add(action.Name, action);
                 CurrentCuddIndex = action.CurrentCuddIndex;
             }

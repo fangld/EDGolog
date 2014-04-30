@@ -13,7 +13,7 @@ namespace Planning.Servers
 
         #region Methods for creating an instance
 
-        public override void FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        public override void From(int initialCuddIndex, PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             CurrentCuddIndex = initialCuddIndex;
             Name = context.actionSymbol().GetText();

@@ -14,7 +14,7 @@ namespace Planning.Clients
 
         protected override int PredicateCuddIndexNumber
         {
-            get { return 1; }
+            get { return 2; }
         }
 
         public CUDDNode SuccessorStateAxiom { get; set; }
@@ -23,7 +23,7 @@ namespace Planning.Clients
 
         #region Methods for creating an instance
 
-        public override void FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        public override void From(int initialCuddIndex, PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
             CurrentCuddIndex = initialCuddIndex;
             Name = context.actionSymbol().GetText();
@@ -33,19 +33,6 @@ namespace Planning.Clients
             GenerateEffect(context, predDict);
             GenerateSuccessorStateAxiom();
         }
-
-        //protected override void GenerateAbstractPredicates(PlanningParser.AtomicFormulaTermContext context, IReadOnlyDictionary<string, Predicate> predDict)
-        //{
-        //    var abstractPredicate = CreateAbstractPredicate(context, predDict);
-        //    if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
-        //    {
-        //        abstractPredicate.PreviousCuddIndex = CurrentCuddIndex;
-        //        CurrentCuddIndex++;
-        //        abstractPredicate.SuccessorCuddIndex = CurrentCuddIndex;
-        //        CurrentCuddIndex++;
-        //        _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
-        //    }
-        //}
 
         #endregion
 

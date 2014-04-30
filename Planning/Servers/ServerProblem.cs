@@ -17,6 +17,8 @@ namespace Planning.Servers
             get { return 1; }
         }
 
+        public HashSet<string> TruePredSet { get; set; }
+
         #endregion
 
         #region Constructors
@@ -24,6 +26,8 @@ namespace Planning.Servers
         private ServerProblem(Domain<ServerAction> domain, PlanningParser.ServerProblemContext context)
             : base(domain, context)
         {
+            TruePredSet = new HashSet<string>();
+            HandleServerProblem(context);
 
         }
 
@@ -35,6 +39,36 @@ namespace Planning.Servers
         {
             ServerProblem result = new ServerProblem(domain, context);
             return result;
+        }
+
+        private void HandleServerProblem(PlanningParser.ServerProblemContext context)
+        {
+            Name = context.problemName().GetText();
+            DomainName = context.domainName().GetText();
+            HandleAgentDefine(context.agentDefine());
+            HandleObjectDeclaration(context.objectDeclaration());
+            HandleInit(context.init());
+        }
+
+        private void BuildTruePredicateSet(PlanningParser.InitContext context)
+        {
+            foreach (var atomicFormula in context.atomicFormulaName())
+            {
+                var nameNodes = atomicFormula.NAME();
+                List<string> termList = new List<string>();
+                foreach (var nameNode in nameNodes)
+                {
+                    termList.Add(nameNode.GetText());
+                }
+                string gndPredName = VariableContainer.GetFullName(atomicFormula.predicate().GetText(), termList);
+
+                TruePredSet.Add(gndPredName);
+            }
+        }
+
+        private void HandleInit(PlanningParser.InitContext context)
+        {
+            BuildTruePredicateSet(context);
         }
 
         public override void ShowInfo()

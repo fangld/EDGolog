@@ -51,7 +51,7 @@ namespace Planning
 
         #region Methods for creating an instance
 
-        public abstract void FromContext(int initialCuddIndex, PlanningParser.ActionDefineContext context,
+        public abstract void From(int initialCuddIndex, PlanningParser.ActionDefineContext context,
             IReadOnlyDictionary<string, Predicate> predDict);
 
         #endregion

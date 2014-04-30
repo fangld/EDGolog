@@ -44,7 +44,7 @@ namespace Planning
 
         public Domain<TA> Domain { get; set; }
 
-        public HashSet<string> TruePredSet { get; set; }
+
 
         public IReadOnlyList<string> AgentList
         {
@@ -79,7 +79,6 @@ namespace Planning
         {
             _constantTypeMap = new Dictionary<string, string>();
             _typeConstantListMap = new Dictionary<string, List<string>>();
-            TruePredSet = new HashSet<string>();
             _agentList = new List<string>();
             Domain = domain;
             _predDict = domain.PredicateDict;
@@ -87,7 +86,6 @@ namespace Planning
             _gndPredDict = new Dictionary<string, GroundPredicate>();
             _gndActionDict = new Dictionary<string, TGA>();
             _currentCuddIndex = domain.CurrentCuddIndex;
-            HandleServerProblem(context);
         }
 
         #endregion
@@ -140,21 +138,7 @@ namespace Planning
 
         }
 
-        internal void BuildTruePredicateSet(PlanningParser.InitContext context)
-        {
-            foreach (var atomicFormula in context.atomicFormulaName())
-            {
-                var nameNodes = atomicFormula.NAME();
-                List<string> termList = new List<string>();
-                foreach (var nameNode in nameNodes)
-                {
-                    termList.Add(nameNode.GetText());
-                }
-                string gndPredName = VariableContainer.GetFullName(atomicFormula.predicate().GetText(), termList);
 
-                TruePredSet.Add(gndPredName);
-            }
-        }
 
         private void BuildGround<T>(IEnumerable<T> containters, Action<string, string[]> action) where T : VariableContainer
         {
@@ -233,16 +217,9 @@ namespace Planning
 
         #region Methods for generating from context
 
-        private void HandleServerProblem(PlanningParser.ServerProblemContext context)
-        {
-            Name = context.problemName().GetText();
-            DomainName = context.domainName().GetText();
-            HandleAgentDefine(context.agentDefine());
-            HandleObjectDeclaration(context.objectDeclaration());
-            HandleInit(context.init());
-        }
 
-        private void HandleAgentDefine(PlanningParser.AgentDefineContext context)
+
+        protected void HandleAgentDefine(PlanningParser.AgentDefineContext context)
         {
             foreach (var nameNode in context.NAME())
             {
@@ -250,7 +227,7 @@ namespace Planning
             }
         }
 
-        private void HandleObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
+        protected void HandleObjectDeclaration(PlanningParser.ObjectDeclarationContext context)
         {
             var listNameContext = context.listName();
             BuildConstantTypeMap(listNameContext);
@@ -258,10 +235,7 @@ namespace Planning
             BuildGroundAction();
         }
 
-        private void HandleInit(PlanningParser.InitContext context)
-        {
-            BuildTruePredicateSet(context);
-        }
+
 
         #endregion
     }
