@@ -30,9 +30,7 @@ namespace ObjectWorlds.Network
 
         //private IReadOnlyDictionary<string, Action> _actionDict;
 
-        //private IReadOnlyDictionary<string, GroundAction> _gndActionDict;
-
-        private ServerProblem _problem;
+        private IReadOnlyDictionary<string, ServerGroundAction> _gndActionDict;
 
         #endregion
 
@@ -69,13 +67,13 @@ namespace ObjectWorlds.Network
             Host = ipEndPoint.Address.ToString();
             Port = ipEndPoint.Port;
             IsConnected = true;
-            _problem = problem;
+            _gndActionDict = problem.GroundActionDict;
         }
 
         public Client(ServerProblem problem, string name)
         {
             Name = name;
-            _problem = problem;
+            _gndActionDict = problem.GroundActionDict;
             IsConnected = false;
         }
 
@@ -120,7 +118,7 @@ namespace ObjectWorlds.Network
             }
 
             string actionFullName = VariableContainer.GetFullName(actionName, constantList);
-            return _problem.GroundActionDict[actionFullName];
+            return _gndActionDict[actionFullName];
         }
 
         private byte[] ReceiveBuffer()

@@ -48,6 +48,7 @@ namespace ObjectWorlds.Network
             _port = port;
             _backLog = backlog;
             _objectBase = new ObjectBase(problem);
+            _objectBase.ObjectBaseChanged += ShowObjectBase;
             _problem = problem;
             _agentClientDict = new Dictionary<string, Client>();
         }
@@ -96,6 +97,15 @@ namespace ObjectWorlds.Network
                     _objectBase.ShowInfo();
                 }
             } while (true);
+        }
+
+        private void ShowObjectBase(object sender, Dictionary<string, bool> predBooleanMap)
+        {
+            Console.WriteLine("Object base:");
+            foreach (var pair in predBooleanMap)
+            {
+                Console.WriteLine("  Predicate: {0}, Value: {1}", pair.Key, pair.Value);
+            }
         }
 
         #endregion

@@ -33,6 +33,12 @@ namespace Planning.Servers
 
         #endregion
 
+        #region Events
+
+        public EventHandler<Dictionary<string, bool>> ObjectBaseChanged;
+
+        #endregion
+
         #region Methods
 
         private CUDDNode GetCuddNode()
@@ -74,12 +80,14 @@ namespace Planning.Servers
             CUDDNode kbNode = GetCuddNode();
             CUDDNode preconditionNode = CUDD.Function.Implies(kbNode, gndAction.Precondition);
 
-            CUDD.Print.PrintMinterm(kbNode);
-
             if (preconditionNode.GetValue() > 0.5)
             {
                 var gndLiteralList = GenerateLiteralList(kbNode, gndAction);
                 UpdateByLiteralList(gndLiteralList);
+                if (ObjectBaseChanged != null)
+                {
+                    ObjectBaseChanged(this, _predBooleanMap);
+                }
                 CUDD.Deref(kbNode);
             }
             else
