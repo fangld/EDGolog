@@ -22,9 +22,14 @@ namespace Planning
         #region Properties
 
         /// <summary>
-        /// The name of default type;
+        /// The name of default type
         /// </summary>
         public const string DefaultType = "object";
+
+        /// <summary>
+        /// The name of agent type
+        /// </summary>
+        public const string AgentType = "agent";
 
         /// <summary>
         /// The name of variable container
@@ -54,7 +59,7 @@ namespace Planning
         /// <summary>
         /// Constructor
         /// </summary>
-        public VariableContainer()
+        protected VariableContainer()
         {
             _variableList = new List<Tuple<string, string>>();
         }

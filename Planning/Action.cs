@@ -8,27 +8,19 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public abstract class Action : VariableContainer 
+    public class Action : VariableContainer 
     {
         #region Fields
 
         protected Dictionary<string, AbstractPredicate> _abstractPredDict;
 
-        private List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> _effect;
+        private List<EventSet> _eventSets;
 
         #endregion
 
         #region Properties
-
-        protected abstract int PredicateCuddIndexNumber { get; }
-
+        
         public CUDDNode Precondition { get; set; }
-
-
-        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> Effect
-        {
-            get { return _effect; }
-        }
 
         public int CurrentCuddIndex { get; set; }
 
@@ -41,40 +33,54 @@ namespace Planning
 
         #region Constructors
 
-        protected Action()
+        private Action()
         {
             _abstractPredDict = new Dictionary<string, AbstractPredicate>();
-            _effect = new List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>>();
         }
 
         #endregion
 
         #region Methods for creating an instance
 
-        public abstract void From(int initialCuddIndex, PlanningParser.ActionDefineContext context,
-            IReadOnlyDictionary<string, Predicate> predDict);
+        public static Action From(int initialCuddIndex, PlanningParser.ActionDefineContext context,
+            IReadOnlyDictionary<string, Predicate> predDict)
+        {
+            Action result= new Action();
+
+            result.CurrentCuddIndex = initialCuddIndex;
+            result.Name = context.actionSymbol().GetText();
+            result.GenerateVariableList(context.listVariable());
+            result.GenerateAbstractPredicates(context, predDict);
+            result.GeneratePrecondition(context, predDict);
+            result.GenerateEffect(context, predDict);
+            result.GenerateSuccessorStateAxiom();
+
+            return result;
+        }
 
         #endregion
 
         #region Methods for generating abstract predicates
 
-        protected void GenerateAbstractPredicates(PlanningParser.ActionDefBodyContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        protected void GenerateAbstractPredicates(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
         {
-            if (context.PRE() != null)
+            foreach (var eventSetDefineContext in context.eventSetDefine())
             {
-                if (context.emptyOrPreGD() != null)
+                foreach (var eventDefineContext in eventSetDefineContext.eventDefine())
                 {
-                    GenerateAbstractPredicates(context.emptyOrPreGD().gd(), predDict);
-                }
-            }
-
-            if (context.EFF() != null)
-            {
-                if (context.emptyOrEffect() != null)
-                {
-                    foreach (var cEffectContext in context.emptyOrEffect().effect().cEffect())
+                    if (eventDefineContext.PRE() != null)
                     {
-                        GenerateAbstractPredicates(cEffectContext, predDict);
+                        GenerateAbstractPredicates(eventDefineContext.emptyOrPreGD().gd(), predDict);
+                    }
+                    if (eventDefineContext.EFF() != null)
+                    {
+                        if (eventDefineContext.emptyOrEffect() != null)
+                        {
+                            foreach (var cEffectContext in eventDefineContext.emptyOrEffect().effect().cEffect())
+                            {
+                                GenerateAbstractPredicates(cEffectContext, predDict);
+                            }
+                        }
                     }
                 }
             }
@@ -86,11 +92,10 @@ namespace Planning
             var abstractPredicate = CreateAbstractPredicate(context, predDict);
             if (!_abstractPredDict.ContainsKey(abstractPredicate.ToString()))
             {
-                for (int i = 0; i < PredicateCuddIndexNumber; i++)
-                {
-                    abstractPredicate.SetCuddIndex(i, CurrentCuddIndex);
-                    CurrentCuddIndex++;
-                }
+                abstractPredicate.PreviousCuddIndex = CurrentCuddIndex;
+                CurrentCuddIndex++;
+                abstractPredicate.SuccessiveCuddIndex = CurrentCuddIndex;
+                CurrentCuddIndex++;
                 _abstractPredDict.Add(abstractPredicate.ToString(), abstractPredicate);
             }
         }
@@ -145,34 +150,99 @@ namespace Planning
 
             Predicate pred = predDict[context.predicate().GetText()];
 
-            AbstractPredicate abstractPredicate = new AbstractPredicate(PredicateCuddIndexNumber, pred, constantList);
+            AbstractPredicate abstractPredicate = new AbstractPredicate(pred, constantList);
 
             return abstractPredicate;
         }
 
         #endregion
 
-        #region Methods for generating precondition
+        #region Methods for getting cuddnode
 
-        protected abstract CUDDNode GetCuddNode(PlanningParser.GdContext context);
-
-        protected void GeneratePrecondition(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaTermContext context, bool isPrevious)
         {
-            Precondition = CUDD.ONE;
+            AbstractPredicate abstractPredicate = GetAbstractPredicate(context);
 
-            if (context.actionDefBody().emptyOrPreGD() != null)
-            {
-                if (context.actionDefBody().emptyOrPreGD().gd() != null)
-                {
-                    Precondition = GetCuddNode(context.actionDefBody().emptyOrPreGD().gd());
-                }
-            }
+            int index = isPrevious ? abstractPredicate.PreviousCuddIndex : abstractPredicate.SuccessiveCuddIndex;
+
+            CUDDNode result = CUDD.Var(index);
+            return result;
         }
 
-        protected AbstractPredicate GetAbstractPredicate(PlanningParser.AtomicFormulaTermContext context)
+        private CUDDNode GetCuddNode(PlanningParser.LiteralTermContext context, bool isPrevious)
         {
-            string abstractPredName = GetFullName(context);
-            AbstractPredicate result = _abstractPredDict[abstractPredName];
+            CUDDNode subNode = GetCuddNode(context.atomicFormulaTerm(), isPrevious);
+            CUDDNode result;
+
+            if (context.NOT() != null)
+            {
+                result = CUDD.Function.Not(subNode);
+                CUDD.Ref(result);
+            }
+            else
+            {
+                result = subNode;
+            }
+
+            return result;
+        }
+
+        private CUDDNode GetCuddNode(PlanningParser.GdContext context, bool isPrevious = true)
+        {
+            CUDDNode result = null;
+
+            if (context.atomicFormulaTerm() != null)
+            {
+                result = GetCuddNode(context.atomicFormulaTerm(), isPrevious);
+            }
+            else if (context.literalTerm() != null)
+            {
+                result = GetCuddNode(context.literalTerm(), isPrevious);
+            }
+            else if (context.AND() != null)
+            {
+                result = GetCuddNode(context.gd()[0], isPrevious);
+                for (int i = 1; i < context.gd().Count; i++)
+                {
+                    CUDDNode gdNode = GetCuddNode(context.gd()[i], isPrevious);
+                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
+                    CUDD.Ref(andNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = andNode;
+                }
+            }
+            else if (context.OR() != null)
+            {
+                result = GetCuddNode(context.gd()[0], isPrevious);
+                for (int i = 1; i < context.gd().Count; i++)
+                {
+                    CUDDNode gdNode = GetCuddNode(context.gd()[i], isPrevious);
+                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
+                    CUDD.Ref(orNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = orNode;
+                }
+            }
+            else if (context.NOT() != null)
+            {
+                CUDDNode gdNode = GetCuddNode(context.gd()[0], isPrevious);
+                result = CUDD.Function.Not(gdNode);
+                CUDD.Ref(result);
+                CUDD.Deref(gdNode);
+            }
+            else if (context.IMPLY() != null)
+            {
+                CUDDNode gdNode0 = GetCuddNode(context.gd()[0], isPrevious);
+                CUDDNode gdNode1 = GetCuddNode(context.gd()[1], isPrevious);
+
+                result = CUDD.Function.Implies(gdNode0, gdNode1);
+                CUDD.Ref(result);
+                CUDD.Deref(gdNode0);
+                CUDD.Deref(gdNode1);
+            }
+
             return result;
         }
 
@@ -228,6 +298,15 @@ namespace Planning
             return new Tuple<AbstractPredicate, bool>(abstractPredicate, isPositive);
         }
         
+        #endregion
+
+        #region Methods for generatring successor state axiom
+
+        private void GenerateSuccessorStateAxiom()
+        {
+            
+        }
+
         #endregion
     }
 }

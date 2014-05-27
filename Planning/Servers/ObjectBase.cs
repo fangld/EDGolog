@@ -51,14 +51,7 @@ namespace Planning.Servers
                 int index = _gndPredicateDict[name].CuddIndexList[0];
                 CUDDNode node;
 
-                if (gndPred.Value)
-                {
-                    node = CUDD.Var(index);
-                }
-                else
-                {
-                    node = CUDD.Function.Not(CUDD.Var(index));
-                }
+                node = gndPred.Value ? CUDD.Var(index) : CUDD.Function.Not(CUDD.Var(index));
                 literalNodes.Add(node);
             }
 

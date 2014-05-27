@@ -8,7 +8,7 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
-    public class Domain<TA> where TA: Action, new()
+    public class Domain
     {
         #region Fields
 
@@ -16,7 +16,7 @@ namespace Planning
 
         private Dictionary<string, Predicate> _predDict;
 
-        private Dictionary<string, TA> _actionDict;
+        private Dictionary<string, Action> _actionDict;
 
         public const string BarLine = "----------------";
 
@@ -38,7 +38,7 @@ namespace Planning
             get { return _predDict; }
         }
 
-        public IReadOnlyDictionary<string, TA> ActionDict
+        public IReadOnlyDictionary<string, Action> ActionDict
         {
             get { return _actionDict; }
         }
@@ -47,23 +47,13 @@ namespace Planning
 
         #region Constructors
 
-        private  Domain(PlanningParser.DomainContext context)
+        public Domain(PlanningParser.DomainContext context)
         {
             _typeList = new List<string> { VariableContainer.DefaultType };
             _predDict = new Dictionary<string, Predicate>();
-            _actionDict = new Dictionary<string, TA>();
+            _actionDict = new Dictionary<string, Action>();
             CurrentCuddIndex = 0;
             HandleDomain(context);
-        }
-
-        #endregion
-
-        #region Methods
-
-        public static Domain<TA> CreateInstance(PlanningParser.DomainContext context)
-        {
-            Domain<TA> result = new Domain<TA>(context);
-            return result;
         }
 
         #endregion
@@ -99,8 +89,7 @@ namespace Planning
         {
             foreach (var actionDefineContext in contexts)
             {
-                TA action = new TA();
-                action.From(CurrentCuddIndex, actionDefineContext, PredicateDict);
+                Action action = Action.From(CurrentCuddIndex, actionDefineContext, PredicateDict);
                 _actionDict.Add(action.Name, action);
                 CurrentCuddIndex = action.CurrentCuddIndex;
             }

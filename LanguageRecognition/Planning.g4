@@ -5,17 +5,11 @@ grammar Planning;
  */
 
 // Domain description
-domain: LB DEF LB DOM NAME RB 
-		   //requireDefine?
+domain: LB DEF LB DOM NAME RB
 		   typeDefine?
 		   predicatesDefine?
 		   actionDefine* 
 		RB;
-
-/*requireDefine: LB COLON REQ requireKey+ RB;
-requireKey: strips | typing;
-strips: COLON STRIPS;
-typing: COLON TYPING;*/
 
 typeDefine: LB COLON TYPE listName RB;
 
@@ -23,18 +17,21 @@ predicatesDefine: LB COLON PRED atomicFormulaSkeleton+ RB;
 atomicFormulaSkeleton: LB predicate listVariable RB;
 predicate: NAME;
 
-primitiveType: OBJ | NAME;
+primitiveType: OBJ | AGT | NAME;
 type: primitiveType | LB EITHER primitiveType+ RB;
-
-//structureDefine: actionDefine;
 
 actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
-		         actionDefBody
+		         eventSetDefine+
 		      RB;
 actionSymbol: NAME;
-actionDefBody: (COLON PRE emptyOrPreGD)?
-               (COLON EFF emptyOrEffect)?;
+
+eventSetDefine: LB eventDefine+ RB;
+
+eventDefine: LB (COLON PLD INTEGER)?
+                (COLON PRE emptyOrPreGD)?
+                (COLON EFF emptyOrEffect)?
+			 RB;
 
 emptyOrPreGD: gd | LB RB;
 emptyOrEffect: effect | LB RB;
@@ -142,6 +139,7 @@ PARM: 'parameters';
 PRE: 'precondition';
 EFF: 'effect';
 OBJ: 'object';
+AGT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';
@@ -189,6 +187,7 @@ DIGIT: [0-9];
 
 NAME: LETTER CHAR*;
 CHAR: LETTER | DIGIT | DASH | UL;
+INTEGER: [1-9] DIGIT*;
 NUMBER: DIGIT+ DECIMAL?;
 DECIMAL: POINT DIGIT+;
 VAR: QM NAME;
