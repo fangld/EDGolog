@@ -8,17 +8,19 @@ grammar Planning;
 domain: LB DEF LB DOM NAME RB
 		   typeDefine?
 		   predicatesDefine?
-		   actionDefine* 
+		   actionDefine*
 		RB;
 
 typeDefine: LB COLON TYPE listName RB;
+maxnumDefine: LB COLON MAXNUM INTEGER RB;
 
 predicatesDefine: LB COLON PRED atomicFormulaSkeleton+ RB;
 atomicFormulaSkeleton: LB predicate listVariable RB;
 predicate: NAME;
 
-primitiveType: OBJ | AGT | NAME;
-type: primitiveType | LB EITHER primitiveType+ RB;
+/*primitiveType: OBJ | AGT | NUMBERS | NAME;
+type: primitiveType | LB EITHER primitiveType+ RB;*/
+type: OBJ | AGT | NUMBERS | NAME;
 
 actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
@@ -49,15 +51,24 @@ gd: atomicFormulaTerm
   | LB AND gd+ RB
   | LB OR gd+ RB
   | LB NOT gd RB
-  | LB IMPLY gd gd RB/*
+  | LB IMPLY gd gd RB
   | LB EXISTS LB listVariable RB gd RB
-  | LB FORALL LB listVariable RB gd RB*/;
+  | LB FORALL LB listVariable RB gd RB;
 
-atomicFormulaTerm: LB predicate term* RB;
-                 //| LB EQ term* RB;
+atomicFormulaTerm: LB predicate term* RB
+                 | LB EQ term term RB
+				 | LB LT term term RB
+				 | LB LEQ term term RB
+				 | LB GT term term RB
+				 | LB GEQ term term RB;
 literalTerm: atomicFormulaTerm | LB NOT atomicFormulaTerm RB;
 
-term: NAME | VAR;// | functionTerm;
+term: NAME
+    | VAR
+	| INTEGER
+	| LB MINUS term term RB
+	| LB PLUS term term RB
+	| LB ABS term RB;// | functionTerm;
 
 effect: LB AND cEffect+ RB
       | cEffect;
@@ -76,6 +87,7 @@ serverProblem: LB DEF LB PROM problemName RB
 		   LB COLON DOM domainName RB
 		   agentDefine
 		   objectDeclaration?
+		   maxnumDefine?
 		   init
 		 RB;
 
@@ -91,11 +103,11 @@ gdName: atomicFormulaName
   | LB OR gdName+ RB
   | LB NOT gdName RB
   | LB IMPLY gdName gdName RB
-  /*| LB EXISTS LB listVariable RB gd RB
-  | LB FORALL LB listVariable RB gd RB*/;
+  | LB EXISTS LB listVariable RB gd RB
+  | LB FORALL LB listVariable RB gd RB;
 
-atomicFormulaName: LB predicate NAME* RB;
-             //| LB EQ NAME* RB;
+atomicFormulaName: LB predicate NAME* RB
+                 | LB EQ NAME NAME RB;
 literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
 
 // Client problem description
@@ -104,6 +116,7 @@ clientProblem: LB DEF LB PROM problemName RB
 		   agentDefine
 		   LB COLON AGENTID agentId RB		   
 		   objectDeclaration?
+		   maxnumDefine?
 		   initKnowledge?
 		   initBelief?
 		 RB;
@@ -143,10 +156,13 @@ AGT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';
+MAXNUM: 'maxnumber';
 
+NUMBERS: 'numbers';
 OBJS: 'objects';
-INIT: 'init';
 AGENTS: 'agents';
+
+INIT: 'init';
 GOAL: 'goal';
 //AT: 'at';
 
@@ -163,7 +179,7 @@ QM: '?';
 POINT: '.';
 UL: '_';
 DASH: '-';
-/*PLUS: '+';
+PLUS: '+';
 MINUS: '-';
 MULT: '*';
 DIV: '/';
@@ -171,7 +187,8 @@ EQ: '=';
 LT: '<';
 LEQ: '<=';
 GT: '>';
-GEQ: '>=';*/
+GEQ: '>=';
+ABS: 'ABS';
 AND: 'and';
 OR: 'or';
 NOT: 'not';
