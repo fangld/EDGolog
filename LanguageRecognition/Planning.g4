@@ -22,6 +22,14 @@ predicate: NAME;
 type: primitiveType | LB EITHER primitiveType+ RB;*/
 type: OBJ | AGT | NUMBERS | NAME;
 
+eventDefine: LB COLON EVT eventSymbol
+                COLON PARM LB listVariable RB
+                (COLON PRE emptyOrPreGD)?
+                (COLON EFF emptyOrEffect)?
+			 RB;
+
+eventSymbol: NAME;
+
 actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
 		         eventSetDefine+
@@ -30,10 +38,9 @@ actionSymbol: NAME;
 
 eventSetDefine: LB eventDefine+ RB;
 
-eventDefine: LB (COLON PLD INTEGER)?
-                (COLON PRE emptyOrPreGD)?
-                (COLON EFF emptyOrEffect)?
-			 RB;
+
+
+observationSymbol: NAME;
 
 emptyOrPreGD: gd | LB RB;
 emptyOrEffect: effect | LB RB;
@@ -148,8 +155,10 @@ AGENTID: 'agentid';
 TYPE: 'types';
 PRED: 'predicates';
 ACT: 'action';
+EVT: 'event';
 PARM: 'parameters';
 PRE: 'precondition';
+RESP: 'response';
 EFF: 'effect';
 OBJ: 'object';
 AGT: 'agent';
