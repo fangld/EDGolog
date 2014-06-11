@@ -8,7 +8,9 @@ grammar Planning;
 domain: LB DEF LB DOM NAME RB
 		   typeDefine?
 		   predicatesDefine?
+		   eventDefine*
 		   actionDefine*
+		   observationDefine*
 		RB;
 
 typeDefine: LB COLON TYPE listName RB;
@@ -23,12 +25,19 @@ type: primitiveType | LB EITHER primitiveType+ RB;*/
 type: OBJ | AGT | NUMBERS | NAME;
 
 eventDefine: LB COLON EVT eventSymbol
-                COLON PARM LB listVariable RB
+                (COLON PARM LB listVariable RB)?
                 (COLON PRE emptyOrPreGD)?
                 (COLON EFF emptyOrEffect)?
 			 RB;
 
 eventSymbol: NAME;
+
+responseDefine: LB COLON RESP responseSymbol
+                   (COLON PARM LB listVariable RB)?
+                   COLON EVTS 
+                RB;
+
+responseSymbol: NAME;
 
 actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
@@ -38,7 +47,8 @@ actionSymbol: NAME;
 
 eventSetDefine: LB eventDefine+ RB;
 
-
+observationDefine: LB 
+                   RB;
 
 observationSymbol: NAME;
 
@@ -52,6 +62,8 @@ listVariable: VAR* | VAR+ DASH type listVariable;
 	 /*| LB FORALL listVariable preGD RB*///;
 //prefGD: gd | LB PREF prefName gd RB;
 //prefName: NAME;
+
+
 
 gd: atomicFormulaTerm
   | literalTerm
@@ -69,6 +81,14 @@ atomicFormulaTerm: LB predicate term* RB
 				 | LB GT term term RB
 				 | LB GEQ term term RB;
 literalTerm: atomicFormulaTerm | LB NOT atomicFormulaTerm RB;
+
+gdAction: actionFormulaTerm
+        | LB NOT gdAction RB
+		| LB AND gdAction+ RB
+		| LB OR gdAction+ RB
+		| LB EXISTS LB listVariable RB gdAction RB
+		| LB FORALL LB listVariable RB gdAction RB;
+actionFormulaTerm: LB actionSymbol term* RB;
 
 term: NAME
     | VAR
@@ -156,6 +176,7 @@ TYPE: 'types';
 PRED: 'predicates';
 ACT: 'action';
 EVT: 'event';
+EVTS: 'events';
 PARM: 'parameters';
 PRE: 'precondition';
 RESP: 'response';
