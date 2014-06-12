@@ -22,14 +22,14 @@ namespace Planning
         #region Properties
 
         /// <summary>
-        /// The name of default type
+        /// The name of object type
         /// </summary>
-        public const string DefaultType = "object";
+        public static readonly PlanningType ObjectType = new PlanningType() {Name = "object"};
 
         /// <summary>
         /// The name of agent type
         /// </summary>
-        public const string AgentType = "agent";
+        public static readonly PlanningType AgentType = new PlanningType() { Name = "agent" };
 
         /// <summary>
         /// The name of variable container
@@ -74,7 +74,7 @@ namespace Planning
             {
                 if (context.VAR().Count != 0)
                 {
-                    string type = context.type() == null ? DefaultType : context.type().GetText();
+                    string type = context.type() == null ? ObjectType.Name : context.type().GetText();
 
                     foreach (var varNode in context.VAR())
                     {
@@ -120,24 +120,24 @@ namespace Planning
             return sb.ToString();
         }
 
-        public static string GetFullName(PlanningParser.AtomicFormulaNameContext context)
+        public static string GetFullName(PlanningParser.TermAtomFormContext context)
         {
-            string name = context.predicate().GetText();
+            string name = context.pred().GetText();
             List<string> constantList = new List<string>();
-            foreach (var nameContext in context.NAME())
+            foreach (var termContext in context.term())
             {
-                constantList.Add(nameContext.GetText());
+                constantList.Add(termContext.GetText());
             }
             return GetFullName(name, constantList);
         }
 
-        public static string GetFullName(PlanningParser.AtomicFormulaTermContext context)
+        public static string GetFullName(PlanningParser.ConstTermAtomFormContext context)
         {
-            string name = context.predicate().GetText();
+            string name = context.pred().GetText();
             List<string> termList = new List<string>();
-            foreach (var termContext in context.term())
+            foreach (var constTermContext in context.constTerm())
             {
-                termList.Add(termContext.GetText());
+                termList.Add(constTermContext.GetText());
             }
             return GetFullName(name, termList);
         }

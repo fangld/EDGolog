@@ -17,10 +17,10 @@ namespace Planning
 
         #region Methods
 
-        public static Predicate FromContext(PlanningParser.AtomicFormulaSkeletonContext context)
+        public static Predicate FromContext(PlanningParser.AtomFormSkeletonContext context)
         {
             Predicate result = new Predicate();
-            result.Name = context.predicate().GetText();
+            result.Name = context.pred().GetText();
             result.GenerateVariableList(context.listVariable());
             return result;
         }

@@ -1,29 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
 
-namespace Planning
-{
-    public class GroundPredicate : Ground<Predicate>
-    {
-        #region Properties
+//namespace Planning
+//{
+//    public class GroundPredicate : Ground<Predicate>
+//    {
+//        #region Properties
 
-        public int PreviousCuddIndex { get; set; }
+//        public int PreviousCuddIndex { get; set; }
 
-        public int SuccessiveCuddIndex { get; set; }
+//        public int SuccessiveCuddIndex { get; set; }
 
-        #endregion
+//        #endregion
 
-        #region Constructors
+//        #region Constructors
 
-        public GroundPredicate(Predicate container, IEnumerable<string> constantList)
-        {
-            Container = container;
-            SetConstantList(constantList);
-        }
+//        public GroundPredicate(Predicate container, IEnumerable<string> constantList)
+//        {
+//            Container = container;
+//            SetConstantList(constantList);
+//        }
 
-        #endregion
-    }
-}
+//        #endregion
+//    }
+//}

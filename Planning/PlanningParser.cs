@@ -29,40 +29,50 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 [System.CLSCompliant(false)]
 public partial class PlanningParser : Parser {
 	public const int
-		DOM=1, PROM=2, DEF=3, AGENTID=4, TYPE=5, PRED=6, ACT=7, PARM=8, PRE=9, 
-		EFF=10, OBJ=11, AGT=12, EITHER=13, INITKNOWLEDGE=14, INITBELIEF=15, OBJS=16, 
-		INIT=17, AGENTS=18, GOAL=19, LB=20, RB=21, LSB=22, RSB=23, COLON=24, QM=25, 
-		POINT=26, UL=27, DASH=28, AND=29, OR=30, NOT=31, IMPLY=32, FORALL=33, 
-		EXISTS=34, WHEN=35, LETTER=36, DIGIT=37, NAME=38, CHAR=39, INTEGER=40, 
-		NUMBER=41, DECIMAL=42, VAR=43, FUNSYM=44, WS=45, PLD=46;
+		DOM=1, PROM=2, DEF=3, AGENTID=4, CONST=5, TYPE=6, PRED=7, ACT=8, EVT=9, 
+		EVTS=10, PARM=11, PRE=12, RESP=13, OBS=14, EFF=15, OBJ=16, AGT=17, EITHER=18, 
+		INITKNOWLEDGE=19, INITBELIEF=20, NUMBERTYPE=21, OBJTYPE=22, AGENTTYPE=23, 
+		INIT=24, GOAL=25, LB=26, RB=27, LSB=28, RSB=29, COMMA=30, COLON=31, QM=32, 
+		POINT=33, UL=34, DASH=35, PLUS=36, MINUS=37, MULT=38, DIV=39, EQ=40, LT=41, 
+		LEQ=42, GT=43, GEQ=44, AND=45, OR=46, NOT=47, IMPLY=48, FORALL=49, EXISTS=50, 
+		WHEN=51, LETTER=52, DIGIT=53, NAME=54, CHAR=55, INTEGER=56, NUMBER=57, 
+		DECIMAL=58, VAR=59, FUNSYM=60, WS=61, AGENTS=62, OBJS=63;
 	public static readonly string[] tokenNames = {
-		"<INVALID>", "'domain'", "'problem'", "'define'", "'agentid'", "'types'", 
-		"'predicates'", "'action'", "'parameters'", "'precondition'", "'effect'", 
-		"'object'", "'agent'", "'either'", "'initknowledge'", "'initbelief'", 
-		"'objects'", "'init'", "'agents'", "'goal'", "'('", "')'", "'['", "']'", 
-		"':'", "'?'", "'.'", "'_'", "'-'", "'and'", "'or'", "'not'", "'imply'", 
+		"<INVALID>", "'domain'", "'problem'", "'define'", "'agentid'", "'constants'", 
+		"'types'", "'predicates'", "'action'", "'event'", "'events'", "'parameters'", 
+		"'precondition'", "'response'", "'observation'", "'effect'", "'object'", 
+		"'agent'", "'either'", "'initknowledge'", "'initbelief'", "'numbers'", 
+		"'objects'", "'agents'", "'init'", "'goal'", "'('", "')'", "'['", "']'", 
+		"','", "':'", "'?'", "'.'", "'_'", "DASH", "'+'", "MINUS", "'*'", "'/'", 
+		"'='", "'<'", "'<='", "'>'", "'>='", "'and'", "'or'", "'not'", "'imply'", 
 		"'forall'", "'exists'", "'when'", "LETTER", "DIGIT", "NAME", "CHAR", "INTEGER", 
-		"NUMBER", "DECIMAL", "VAR", "FUNSYM", "WS", "PLD"
+		"NUMBER", "DECIMAL", "VAR", "FUNSYM", "WS", "AGENTS", "OBJS"
 	};
 	public const int
-		RULE_domain = 0, RULE_typeDefine = 1, RULE_predicatesDefine = 2, RULE_atomicFormulaSkeleton = 3, 
-		RULE_predicate = 4, RULE_primitiveType = 5, RULE_type = 6, RULE_actionDefine = 7, 
-		RULE_actionSymbol = 8, RULE_eventSetDefine = 9, RULE_eventDefine = 10, 
-		RULE_emptyOrPreGD = 11, RULE_emptyOrEffect = 12, RULE_listName = 13, RULE_listVariable = 14, 
-		RULE_gd = 15, RULE_atomicFormulaTerm = 16, RULE_literalTerm = 17, RULE_term = 18, 
-		RULE_effect = 19, RULE_cEffect = 20, RULE_condEffect = 21, RULE_serverProblem = 22, 
-		RULE_problemName = 23, RULE_domainName = 24, RULE_agentDefine = 25, RULE_objectDeclaration = 26, 
-		RULE_init = 27, RULE_gdName = 28, RULE_atomicFormulaName = 29, RULE_literalName = 30, 
-		RULE_clientProblem = 31, RULE_initKnowledge = 32, RULE_initBelief = 33, 
-		RULE_agentId = 34;
+		RULE_domain = 0, RULE_constDefine = 1, RULE_constSymbol = 2, RULE_typeDefine = 3, 
+		RULE_predDefine = 4, RULE_atomFormSkeleton = 5, RULE_pred = 6, RULE_typeDeclaration = 7, 
+		RULE_type = 8, RULE_interval = 9, RULE_eventDefine = 10, RULE_eventSymbol = 11, 
+		RULE_responseDefine = 12, RULE_responseSymbol = 13, RULE_actionDefine = 14, 
+		RULE_actionSymbol = 15, RULE_eventModel = 16, RULE_plausibilityDegree = 17, 
+		RULE_observationDefine = 18, RULE_observationSymbol = 19, RULE_emptyOrPreGD = 20, 
+		RULE_emptyOrEffect = 21, RULE_listName = 22, RULE_listVariable = 23, RULE_gd = 24, 
+		RULE_termAtomForm = 25, RULE_termLiteral = 26, RULE_gdEvent = 27, RULE_eventFormulaTerm = 28, 
+		RULE_term = 29, RULE_constTerm = 30, RULE_effect = 31, RULE_cEffect = 32, 
+		RULE_condEffect = 33, RULE_serverProblem = 34, RULE_problemName = 35, 
+		RULE_domainName = 36, RULE_agentDefine = 37, RULE_objectDeclaration = 38, 
+		RULE_constSetting = 39, RULE_init = 40, RULE_constTermGd = 41, RULE_constTermAtomForm = 42, 
+		RULE_constTermLiteral = 43, RULE_clientProblem = 44, RULE_initKnowledge = 45, 
+		RULE_initBelief = 46, RULE_agentId = 47;
 	public static readonly string[] ruleNames = {
-		"domain", "typeDefine", "predicatesDefine", "atomicFormulaSkeleton", "predicate", 
-		"primitiveType", "type", "actionDefine", "actionSymbol", "eventSetDefine", 
-		"eventDefine", "emptyOrPreGD", "emptyOrEffect", "listName", "listVariable", 
-		"gd", "atomicFormulaTerm", "literalTerm", "term", "effect", "cEffect", 
+		"domain", "constDefine", "constSymbol", "typeDefine", "predDefine", "atomFormSkeleton", 
+		"pred", "typeDeclaration", "type", "interval", "eventDefine", "eventSymbol", 
+		"responseDefine", "responseSymbol", "actionDefine", "actionSymbol", "eventModel", 
+		"plausibilityDegree", "observationDefine", "observationSymbol", "emptyOrPreGD", 
+		"emptyOrEffect", "listName", "listVariable", "gd", "termAtomForm", "termLiteral", 
+		"gdEvent", "eventFormulaTerm", "term", "constTerm", "effect", "cEffect", 
 		"condEffect", "serverProblem", "problemName", "domainName", "agentDefine", 
-		"objectDeclaration", "init", "gdName", "atomicFormulaName", "literalName", 
-		"clientProblem", "initKnowledge", "initBelief", "agentId"
+		"objectDeclaration", "constSetting", "init", "constTermGd", "constTermAtomForm", 
+		"constTermLiteral", "clientProblem", "initKnowledge", "initBelief", "agentId"
 	};
 
 	public override string GrammarFileName { get { return "Planning.g4"; } }
@@ -79,26 +89,41 @@ public partial class PlanningParser : Parser {
 		_interp = new ParserATNSimulator(this,_ATN);
 	}
 	public partial class DomainContext : ParserRuleContext {
+		public ConstDefineContext constDefine() {
+			return GetRuleContext<ConstDefineContext>(0);
+		}
+		public ObservationDefineContext observationDefine(int i) {
+			return GetRuleContext<ObservationDefineContext>(i);
+		}
+		public IReadOnlyList<ActionDefineContext> actionDefine() {
+			return GetRuleContexts<ActionDefineContext>();
+		}
+		public IReadOnlyList<ObservationDefineContext> observationDefine() {
+			return GetRuleContexts<ObservationDefineContext>();
+		}
+		public ITerminalNode DOM() { return GetToken(PlanningParser.DOM, 0); }
 		public ITerminalNode RB(int i) {
 			return GetToken(PlanningParser.RB, i);
 		}
 		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
 		public ITerminalNode DEF() { return GetToken(PlanningParser.DEF, 0); }
-		public IReadOnlyList<ActionDefineContext> actionDefine() {
-			return GetRuleContexts<ActionDefineContext>();
+		public EventDefineContext eventDefine(int i) {
+			return GetRuleContext<EventDefineContext>(i);
 		}
 		public ITerminalNode LB(int i) {
 			return GetToken(PlanningParser.LB, i);
 		}
 		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
 		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
-		public PredicatesDefineContext predicatesDefine() {
-			return GetRuleContext<PredicatesDefineContext>(0);
+		public PredDefineContext predDefine() {
+			return GetRuleContext<PredDefineContext>(0);
+		}
+		public IReadOnlyList<EventDefineContext> eventDefine() {
+			return GetRuleContexts<EventDefineContext>();
 		}
 		public TypeDefineContext typeDefine() {
 			return GetRuleContext<TypeDefineContext>(0);
 		}
-		public ITerminalNode DOM() { return GetToken(PlanningParser.DOM, 0); }
 		public ActionDefineContext actionDefine(int i) {
 			return GetRuleContext<ActionDefineContext>(i);
 		}
@@ -115,44 +140,169 @@ public partial class PlanningParser : Parser {
 		EnterRule(_localctx, 0, RULE_domain);
 		int _la;
 		try {
+			int _alt;
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 70; Match(LB);
-			State = 71; Match(DEF);
-			State = 72; Match(LB);
-			State = 73; Match(DOM);
-			State = 74; Match(NAME);
-			State = 75; Match(RB);
-			State = 77;
+			State = 96; Match(LB);
+			State = 97; Match(DEF);
+			State = 98; Match(LB);
+			State = 99; Match(DOM);
+			State = 100; Match(NAME);
+			State = 101; Match(RB);
+			State = 103;
 			switch ( Interpreter.AdaptivePredict(_input,0,_ctx) ) {
 			case 1:
 				{
-				State = 76; typeDefine();
+				State = 102; constDefine();
 				}
 				break;
 			}
-			State = 80;
+			State = 106;
 			switch ( Interpreter.AdaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
-				State = 79; predicatesDefine();
+				State = 105; typeDefine();
 				}
 				break;
 			}
-			State = 85;
+			State = 109;
+			switch ( Interpreter.AdaptivePredict(_input,2,_ctx) ) {
+			case 1:
+				{
+				State = 108; predDefine();
+				}
+				break;
+			}
+			State = 114;
+			_errHandler.Sync(this);
+			_alt = Interpreter.AdaptivePredict(_input,3,_ctx);
+			while ( _alt!=2 && _alt!=ATN.InvalidAltNumber ) {
+				if ( _alt==1 ) {
+					{
+					{
+					State = 111; eventDefine();
+					}
+					} 
+				}
+				State = 116;
+				_errHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(_input,3,_ctx);
+			}
+			State = 120;
+			_errHandler.Sync(this);
+			_alt = Interpreter.AdaptivePredict(_input,4,_ctx);
+			while ( _alt!=2 && _alt!=ATN.InvalidAltNumber ) {
+				if ( _alt==1 ) {
+					{
+					{
+					State = 117; actionDefine();
+					}
+					} 
+				}
+				State = 122;
+				_errHandler.Sync(this);
+				_alt = Interpreter.AdaptivePredict(_input,4,_ctx);
+			}
+			State = 126;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while (_la==LB) {
 				{
 				{
-				State = 82; actionDefine();
+				State = 123; observationDefine();
 				}
 				}
-				State = 87;
+				State = 128;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
-			State = 88; Match(RB);
+			State = 129; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ConstDefineContext : ParserRuleContext {
+		public ConstSymbolContext constSymbol(int i) {
+			return GetRuleContext<ConstSymbolContext>(i);
+		}
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public IReadOnlyList<ConstSymbolContext> constSymbol() {
+			return GetRuleContexts<ConstSymbolContext>();
+		}
+		public ITerminalNode CONST() { return GetToken(PlanningParser.CONST, 0); }
+		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
+		public ConstDefineContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_constDefine; }
+	}
+
+	[RuleVersion(0)]
+	public ConstDefineContext constDefine() {
+		ConstDefineContext _localctx = new ConstDefineContext(_ctx, State);
+		EnterRule(_localctx, 2, RULE_constDefine);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 131; Match(LB);
+			State = 132; Match(COLON);
+			State = 133; Match(CONST);
+			State = 135;
+			_errHandler.Sync(this);
+			_la = _input.La(1);
+			do {
+				{
+				{
+				State = 134; constSymbol();
+				}
+				}
+				State = 137;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+			} while ( _la==NAME );
+			State = 139; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ConstSymbolContext : ParserRuleContext {
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public ConstSymbolContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_constSymbol; }
+	}
+
+	[RuleVersion(0)]
+	public ConstSymbolContext constSymbol() {
+		ConstSymbolContext _localctx = new ConstSymbolContext(_ctx, State);
+		EnterRule(_localctx, 4, RULE_constSymbol);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 141; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -168,10 +318,13 @@ public partial class PlanningParser : Parser {
 
 	public partial class TypeDefineContext : ParserRuleContext {
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ListNameContext listName() {
-			return GetRuleContext<ListNameContext>(0);
-		}
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public IReadOnlyList<TypeDeclarationContext> typeDeclaration() {
+			return GetRuleContexts<TypeDeclarationContext>();
+		}
+		public TypeDeclarationContext typeDeclaration(int i) {
+			return GetRuleContext<TypeDeclarationContext>(i);
+		}
 		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
 		public ITerminalNode TYPE() { return GetToken(PlanningParser.TYPE, 0); }
 		public TypeDefineContext(ParserRuleContext parent, int invokingState)
@@ -184,71 +337,28 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public TypeDefineContext typeDefine() {
 		TypeDefineContext _localctx = new TypeDefineContext(_ctx, State);
-		EnterRule(_localctx, 2, RULE_typeDefine);
-		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 90; Match(LB);
-			State = 91; Match(COLON);
-			State = 92; Match(TYPE);
-			State = 93; listName();
-			State = 94; Match(RB);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.ReportError(this, re);
-			_errHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class PredicatesDefineContext : ParserRuleContext {
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public AtomicFormulaSkeletonContext atomicFormulaSkeleton(int i) {
-			return GetRuleContext<AtomicFormulaSkeletonContext>(i);
-		}
-		public IReadOnlyList<AtomicFormulaSkeletonContext> atomicFormulaSkeleton() {
-			return GetRuleContexts<AtomicFormulaSkeletonContext>();
-		}
-		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
-		public ITerminalNode PRED() { return GetToken(PlanningParser.PRED, 0); }
-		public PredicatesDefineContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int GetRuleIndex() { return RULE_predicatesDefine; }
-	}
-
-	[RuleVersion(0)]
-	public PredicatesDefineContext predicatesDefine() {
-		PredicatesDefineContext _localctx = new PredicatesDefineContext(_ctx, State);
-		EnterRule(_localctx, 4, RULE_predicatesDefine);
+		EnterRule(_localctx, 6, RULE_typeDefine);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 96; Match(LB);
-			State = 97; Match(COLON);
-			State = 98; Match(PRED);
-			State = 100;
+			State = 143; Match(LB);
+			State = 144; Match(COLON);
+			State = 145; Match(TYPE);
+			State = 147;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			do {
 				{
 				{
-				State = 99; atomicFormulaSkeleton();
+				State = 146; typeDeclaration();
 				}
 				}
-				State = 102;
+				State = 149;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
-			} while ( _la==LB );
-			State = 104; Match(RB);
+			} while ( _la==NAME );
+			State = 151; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -262,96 +372,198 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AtomicFormulaSkeletonContext : ParserRuleContext {
+	public partial class PredDefineContext : ParserRuleContext {
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public AtomFormSkeletonContext atomFormSkeleton(int i) {
+			return GetRuleContext<AtomFormSkeletonContext>(i);
+		}
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public ListVariableContext listVariable() {
-			return GetRuleContext<ListVariableContext>(0);
+		public IReadOnlyList<AtomFormSkeletonContext> atomFormSkeleton() {
+			return GetRuleContexts<AtomFormSkeletonContext>();
 		}
-		public PredicateContext predicate() {
-			return GetRuleContext<PredicateContext>(0);
-		}
-		public AtomicFormulaSkeletonContext(ParserRuleContext parent, int invokingState)
+		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
+		public ITerminalNode PRED() { return GetToken(PlanningParser.PRED, 0); }
+		public PredDefineContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_atomicFormulaSkeleton; }
+		public override int GetRuleIndex() { return RULE_predDefine; }
 	}
 
 	[RuleVersion(0)]
-	public AtomicFormulaSkeletonContext atomicFormulaSkeleton() {
-		AtomicFormulaSkeletonContext _localctx = new AtomicFormulaSkeletonContext(_ctx, State);
-		EnterRule(_localctx, 6, RULE_atomicFormulaSkeleton);
-		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 106; Match(LB);
-			State = 107; predicate();
-			State = 108; listVariable();
-			State = 109; Match(RB);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.ReportError(this, re);
-			_errHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class PredicateContext : ParserRuleContext {
-		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
-		public PredicateContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int GetRuleIndex() { return RULE_predicate; }
-	}
-
-	[RuleVersion(0)]
-	public PredicateContext predicate() {
-		PredicateContext _localctx = new PredicateContext(_ctx, State);
-		EnterRule(_localctx, 8, RULE_predicate);
-		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 111; Match(NAME);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.ReportError(this, re);
-			_errHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class PrimitiveTypeContext : ParserRuleContext {
-		public ITerminalNode OBJ() { return GetToken(PlanningParser.OBJ, 0); }
-		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
-		public ITerminalNode AGT() { return GetToken(PlanningParser.AGT, 0); }
-		public PrimitiveTypeContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int GetRuleIndex() { return RULE_primitiveType; }
-	}
-
-	[RuleVersion(0)]
-	public PrimitiveTypeContext primitiveType() {
-		PrimitiveTypeContext _localctx = new PrimitiveTypeContext(_ctx, State);
-		EnterRule(_localctx, 10, RULE_primitiveType);
+	public PredDefineContext predDefine() {
+		PredDefineContext _localctx = new PredDefineContext(_ctx, State);
+		EnterRule(_localctx, 8, RULE_predDefine);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 113;
+			State = 153; Match(LB);
+			State = 154; Match(COLON);
+			State = 155; Match(PRED);
+			State = 157;
+			_errHandler.Sync(this);
+			_la = _input.La(1);
+			do {
+				{
+				{
+				State = 156; atomFormSkeleton();
+				}
+				}
+				State = 159;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+			} while ( _la==LB );
+			State = 161; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class AtomFormSkeletonContext : ParserRuleContext {
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public PredContext pred() {
+			return GetRuleContext<PredContext>(0);
+		}
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
+		public AtomFormSkeletonContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_atomFormSkeleton; }
+	}
+
+	[RuleVersion(0)]
+	public AtomFormSkeletonContext atomFormSkeleton() {
+		AtomFormSkeletonContext _localctx = new AtomFormSkeletonContext(_ctx, State);
+		EnterRule(_localctx, 10, RULE_atomFormSkeleton);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 163; Match(LB);
+			State = 164; pred();
+			State = 165; listVariable();
+			State = 166; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class PredContext : ParserRuleContext {
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public PredContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_pred; }
+	}
+
+	[RuleVersion(0)]
+	public PredContext pred() {
+		PredContext _localctx = new PredContext(_ctx, State);
+		EnterRule(_localctx, 12, RULE_pred);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 168; Match(NAME);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class TypeDeclarationContext : ParserRuleContext {
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public IntervalContext interval() {
+			return GetRuleContext<IntervalContext>(0);
+		}
+		public TypeDeclarationContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_typeDeclaration; }
+	}
+
+	[RuleVersion(0)]
+	public TypeDeclarationContext typeDeclaration() {
+		TypeDeclarationContext _localctx = new TypeDeclarationContext(_ctx, State);
+		EnterRule(_localctx, 14, RULE_typeDeclaration);
+		try {
+			State = 173;
+			switch ( Interpreter.AdaptivePredict(_input,9,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 170; Match(NAME);
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 171; Match(NAME);
+				State = 172; interval();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class TypeContext : ParserRuleContext {
+		public ITerminalNode OBJ() { return GetToken(PlanningParser.OBJ, 0); }
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public ITerminalNode AGT() { return GetToken(PlanningParser.AGT, 0); }
+		public TypeContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_type; }
+	}
+
+	[RuleVersion(0)]
+	public TypeContext type() {
+		TypeContext _localctx = new TypeContext(_ctx, State);
+		EnterRule(_localctx, 16, RULE_type);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 175;
 			_la = _input.La(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << OBJ) | (1L << AGT) | (1L << NAME))) != 0)) ) {
 			_errHandler.RecoverInline(this);
@@ -370,62 +582,261 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class TypeContext : ParserRuleContext {
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public PrimitiveTypeContext primitiveType(int i) {
-			return GetRuleContext<PrimitiveTypeContext>(i);
+	public partial class IntervalContext : ParserRuleContext {
+		public IReadOnlyList<ConstTermContext> constTerm() {
+			return GetRuleContexts<ConstTermContext>();
 		}
-		public ITerminalNode EITHER() { return GetToken(PlanningParser.EITHER, 0); }
-		public IReadOnlyList<PrimitiveTypeContext> primitiveType() {
-			return GetRuleContexts<PrimitiveTypeContext>();
+		public ITerminalNode RSB() { return GetToken(PlanningParser.RSB, 0); }
+		public ITerminalNode COMMA() { return GetToken(PlanningParser.COMMA, 0); }
+		public ConstTermContext constTerm(int i) {
+			return GetRuleContext<ConstTermContext>(i);
 		}
-		public TypeContext(ParserRuleContext parent, int invokingState)
+		public ITerminalNode LSB() { return GetToken(PlanningParser.LSB, 0); }
+		public IntervalContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_type; }
+		public override int GetRuleIndex() { return RULE_interval; }
 	}
 
 	[RuleVersion(0)]
-	public TypeContext type() {
-		TypeContext _localctx = new TypeContext(_ctx, State);
-		EnterRule(_localctx, 12, RULE_type);
+	public IntervalContext interval() {
+		IntervalContext _localctx = new IntervalContext(_ctx, State);
+		EnterRule(_localctx, 18, RULE_interval);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 177; Match(LSB);
+			State = 178; constTerm();
+			State = 179; Match(COMMA);
+			State = 180; constTerm();
+			State = 181; Match(RSB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class EventDefineContext : ParserRuleContext {
+		public ITerminalNode PRE() { return GetToken(PlanningParser.PRE, 0); }
+		public ITerminalNode EFF() { return GetToken(PlanningParser.EFF, 0); }
+		public EmptyOrPreGDContext emptyOrPreGD() {
+			return GetRuleContext<EmptyOrPreGDContext>(0);
+		}
+		public EventSymbolContext eventSymbol() {
+			return GetRuleContext<EventSymbolContext>(0);
+		}
+		public ITerminalNode RB(int i) {
+			return GetToken(PlanningParser.RB, i);
+		}
+		public ITerminalNode PARM() { return GetToken(PlanningParser.PARM, 0); }
+		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
+		public EmptyOrEffectContext emptyOrEffect() {
+			return GetRuleContext<EmptyOrEffectContext>(0);
+		}
+		public ITerminalNode LB(int i) {
+			return GetToken(PlanningParser.LB, i);
+		}
+		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
+		public ITerminalNode COLON(int i) {
+			return GetToken(PlanningParser.COLON, i);
+		}
+		public IReadOnlyList<ITerminalNode> COLON() { return GetTokens(PlanningParser.COLON); }
+		public ITerminalNode EVT() { return GetToken(PlanningParser.EVT, 0); }
+		public EventDefineContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_eventDefine; }
+	}
+
+	[RuleVersion(0)]
+	public EventDefineContext eventDefine() {
+		EventDefineContext _localctx = new EventDefineContext(_ctx, State);
+		EnterRule(_localctx, 20, RULE_eventDefine);
 		int _la;
 		try {
-			State = 125;
-			switch (_input.La(1)) {
-			case OBJ:
-			case AGT:
-			case NAME:
-				EnterOuterAlt(_localctx, 1);
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 183; Match(LB);
+			State = 184; Match(COLON);
+			State = 185; Match(EVT);
+			State = 186; eventSymbol();
+			State = 193;
+			switch ( Interpreter.AdaptivePredict(_input,10,_ctx) ) {
+			case 1:
 				{
-				State = 115; primitiveType();
+				State = 187; Match(COLON);
+				State = 188; Match(PARM);
+				State = 189; Match(LB);
+				State = 190; listVariable();
+				State = 191; Match(RB);
 				}
 				break;
-			case LB:
-				EnterOuterAlt(_localctx, 2);
+			}
+			State = 198;
+			switch ( Interpreter.AdaptivePredict(_input,11,_ctx) ) {
+			case 1:
 				{
-				State = 116; Match(LB);
-				State = 117; Match(EITHER);
-				State = 119;
-				_errHandler.Sync(this);
-				_la = _input.La(1);
-				do {
-					{
-					{
-					State = 118; primitiveType();
-					}
-					}
-					State = 121;
-					_errHandler.Sync(this);
-					_la = _input.La(1);
-				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << OBJ) | (1L << AGT) | (1L << NAME))) != 0) );
-				State = 123; Match(RB);
+				State = 195; Match(COLON);
+				State = 196; Match(PRE);
+				State = 197; emptyOrPreGD();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
+			}
+			State = 203;
+			_la = _input.La(1);
+			if (_la==COLON) {
+				{
+				State = 200; Match(COLON);
+				State = 201; Match(EFF);
+				State = 202; emptyOrEffect();
+				}
+			}
+
+			State = 205; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class EventSymbolContext : ParserRuleContext {
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public EventSymbolContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_eventSymbol; }
+	}
+
+	[RuleVersion(0)]
+	public EventSymbolContext eventSymbol() {
+		EventSymbolContext _localctx = new EventSymbolContext(_ctx, State);
+		EnterRule(_localctx, 22, RULE_eventSymbol);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 207; Match(NAME);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ResponseDefineContext : ParserRuleContext {
+		public ITerminalNode RB(int i) {
+			return GetToken(PlanningParser.RB, i);
+		}
+		public ITerminalNode PARM() { return GetToken(PlanningParser.PARM, 0); }
+		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
+		public ITerminalNode LB(int i) {
+			return GetToken(PlanningParser.LB, i);
+		}
+		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public ResponseSymbolContext responseSymbol() {
+			return GetRuleContext<ResponseSymbolContext>(0);
+		}
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
+		public ITerminalNode COLON(int i) {
+			return GetToken(PlanningParser.COLON, i);
+		}
+		public ITerminalNode EVTS() { return GetToken(PlanningParser.EVTS, 0); }
+		public ITerminalNode RESP() { return GetToken(PlanningParser.RESP, 0); }
+		public IReadOnlyList<ITerminalNode> COLON() { return GetTokens(PlanningParser.COLON); }
+		public GdEventContext gdEvent() {
+			return GetRuleContext<GdEventContext>(0);
+		}
+		public ResponseDefineContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_responseDefine; }
+	}
+
+	[RuleVersion(0)]
+	public ResponseDefineContext responseDefine() {
+		ResponseDefineContext _localctx = new ResponseDefineContext(_ctx, State);
+		EnterRule(_localctx, 24, RULE_responseDefine);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 209; Match(LB);
+			State = 210; Match(COLON);
+			State = 211; Match(RESP);
+			State = 212; responseSymbol();
+			State = 219;
+			switch ( Interpreter.AdaptivePredict(_input,13,_ctx) ) {
+			case 1:
+				{
+				State = 213; Match(COLON);
+				State = 214; Match(PARM);
+				State = 215; Match(LB);
+				State = 216; listVariable();
+				State = 217; Match(RB);
+				}
+				break;
+			}
+			State = 221; Match(COLON);
+			State = 222; Match(EVTS);
+			State = 223; gdEvent();
+			State = 224; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ResponseSymbolContext : ParserRuleContext {
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public ResponseSymbolContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_responseSymbol; }
+	}
+
+	[RuleVersion(0)]
+	public ResponseSymbolContext responseSymbol() {
+		ResponseSymbolContext _localctx = new ResponseSymbolContext(_ctx, State);
+		EnterRule(_localctx, 26, RULE_responseSymbol);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 226; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -451,18 +862,18 @@ public partial class PlanningParser : Parser {
 		public ActionSymbolContext actionSymbol() {
 			return GetRuleContext<ActionSymbolContext>(0);
 		}
+		public IReadOnlyList<ResponseDefineContext> responseDefine() {
+			return GetRuleContexts<ResponseDefineContext>();
+		}
 		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public ResponseDefineContext responseDefine(int i) {
+			return GetRuleContext<ResponseDefineContext>(i);
+		}
 		public ListVariableContext listVariable() {
 			return GetRuleContext<ListVariableContext>(0);
 		}
 		public ITerminalNode COLON(int i) {
 			return GetToken(PlanningParser.COLON, i);
-		}
-		public EventSetDefineContext eventSetDefine(int i) {
-			return GetRuleContext<EventSetDefineContext>(i);
-		}
-		public IReadOnlyList<EventSetDefineContext> eventSetDefine() {
-			return GetRuleContexts<EventSetDefineContext>();
 		}
 		public ITerminalNode ACT() { return GetToken(PlanningParser.ACT, 0); }
 		public IReadOnlyList<ITerminalNode> COLON() { return GetTokens(PlanningParser.COLON); }
@@ -476,34 +887,34 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ActionDefineContext actionDefine() {
 		ActionDefineContext _localctx = new ActionDefineContext(_ctx, State);
-		EnterRule(_localctx, 14, RULE_actionDefine);
+		EnterRule(_localctx, 28, RULE_actionDefine);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 127; Match(LB);
-			State = 128; Match(COLON);
-			State = 129; Match(ACT);
-			State = 130; actionSymbol();
-			State = 131; Match(COLON);
-			State = 132; Match(PARM);
-			State = 133; Match(LB);
-			State = 134; listVariable();
-			State = 135; Match(RB);
-			State = 137;
+			State = 228; Match(LB);
+			State = 229; Match(COLON);
+			State = 230; Match(ACT);
+			State = 231; actionSymbol();
+			State = 232; Match(COLON);
+			State = 233; Match(PARM);
+			State = 234; Match(LB);
+			State = 235; listVariable();
+			State = 236; Match(RB);
+			State = 238;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			do {
 				{
 				{
-				State = 136; eventSetDefine();
+				State = 237; responseDefine();
 				}
 				}
-				State = 139;
+				State = 240;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			} while ( _la==LB );
-			State = 141; Match(RB);
+			State = 242; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -529,11 +940,11 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ActionSymbolContext actionSymbol() {
 		ActionSymbolContext _localctx = new ActionSymbolContext(_ctx, State);
-		EnterRule(_localctx, 16, RULE_actionSymbol);
+		EnterRule(_localctx, 30, RULE_actionSymbol);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 143; Match(NAME);
+			State = 244; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -547,45 +958,82 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class EventSetDefineContext : ParserRuleContext {
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public EventDefineContext eventDefine(int i) {
-			return GetRuleContext<EventDefineContext>(i);
+	public partial class EventModelContext : ParserRuleContext {
+		public ITerminalNode RB(int i) {
+			return GetToken(PlanningParser.RB, i);
 		}
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public IReadOnlyList<EventDefineContext> eventDefine() {
-			return GetRuleContexts<EventDefineContext>();
+		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
+		public GdEventContext gdEvent(int i) {
+			return GetRuleContext<GdEventContext>(i);
 		}
-		public EventSetDefineContext(ParserRuleContext parent, int invokingState)
+		public ITerminalNode LB(int i) {
+			return GetToken(PlanningParser.LB, i);
+		}
+		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public IReadOnlyList<PlausibilityDegreeContext> plausibilityDegree() {
+			return GetRuleContexts<PlausibilityDegreeContext>();
+		}
+		public PlausibilityDegreeContext plausibilityDegree(int i) {
+			return GetRuleContext<PlausibilityDegreeContext>(i);
+		}
+		public IReadOnlyList<GdEventContext> gdEvent() {
+			return GetRuleContexts<GdEventContext>();
+		}
+		public EventModelContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_eventSetDefine; }
+		public override int GetRuleIndex() { return RULE_eventModel; }
 	}
 
 	[RuleVersion(0)]
-	public EventSetDefineContext eventSetDefine() {
-		EventSetDefineContext _localctx = new EventSetDefineContext(_ctx, State);
-		EnterRule(_localctx, 18, RULE_eventSetDefine);
+	public EventModelContext eventModel() {
+		EventModelContext _localctx = new EventModelContext(_ctx, State);
+		EnterRule(_localctx, 32, RULE_eventModel);
 		int _la;
 		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 145; Match(LB);
-			State = 147;
-			_errHandler.Sync(this);
-			_la = _input.La(1);
-			do {
+			State = 260;
+			switch ( Interpreter.AdaptivePredict(_input,17,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
 				{
-				{
-				State = 146; eventDefine();
-				}
-				}
-				State = 149;
+				State = 247;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
-			} while ( _la==LB );
-			State = 151; Match(RB);
+				do {
+					{
+					{
+					State = 246; gdEvent();
+					}
+					}
+					State = 249;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				} while ( _la==LB );
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 256;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+				do {
+					{
+					{
+					State = 251; Match(LB);
+					State = 252; plausibilityDegree();
+					State = 253; gdEvent();
+					State = 254; Match(RB);
+					}
+					}
+					State = 258;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				} while ( _la==LB );
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -599,70 +1047,117 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class EventDefineContext : ParserRuleContext {
-		public ITerminalNode PLD() { return GetToken(PlanningParser.PLD, 0); }
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public EmptyOrEffectContext emptyOrEffect() {
-			return GetRuleContext<EmptyOrEffectContext>(0);
+	public partial class PlausibilityDegreeContext : ParserRuleContext {
+		public ITerminalNode INTEGER() { return GetToken(PlanningParser.INTEGER, 0); }
+		public PlausibilityDegreeContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
 		}
+		public override int GetRuleIndex() { return RULE_plausibilityDegree; }
+	}
+
+	[RuleVersion(0)]
+	public PlausibilityDegreeContext plausibilityDegree() {
+		PlausibilityDegreeContext _localctx = new PlausibilityDegreeContext(_ctx, State);
+		EnterRule(_localctx, 34, RULE_plausibilityDegree);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 262; Match(INTEGER);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ObservationDefineContext : ParserRuleContext {
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
 		public ITerminalNode PRE() { return GetToken(PlanningParser.PRE, 0); }
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public ITerminalNode EFF() { return GetToken(PlanningParser.EFF, 0); }
 		public EmptyOrPreGDContext emptyOrPreGD() {
 			return GetRuleContext<EmptyOrPreGDContext>(0);
 		}
 		public ITerminalNode COLON(int i) {
 			return GetToken(PlanningParser.COLON, i);
 		}
-		public ITerminalNode INTEGER() { return GetToken(PlanningParser.INTEGER, 0); }
+		public ITerminalNode EVTS() { return GetToken(PlanningParser.EVTS, 0); }
+		public EventModelContext eventModel() {
+			return GetRuleContext<EventModelContext>(0);
+		}
+		public ITerminalNode OBS() { return GetToken(PlanningParser.OBS, 0); }
 		public IReadOnlyList<ITerminalNode> COLON() { return GetTokens(PlanningParser.COLON); }
-		public EventDefineContext(ParserRuleContext parent, int invokingState)
+		public ObservationSymbolContext observationSymbol() {
+			return GetRuleContext<ObservationSymbolContext>(0);
+		}
+		public ObservationDefineContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_eventDefine; }
+		public override int GetRuleIndex() { return RULE_observationDefine; }
 	}
 
 	[RuleVersion(0)]
-	public EventDefineContext eventDefine() {
-		EventDefineContext _localctx = new EventDefineContext(_ctx, State);
-		EnterRule(_localctx, 20, RULE_eventDefine);
-		int _la;
+	public ObservationDefineContext observationDefine() {
+		ObservationDefineContext _localctx = new ObservationDefineContext(_ctx, State);
+		EnterRule(_localctx, 36, RULE_observationDefine);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 153; Match(LB);
-			State = 157;
-			switch ( Interpreter.AdaptivePredict(_input,8,_ctx) ) {
+			State = 264; Match(LB);
+			State = 265; Match(COLON);
+			State = 266; Match(OBS);
+			State = 267; observationSymbol();
+			State = 271;
+			switch ( Interpreter.AdaptivePredict(_input,18,_ctx) ) {
 			case 1:
 				{
-				State = 154; Match(COLON);
-				State = 155; Match(PLD);
-				State = 156; Match(INTEGER);
+				State = 268; Match(COLON);
+				State = 269; Match(PRE);
+				State = 270; emptyOrPreGD();
 				}
 				break;
 			}
-			State = 162;
-			switch ( Interpreter.AdaptivePredict(_input,9,_ctx) ) {
-			case 1:
-				{
-				State = 159; Match(COLON);
-				State = 160; Match(PRE);
-				State = 161; emptyOrPreGD();
-				}
-				break;
+			State = 273; Match(COLON);
+			State = 274; Match(EVTS);
+			State = 275; eventModel();
+			State = 276; Match(RB);
 			}
-			State = 167;
-			_la = _input.La(1);
-			if (_la==COLON) {
-				{
-				State = 164; Match(COLON);
-				State = 165; Match(EFF);
-				State = 166; emptyOrEffect();
-				}
-			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
 
-			State = 169; Match(RB);
+	public partial class ObservationSymbolContext : ParserRuleContext {
+		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public ObservationSymbolContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_observationSymbol; }
+	}
+
+	[RuleVersion(0)]
+	public ObservationSymbolContext observationSymbol() {
+		ObservationSymbolContext _localctx = new ObservationSymbolContext(_ctx, State);
+		EnterRule(_localctx, 38, RULE_observationSymbol);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 278; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -692,22 +1187,22 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public EmptyOrPreGDContext emptyOrPreGD() {
 		EmptyOrPreGDContext _localctx = new EmptyOrPreGDContext(_ctx, State);
-		EnterRule(_localctx, 22, RULE_emptyOrPreGD);
+		EnterRule(_localctx, 40, RULE_emptyOrPreGD);
 		try {
-			State = 174;
-			switch ( Interpreter.AdaptivePredict(_input,11,_ctx) ) {
+			State = 283;
+			switch ( Interpreter.AdaptivePredict(_input,19,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 171; gd();
+				State = 280; gd();
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 172; Match(LB);
-				State = 173; Match(RB);
+				State = 281; Match(LB);
+				State = 282; Match(RB);
 				}
 				break;
 			}
@@ -739,22 +1234,22 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public EmptyOrEffectContext emptyOrEffect() {
 		EmptyOrEffectContext _localctx = new EmptyOrEffectContext(_ctx, State);
-		EnterRule(_localctx, 24, RULE_emptyOrEffect);
+		EnterRule(_localctx, 42, RULE_emptyOrEffect);
 		try {
-			State = 179;
-			switch ( Interpreter.AdaptivePredict(_input,12,_ctx) ) {
+			State = 288;
+			switch ( Interpreter.AdaptivePredict(_input,20,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 176; effect();
+				State = 285; effect();
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 177; Match(LB);
-				State = 178; Match(RB);
+				State = 286; Match(LB);
+				State = 287; Match(RB);
 				}
 				break;
 			}
@@ -792,24 +1287,24 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ListNameContext listName() {
 		ListNameContext _localctx = new ListNameContext(_ctx, State);
-		EnterRule(_localctx, 26, RULE_listName);
+		EnterRule(_localctx, 44, RULE_listName);
 		int _la;
 		try {
-			State = 196;
-			switch ( Interpreter.AdaptivePredict(_input,15,_ctx) ) {
+			State = 305;
+			switch ( Interpreter.AdaptivePredict(_input,23,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 184;
+				State = 293;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				while (_la==NAME) {
 					{
 					{
-					State = 181; Match(NAME);
+					State = 290; Match(NAME);
 					}
 					}
-					State = 186;
+					State = 295;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				}
@@ -819,22 +1314,22 @@ public partial class PlanningParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 188;
+				State = 297;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 187; Match(NAME);
+					State = 296; Match(NAME);
 					}
 					}
-					State = 190;
+					State = 299;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==NAME );
-				State = 192; Match(DASH);
-				State = 193; type();
-				State = 194; listName();
+				State = 301; Match(DASH);
+				State = 302; type();
+				State = 303; listName();
 				}
 				break;
 			}
@@ -872,24 +1367,24 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ListVariableContext listVariable() {
 		ListVariableContext _localctx = new ListVariableContext(_ctx, State);
-		EnterRule(_localctx, 28, RULE_listVariable);
+		EnterRule(_localctx, 46, RULE_listVariable);
 		int _la;
 		try {
-			State = 213;
-			switch ( Interpreter.AdaptivePredict(_input,18,_ctx) ) {
+			State = 322;
+			switch ( Interpreter.AdaptivePredict(_input,26,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 201;
+				State = 310;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				while (_la==VAR) {
 					{
 					{
-					State = 198; Match(VAR);
+					State = 307; Match(VAR);
 					}
 					}
-					State = 203;
+					State = 312;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				}
@@ -899,22 +1394,22 @@ public partial class PlanningParser : Parser {
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 205;
+				State = 314;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 204; Match(VAR);
+					State = 313; Match(VAR);
 					}
 					}
-					State = 207;
+					State = 316;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==VAR );
-				State = 209; Match(DASH);
-				State = 210; type();
-				State = 211; listVariable();
+				State = 318; Match(DASH);
+				State = 319; type();
+				State = 320; listVariable();
 				}
 				break;
 			}
@@ -931,20 +1426,31 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class GdContext : ParserRuleContext {
-		public LiteralTermContext literalTerm() {
-			return GetRuleContext<LiteralTermContext>(0);
+		public TermLiteralContext termLiteral() {
+			return GetRuleContext<TermLiteralContext>(0);
 		}
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode EXISTS() { return GetToken(PlanningParser.EXISTS, 0); }
+		public ITerminalNode AND() { return GetToken(PlanningParser.AND, 0); }
+		public ITerminalNode OR() { return GetToken(PlanningParser.OR, 0); }
+		public ITerminalNode FORALL() { return GetToken(PlanningParser.FORALL, 0); }
+		public TermAtomFormContext termAtomForm() {
+			return GetRuleContext<TermAtomFormContext>(0);
+		}
+		public ITerminalNode RB(int i) {
+			return GetToken(PlanningParser.RB, i);
+		}
+		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
 		public IReadOnlyList<GdContext> gd() {
 			return GetRuleContexts<GdContext>();
 		}
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public ITerminalNode AND() { return GetToken(PlanningParser.AND, 0); }
-		public ITerminalNode OR() { return GetToken(PlanningParser.OR, 0); }
-		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
-		public AtomicFormulaTermContext atomicFormulaTerm() {
-			return GetRuleContext<AtomicFormulaTermContext>(0);
+		public ITerminalNode LB(int i) {
+			return GetToken(PlanningParser.LB, i);
 		}
+		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
+		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
 		public ITerminalNode IMPLY() { return GetToken(PlanningParser.IMPLY, 0); }
 		public GdContext gd(int i) {
 			return GetRuleContext<GdContext>(i);
@@ -959,87 +1465,113 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public GdContext gd() {
 		GdContext _localctx = new GdContext(_ctx, State);
-		EnterRule(_localctx, 30, RULE_gd);
+		EnterRule(_localctx, 48, RULE_gd);
 		int _la;
 		try {
-			State = 246;
-			switch ( Interpreter.AdaptivePredict(_input,21,_ctx) ) {
+			State = 371;
+			switch ( Interpreter.AdaptivePredict(_input,29,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 215; atomicFormulaTerm();
+				State = 324; termAtomForm();
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 216; literalTerm();
+				State = 325; termLiteral();
 				}
 				break;
 
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 217; Match(LB);
-				State = 218; Match(AND);
-				State = 220;
+				State = 326; Match(LB);
+				State = 327; Match(AND);
+				State = 329;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 219; gd();
+					State = 328; gd();
 					}
 					}
-					State = 222;
+					State = 331;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==LB );
-				State = 224; Match(RB);
+				State = 333; Match(RB);
 				}
 				break;
 
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 226; Match(LB);
-				State = 227; Match(OR);
-				State = 229;
+				State = 335; Match(LB);
+				State = 336; Match(OR);
+				State = 338;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 228; gd();
+					State = 337; gd();
 					}
 					}
-					State = 231;
+					State = 340;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==LB );
-				State = 233; Match(RB);
+				State = 342; Match(RB);
 				}
 				break;
 
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 235; Match(LB);
-				State = 236; Match(NOT);
-				State = 237; gd();
-				State = 238; Match(RB);
+				State = 344; Match(LB);
+				State = 345; Match(NOT);
+				State = 346; gd();
+				State = 347; Match(RB);
 				}
 				break;
 
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 240; Match(LB);
-				State = 241; Match(IMPLY);
-				State = 242; gd();
-				State = 243; gd();
-				State = 244; Match(RB);
+				State = 349; Match(LB);
+				State = 350; Match(IMPLY);
+				State = 351; gd();
+				State = 352; gd();
+				State = 353; Match(RB);
+				}
+				break;
+
+			case 7:
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 355; Match(LB);
+				State = 356; Match(EXISTS);
+				State = 357; Match(LB);
+				State = 358; listVariable();
+				State = 359; Match(RB);
+				State = 360; gd();
+				State = 361; Match(RB);
+				}
+				break;
+
+			case 8:
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 363; Match(LB);
+				State = 364; Match(FORALL);
+				State = 365; Match(LB);
+				State = 366; listVariable();
+				State = 367; Match(RB);
+				State = 368; gd();
+				State = 369; Match(RB);
 				}
 				break;
 			}
@@ -1055,99 +1587,360 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AtomicFormulaTermContext : ParserRuleContext {
+	public partial class TermAtomFormContext : ParserRuleContext {
 		public IReadOnlyList<TermContext> term() {
 			return GetRuleContexts<TermContext>();
 		}
+		public ITerminalNode GEQ() { return GetToken(PlanningParser.GEQ, 0); }
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public PredicateContext predicate() {
-			return GetRuleContext<PredicateContext>(0);
+		public PredContext pred() {
+			return GetRuleContext<PredContext>(0);
 		}
+		public ITerminalNode LT() { return GetToken(PlanningParser.LT, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ITerminalNode LEQ() { return GetToken(PlanningParser.LEQ, 0); }
+		public ITerminalNode GT() { return GetToken(PlanningParser.GT, 0); }
+		public ITerminalNode EQ() { return GetToken(PlanningParser.EQ, 0); }
 		public TermContext term(int i) {
 			return GetRuleContext<TermContext>(i);
 		}
-		public AtomicFormulaTermContext(ParserRuleContext parent, int invokingState)
+		public TermAtomFormContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_atomicFormulaTerm; }
+		public override int GetRuleIndex() { return RULE_termAtomForm; }
 	}
 
 	[RuleVersion(0)]
-	public AtomicFormulaTermContext atomicFormulaTerm() {
-		AtomicFormulaTermContext _localctx = new AtomicFormulaTermContext(_ctx, State);
-		EnterRule(_localctx, 32, RULE_atomicFormulaTerm);
+	public TermAtomFormContext termAtomForm() {
+		TermAtomFormContext _localctx = new TermAtomFormContext(_ctx, State);
+		EnterRule(_localctx, 50, RULE_termAtomForm);
 		int _la;
 		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 248; Match(LB);
-			State = 249; predicate();
-			State = 253;
-			_errHandler.Sync(this);
-			_la = _input.La(1);
-			while (_la==NAME || _la==VAR) {
-				{
-				{
-				State = 250; term();
-				}
-				}
-				State = 255;
-				_errHandler.Sync(this);
-				_la = _input.La(1);
-			}
-			State = 256; Match(RB);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.ReportError(this, re);
-			_errHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class LiteralTermContext : ParserRuleContext {
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
-		public AtomicFormulaTermContext atomicFormulaTerm() {
-			return GetRuleContext<AtomicFormulaTermContext>(0);
-		}
-		public LiteralTermContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int GetRuleIndex() { return RULE_literalTerm; }
-	}
-
-	[RuleVersion(0)]
-	public LiteralTermContext literalTerm() {
-		LiteralTermContext _localctx = new LiteralTermContext(_ctx, State);
-		EnterRule(_localctx, 34, RULE_literalTerm);
-		try {
-			State = 264;
-			switch ( Interpreter.AdaptivePredict(_input,23,_ctx) ) {
+			State = 413;
+			switch ( Interpreter.AdaptivePredict(_input,31,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 258; atomicFormulaTerm();
+				State = 373; Match(LB);
+				State = 374; pred();
+				State = 378;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LB) | (1L << NAME) | (1L << INTEGER) | (1L << VAR))) != 0)) {
+					{
+					{
+					State = 375; term();
+					}
+					}
+					State = 380;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				}
+				State = 381; Match(RB);
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 259; Match(LB);
-				State = 260; Match(NOT);
-				State = 261; atomicFormulaTerm();
-				State = 262; Match(RB);
+				State = 383; Match(LB);
+				State = 384; Match(EQ);
+				State = 385; term();
+				State = 386; term();
+				State = 387; Match(RB);
 				}
 				break;
+
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 389; Match(LB);
+				State = 390; Match(LT);
+				State = 391; term();
+				State = 392; term();
+				State = 393; Match(RB);
+				}
+				break;
+
+			case 4:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 395; Match(LB);
+				State = 396; Match(LEQ);
+				State = 397; term();
+				State = 398; term();
+				State = 399; Match(RB);
+				}
+				break;
+
+			case 5:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 401; Match(LB);
+				State = 402; Match(GT);
+				State = 403; term();
+				State = 404; term();
+				State = 405; Match(RB);
+				}
+				break;
+
+			case 6:
+				EnterOuterAlt(_localctx, 6);
+				{
+				State = 407; Match(LB);
+				State = 408; Match(GEQ);
+				State = 409; term();
+				State = 410; term();
+				State = 411; Match(RB);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class TermLiteralContext : ParserRuleContext {
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
+		public TermAtomFormContext termAtomForm() {
+			return GetRuleContext<TermAtomFormContext>(0);
+		}
+		public TermLiteralContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_termLiteral; }
+	}
+
+	[RuleVersion(0)]
+	public TermLiteralContext termLiteral() {
+		TermLiteralContext _localctx = new TermLiteralContext(_ctx, State);
+		EnterRule(_localctx, 52, RULE_termLiteral);
+		try {
+			State = 421;
+			switch ( Interpreter.AdaptivePredict(_input,32,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 415; termAtomForm();
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 416; Match(LB);
+				State = 417; Match(NOT);
+				State = 418; termAtomForm();
+				State = 419; Match(RB);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class GdEventContext : ParserRuleContext {
+		public ITerminalNode RB(int i) {
+			return GetToken(PlanningParser.RB, i);
+		}
+		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
+		public ITerminalNode EXISTS() { return GetToken(PlanningParser.EXISTS, 0); }
+		public GdEventContext gdEvent(int i) {
+			return GetRuleContext<GdEventContext>(i);
+		}
+		public ITerminalNode LB(int i) {
+			return GetToken(PlanningParser.LB, i);
+		}
+		public ITerminalNode AND() { return GetToken(PlanningParser.AND, 0); }
+		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
+		public ITerminalNode OR() { return GetToken(PlanningParser.OR, 0); }
+		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
+		public ITerminalNode FORALL() { return GetToken(PlanningParser.FORALL, 0); }
+		public IReadOnlyList<GdEventContext> gdEvent() {
+			return GetRuleContexts<GdEventContext>();
+		}
+		public EventFormulaTermContext eventFormulaTerm() {
+			return GetRuleContext<EventFormulaTermContext>(0);
+		}
+		public GdEventContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_gdEvent; }
+	}
+
+	[RuleVersion(0)]
+	public GdEventContext gdEvent() {
+		GdEventContext _localctx = new GdEventContext(_ctx, State);
+		EnterRule(_localctx, 54, RULE_gdEvent);
+		int _la;
+		try {
+			State = 463;
+			switch ( Interpreter.AdaptivePredict(_input,35,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 423; eventFormulaTerm();
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 424; Match(LB);
+				State = 425; Match(NOT);
+				State = 426; gdEvent();
+				State = 427; Match(RB);
+				}
+				break;
+
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 429; Match(LB);
+				State = 430; Match(AND);
+				State = 432;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+				do {
+					{
+					{
+					State = 431; gdEvent();
+					}
+					}
+					State = 434;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				} while ( _la==LB );
+				State = 436; Match(RB);
+				}
+				break;
+
+			case 4:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 438; Match(LB);
+				State = 439; Match(OR);
+				State = 441;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+				do {
+					{
+					{
+					State = 440; gdEvent();
+					}
+					}
+					State = 443;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				} while ( _la==LB );
+				State = 445; Match(RB);
+				}
+				break;
+
+			case 5:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 447; Match(LB);
+				State = 448; Match(EXISTS);
+				State = 449; Match(LB);
+				State = 450; listVariable();
+				State = 451; Match(RB);
+				State = 452; gdEvent();
+				State = 453; Match(RB);
+				}
+				break;
+
+			case 6:
+				EnterOuterAlt(_localctx, 6);
+				{
+				State = 455; Match(LB);
+				State = 456; Match(FORALL);
+				State = 457; Match(LB);
+				State = 458; listVariable();
+				State = 459; Match(RB);
+				State = 460; gdEvent();
+				State = 461; Match(RB);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class EventFormulaTermContext : ParserRuleContext {
+		public IReadOnlyList<TermContext> term() {
+			return GetRuleContexts<TermContext>();
+		}
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public EventSymbolContext eventSymbol() {
+			return GetRuleContext<EventSymbolContext>(0);
+		}
+		public TermContext term(int i) {
+			return GetRuleContext<TermContext>(i);
+		}
+		public EventFormulaTermContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_eventFormulaTerm; }
+	}
+
+	[RuleVersion(0)]
+	public EventFormulaTermContext eventFormulaTerm() {
+		EventFormulaTermContext _localctx = new EventFormulaTermContext(_ctx, State);
+		EnterRule(_localctx, 56, RULE_eventFormulaTerm);
+		int _la;
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 465; Match(LB);
+			State = 466; eventSymbol();
+			State = 470;
+			_errHandler.Sync(this);
+			_la = _input.La(1);
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LB) | (1L << NAME) | (1L << INTEGER) | (1L << VAR))) != 0)) {
+				{
+				{
+				State = 467; term();
+				}
+				}
+				State = 472;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+			}
+			State = 473; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1162,8 +1955,19 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class TermContext : ParserRuleContext {
+		public IReadOnlyList<TermContext> term() {
+			return GetRuleContexts<TermContext>();
+		}
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ITerminalNode MINUS() { return GetToken(PlanningParser.MINUS, 0); }
 		public ITerminalNode VAR() { return GetToken(PlanningParser.VAR, 0); }
 		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
+		public ITerminalNode PLUS() { return GetToken(PlanningParser.PLUS, 0); }
+		public ITerminalNode INTEGER() { return GetToken(PlanningParser.INTEGER, 0); }
+		public TermContext term(int i) {
+			return GetRuleContext<TermContext>(i);
+		}
 		public TermContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1174,17 +1978,129 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public TermContext term() {
 		TermContext _localctx = new TermContext(_ctx, State);
-		EnterRule(_localctx, 36, RULE_term);
-		int _la;
+		EnterRule(_localctx, 58, RULE_term);
 		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 266;
-			_la = _input.La(1);
-			if ( !(_la==NAME || _la==VAR) ) {
-			_errHandler.RecoverInline(this);
+			State = 490;
+			switch ( Interpreter.AdaptivePredict(_input,37,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 475; Match(NAME);
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 476; Match(VAR);
+				}
+				break;
+
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 477; Match(INTEGER);
+				}
+				break;
+
+			case 4:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 478; Match(LB);
+				State = 479; Match(MINUS);
+				State = 480; term();
+				State = 481; term();
+				State = 482; Match(RB);
+				}
+				break;
+
+			case 5:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 484; Match(LB);
+				State = 485; Match(PLUS);
+				State = 486; term();
+				State = 487; term();
+				State = 488; Match(RB);
+				}
+				break;
 			}
-			Consume();
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ConstTermContext : ParserRuleContext {
+		public IReadOnlyList<ConstTermContext> constTerm() {
+			return GetRuleContexts<ConstTermContext>();
+		}
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ITerminalNode MINUS() { return GetToken(PlanningParser.MINUS, 0); }
+		public ConstTermContext constTerm(int i) {
+			return GetRuleContext<ConstTermContext>(i);
+		}
+		public ConstSymbolContext constSymbol() {
+			return GetRuleContext<ConstSymbolContext>(0);
+		}
+		public ITerminalNode PLUS() { return GetToken(PlanningParser.PLUS, 0); }
+		public ITerminalNode INTEGER() { return GetToken(PlanningParser.INTEGER, 0); }
+		public ConstTermContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_constTerm; }
+	}
+
+	[RuleVersion(0)]
+	public ConstTermContext constTerm() {
+		ConstTermContext _localctx = new ConstTermContext(_ctx, State);
+		EnterRule(_localctx, 60, RULE_constTerm);
+		try {
+			State = 506;
+			switch ( Interpreter.AdaptivePredict(_input,38,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 492; constSymbol();
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 493; Match(INTEGER);
+				}
+				break;
+
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 494; Match(LB);
+				State = 495; Match(MINUS);
+				State = 496; constTerm();
+				State = 497; constTerm();
+				State = 498; Match(RB);
+				}
+				break;
+
+			case 4:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 500; Match(LB);
+				State = 501; Match(PLUS);
+				State = 502; constTerm();
+				State = 503; constTerm();
+				State = 504; Match(RB);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -1218,37 +2134,37 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public EffectContext effect() {
 		EffectContext _localctx = new EffectContext(_ctx, State);
-		EnterRule(_localctx, 38, RULE_effect);
+		EnterRule(_localctx, 62, RULE_effect);
 		int _la;
 		try {
-			State = 278;
-			switch ( Interpreter.AdaptivePredict(_input,25,_ctx) ) {
+			State = 518;
+			switch ( Interpreter.AdaptivePredict(_input,40,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 268; Match(LB);
-				State = 269; Match(AND);
-				State = 271;
+				State = 508; Match(LB);
+				State = 509; Match(AND);
+				State = 511;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 270; cEffect();
+					State = 510; cEffect();
 					}
 					}
-					State = 273;
+					State = 513;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==LB );
-				State = 275; Match(RB);
+				State = 515; Match(RB);
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 277; cEffect();
+				State = 517; cEffect();
 				}
 				break;
 			}
@@ -1265,8 +2181,8 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class CEffectContext : ParserRuleContext {
-		public LiteralTermContext literalTerm() {
-			return GetRuleContext<LiteralTermContext>(0);
+		public TermLiteralContext termLiteral() {
+			return GetRuleContext<TermLiteralContext>(0);
 		}
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
 		public GdContext gd() {
@@ -1276,6 +2192,13 @@ public partial class PlanningParser : Parser {
 			return GetRuleContext<CondEffectContext>(0);
 		}
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public EffectContext effect() {
+			return GetRuleContext<EffectContext>(0);
+		}
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
+		public ITerminalNode FORALL() { return GetToken(PlanningParser.FORALL, 0); }
 		public ITerminalNode WHEN() { return GetToken(PlanningParser.WHEN, 0); }
 		public CEffectContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -1287,25 +2210,36 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public CEffectContext cEffect() {
 		CEffectContext _localctx = new CEffectContext(_ctx, State);
-		EnterRule(_localctx, 40, RULE_cEffect);
+		EnterRule(_localctx, 64, RULE_cEffect);
 		try {
-			State = 287;
-			switch ( Interpreter.AdaptivePredict(_input,26,_ctx) ) {
+			State = 533;
+			switch ( Interpreter.AdaptivePredict(_input,41,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 280; Match(LB);
-				State = 281; Match(WHEN);
-				State = 282; gd();
-				State = 283; condEffect();
-				State = 284; Match(RB);
+				State = 520; Match(LB);
+				State = 521; Match(FORALL);
+				State = 522; listVariable();
+				State = 523; effect();
+				State = 524; Match(RB);
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 286; literalTerm();
+				State = 526; Match(LB);
+				State = 527; Match(WHEN);
+				State = 528; gd();
+				State = 529; condEffect();
+				State = 530; Match(RB);
+				}
+				break;
+
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 532; termLiteral();
 				}
 				break;
 			}
@@ -1322,15 +2256,15 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class CondEffectContext : ParserRuleContext {
-		public IReadOnlyList<LiteralTermContext> literalTerm() {
-			return GetRuleContexts<LiteralTermContext>();
+		public IReadOnlyList<TermLiteralContext> termLiteral() {
+			return GetRuleContexts<TermLiteralContext>();
 		}
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public TermLiteralContext termLiteral(int i) {
+			return GetRuleContext<TermLiteralContext>(i);
+		}
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
 		public ITerminalNode AND() { return GetToken(PlanningParser.AND, 0); }
-		public LiteralTermContext literalTerm(int i) {
-			return GetRuleContext<LiteralTermContext>(i);
-		}
 		public CondEffectContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1341,37 +2275,37 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public CondEffectContext condEffect() {
 		CondEffectContext _localctx = new CondEffectContext(_ctx, State);
-		EnterRule(_localctx, 42, RULE_condEffect);
+		EnterRule(_localctx, 66, RULE_condEffect);
 		int _la;
 		try {
-			State = 299;
-			switch ( Interpreter.AdaptivePredict(_input,28,_ctx) ) {
+			State = 545;
+			switch ( Interpreter.AdaptivePredict(_input,43,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 289; Match(LB);
-				State = 290; Match(AND);
-				State = 292;
+				State = 535; Match(LB);
+				State = 536; Match(AND);
+				State = 538;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 291; literalTerm();
+					State = 537; termLiteral();
 					}
 					}
-					State = 294;
+					State = 540;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==LB );
-				State = 296; Match(RB);
+				State = 542; Match(RB);
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 298; literalTerm();
+				State = 544; termLiteral();
 				}
 				break;
 			}
@@ -1412,6 +2346,9 @@ public partial class PlanningParser : Parser {
 		}
 		public ITerminalNode DOM() { return GetToken(PlanningParser.DOM, 0); }
 		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
+		public ConstSettingContext constSetting() {
+			return GetRuleContext<ConstSettingContext>(0);
+		}
 		public ObjectDeclarationContext objectDeclaration() {
 			return GetRuleContext<ObjectDeclarationContext>(0);
 		}
@@ -1425,32 +2362,40 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ServerProblemContext serverProblem() {
 		ServerProblemContext _localctx = new ServerProblemContext(_ctx, State);
-		EnterRule(_localctx, 44, RULE_serverProblem);
+		EnterRule(_localctx, 68, RULE_serverProblem);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 301; Match(LB);
-			State = 302; Match(DEF);
-			State = 303; Match(LB);
-			State = 304; Match(PROM);
-			State = 305; problemName();
-			State = 306; Match(RB);
-			State = 307; Match(LB);
-			State = 308; Match(COLON);
-			State = 309; Match(DOM);
-			State = 310; domainName();
-			State = 311; Match(RB);
-			State = 312; agentDefine();
-			State = 314;
-			switch ( Interpreter.AdaptivePredict(_input,29,_ctx) ) {
+			State = 547; Match(LB);
+			State = 548; Match(DEF);
+			State = 549; Match(LB);
+			State = 550; Match(PROM);
+			State = 551; problemName();
+			State = 552; Match(RB);
+			State = 553; Match(LB);
+			State = 554; Match(COLON);
+			State = 555; Match(DOM);
+			State = 556; domainName();
+			State = 557; Match(RB);
+			State = 558; agentDefine();
+			State = 560;
+			switch ( Interpreter.AdaptivePredict(_input,44,_ctx) ) {
 			case 1:
 				{
-				State = 313; objectDeclaration();
+				State = 559; objectDeclaration();
 				}
 				break;
 			}
-			State = 316; init();
-			State = 317; Match(RB);
+			State = 563;
+			switch ( Interpreter.AdaptivePredict(_input,45,_ctx) ) {
+			case 1:
+				{
+				State = 562; constSetting();
+				}
+				break;
+			}
+			State = 565; init();
+			State = 566; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1476,11 +2421,11 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ProblemNameContext problemName() {
 		ProblemNameContext _localctx = new ProblemNameContext(_ctx, State);
-		EnterRule(_localctx, 46, RULE_problemName);
+		EnterRule(_localctx, 70, RULE_problemName);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 319; Match(NAME);
+			State = 568; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1506,11 +2451,11 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public DomainNameContext domainName() {
 		DomainNameContext _localctx = new DomainNameContext(_ctx, State);
-		EnterRule(_localctx, 48, RULE_domainName);
+		EnterRule(_localctx, 72, RULE_domainName);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 321; Match(NAME);
+			State = 570; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1543,28 +2488,28 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public AgentDefineContext agentDefine() {
 		AgentDefineContext _localctx = new AgentDefineContext(_ctx, State);
-		EnterRule(_localctx, 50, RULE_agentDefine);
+		EnterRule(_localctx, 74, RULE_agentDefine);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 323; Match(LB);
-			State = 324; Match(COLON);
-			State = 325; Match(AGENTS);
-			State = 327;
+			State = 572; Match(LB);
+			State = 573; Match(COLON);
+			State = 574; Match(AGENTS);
+			State = 576;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			do {
 				{
 				{
-				State = 326; Match(NAME);
+				State = 575; Match(NAME);
 				}
 				}
-				State = 329;
+				State = 578;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			} while ( _la==NAME );
-			State = 331; Match(RB);
+			State = 580; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1596,15 +2541,53 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ObjectDeclarationContext objectDeclaration() {
 		ObjectDeclarationContext _localctx = new ObjectDeclarationContext(_ctx, State);
-		EnterRule(_localctx, 52, RULE_objectDeclaration);
+		EnterRule(_localctx, 76, RULE_objectDeclaration);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 333; Match(LB);
-			State = 334; Match(COLON);
-			State = 335; Match(OBJS);
-			State = 336; listName();
-			State = 337; Match(RB);
+			State = 582; Match(LB);
+			State = 583; Match(COLON);
+			State = 584; Match(OBJS);
+			State = 585; listName();
+			State = 586; Match(RB);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ConstSettingContext : ParserRuleContext {
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ConstSymbolContext constSymbol() {
+			return GetRuleContext<ConstSymbolContext>(0);
+		}
+		public ITerminalNode INTEGER() { return GetToken(PlanningParser.INTEGER, 0); }
+		public ConstSettingContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_constSetting; }
+	}
+
+	[RuleVersion(0)]
+	public ConstSettingContext constSetting() {
+		ConstSettingContext _localctx = new ConstSettingContext(_ctx, State);
+		EnterRule(_localctx, 78, RULE_constSetting);
+		try {
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 588; Match(LB);
+			State = 589; constSymbol();
+			State = 590; Match(INTEGER);
+			State = 591; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1619,15 +2602,15 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class InitContext : ParserRuleContext {
+		public IReadOnlyList<ConstTermAtomFormContext> constTermAtomForm() {
+			return GetRuleContexts<ConstTermAtomFormContext>();
+		}
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public IReadOnlyList<AtomicFormulaNameContext> atomicFormulaName() {
-			return GetRuleContexts<AtomicFormulaNameContext>();
+		public ConstTermAtomFormContext constTermAtomForm(int i) {
+			return GetRuleContext<ConstTermAtomFormContext>(i);
 		}
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
 		public ITerminalNode INIT() { return GetToken(PlanningParser.INIT, 0); }
-		public AtomicFormulaNameContext atomicFormulaName(int i) {
-			return GetRuleContext<AtomicFormulaNameContext>(i);
-		}
 		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
 		public InitContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -1639,28 +2622,28 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public InitContext init() {
 		InitContext _localctx = new InitContext(_ctx, State);
-		EnterRule(_localctx, 54, RULE_init);
+		EnterRule(_localctx, 80, RULE_init);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 339; Match(LB);
-			State = 340; Match(COLON);
-			State = 341; Match(INIT);
-			State = 345;
+			State = 593; Match(LB);
+			State = 594; Match(COLON);
+			State = 595; Match(INIT);
+			State = 599;
 			_errHandler.Sync(this);
 			_la = _input.La(1);
 			while (_la==LB) {
 				{
 				{
-				State = 342; atomicFormulaName();
+				State = 596; constTermAtomForm();
 				}
 				}
-				State = 347;
+				State = 601;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 			}
-			State = 348; Match(RB);
+			State = 602; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1674,116 +2657,156 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class GdNameContext : ParserRuleContext {
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public IReadOnlyList<GdNameContext> gdName() {
-			return GetRuleContexts<GdNameContext>();
+	public partial class ConstTermGdContext : ParserRuleContext {
+		public IReadOnlyList<ConstTermGdContext> constTermGd() {
+			return GetRuleContexts<ConstTermGdContext>();
 		}
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ITerminalNode EXISTS() { return GetToken(PlanningParser.EXISTS, 0); }
+		public ConstTermGdContext constTermGd(int i) {
+			return GetRuleContext<ConstTermGdContext>(i);
+		}
 		public ITerminalNode AND() { return GetToken(PlanningParser.AND, 0); }
-		public AtomicFormulaNameContext atomicFormulaName() {
-			return GetRuleContext<AtomicFormulaNameContext>(0);
-		}
 		public ITerminalNode OR() { return GetToken(PlanningParser.OR, 0); }
+		public ITerminalNode FORALL() { return GetToken(PlanningParser.FORALL, 0); }
+		public ITerminalNode RB(int i) {
+			return GetToken(PlanningParser.RB, i);
+		}
+		public ConstTermAtomFormContext constTermAtomForm() {
+			return GetRuleContext<ConstTermAtomFormContext>(0);
+		}
+		public IReadOnlyList<ITerminalNode> LB() { return GetTokens(PlanningParser.LB); }
+		public GdContext gd() {
+			return GetRuleContext<GdContext>(0);
+		}
+		public ITerminalNode LB(int i) {
+			return GetToken(PlanningParser.LB, i);
+		}
+		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
+		public ListVariableContext listVariable() {
+			return GetRuleContext<ListVariableContext>(0);
+		}
 		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
 		public ITerminalNode IMPLY() { return GetToken(PlanningParser.IMPLY, 0); }
-		public LiteralNameContext literalName() {
-			return GetRuleContext<LiteralNameContext>(0);
+		public ConstTermLiteralContext constTermLiteral() {
+			return GetRuleContext<ConstTermLiteralContext>(0);
 		}
-		public GdNameContext gdName(int i) {
-			return GetRuleContext<GdNameContext>(i);
-		}
-		public GdNameContext(ParserRuleContext parent, int invokingState)
+		public ConstTermGdContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_gdName; }
+		public override int GetRuleIndex() { return RULE_constTermGd; }
 	}
 
 	[RuleVersion(0)]
-	public GdNameContext gdName() {
-		GdNameContext _localctx = new GdNameContext(_ctx, State);
-		EnterRule(_localctx, 56, RULE_gdName);
+	public ConstTermGdContext constTermGd() {
+		ConstTermGdContext _localctx = new ConstTermGdContext(_ctx, State);
+		EnterRule(_localctx, 82, RULE_constTermGd);
 		int _la;
 		try {
-			State = 381;
-			switch ( Interpreter.AdaptivePredict(_input,34,_ctx) ) {
+			State = 651;
+			switch ( Interpreter.AdaptivePredict(_input,50,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 350; atomicFormulaName();
+				State = 604; constTermAtomForm();
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 351; literalName();
+				State = 605; constTermLiteral();
 				}
 				break;
 
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 352; Match(LB);
-				State = 353; Match(AND);
-				State = 355;
+				State = 606; Match(LB);
+				State = 607; Match(AND);
+				State = 609;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 354; gdName();
+					State = 608; constTermGd();
 					}
 					}
-					State = 357;
+					State = 611;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==LB );
-				State = 359; Match(RB);
+				State = 613; Match(RB);
 				}
 				break;
 
 			case 4:
 				EnterOuterAlt(_localctx, 4);
 				{
-				State = 361; Match(LB);
-				State = 362; Match(OR);
-				State = 364;
+				State = 615; Match(LB);
+				State = 616; Match(OR);
+				State = 618;
 				_errHandler.Sync(this);
 				_la = _input.La(1);
 				do {
 					{
 					{
-					State = 363; gdName();
+					State = 617; constTermGd();
 					}
 					}
-					State = 366;
+					State = 620;
 					_errHandler.Sync(this);
 					_la = _input.La(1);
 				} while ( _la==LB );
-				State = 368; Match(RB);
+				State = 622; Match(RB);
 				}
 				break;
 
 			case 5:
 				EnterOuterAlt(_localctx, 5);
 				{
-				State = 370; Match(LB);
-				State = 371; Match(NOT);
-				State = 372; gdName();
-				State = 373; Match(RB);
+				State = 624; Match(LB);
+				State = 625; Match(NOT);
+				State = 626; constTermGd();
+				State = 627; Match(RB);
 				}
 				break;
 
 			case 6:
 				EnterOuterAlt(_localctx, 6);
 				{
-				State = 375; Match(LB);
-				State = 376; Match(IMPLY);
-				State = 377; gdName();
-				State = 378; gdName();
-				State = 379; Match(RB);
+				State = 629; Match(LB);
+				State = 630; Match(IMPLY);
+				State = 631; constTermGd();
+				State = 632; constTermGd();
+				State = 633; Match(RB);
+				}
+				break;
+
+			case 7:
+				EnterOuterAlt(_localctx, 7);
+				{
+				State = 635; Match(LB);
+				State = 636; Match(EXISTS);
+				State = 637; Match(LB);
+				State = 638; listVariable();
+				State = 639; Match(RB);
+				State = 640; gd();
+				State = 641; Match(RB);
+				}
+				break;
+
+			case 8:
+				EnterOuterAlt(_localctx, 8);
+				{
+				State = 643; Match(LB);
+				State = 644; Match(FORALL);
+				State = 645; Match(LB);
+				State = 646; listVariable();
+				State = 647; Match(RB);
+				State = 648; gd();
+				State = 649; Match(RB);
 				}
 				break;
 			}
@@ -1799,95 +2822,162 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class AtomicFormulaNameContext : ParserRuleContext {
+	public partial class ConstTermAtomFormContext : ParserRuleContext {
+		public IReadOnlyList<ConstTermContext> constTerm() {
+			return GetRuleContexts<ConstTermContext>();
+		}
+		public ITerminalNode GEQ() { return GetToken(PlanningParser.GEQ, 0); }
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ITerminalNode NAME(int i) {
-			return GetToken(PlanningParser.NAME, i);
+		public PredContext pred() {
+			return GetRuleContext<PredContext>(0);
 		}
+		public ITerminalNode LT() { return GetToken(PlanningParser.LT, 0); }
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public PredicateContext predicate() {
-			return GetRuleContext<PredicateContext>(0);
+		public ConstTermContext constTerm(int i) {
+			return GetRuleContext<ConstTermContext>(i);
 		}
-		public IReadOnlyList<ITerminalNode> NAME() { return GetTokens(PlanningParser.NAME); }
-		public AtomicFormulaNameContext(ParserRuleContext parent, int invokingState)
+		public ITerminalNode LEQ() { return GetToken(PlanningParser.LEQ, 0); }
+		public ITerminalNode GT() { return GetToken(PlanningParser.GT, 0); }
+		public ITerminalNode EQ() { return GetToken(PlanningParser.EQ, 0); }
+		public ConstTermAtomFormContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_atomicFormulaName; }
+		public override int GetRuleIndex() { return RULE_constTermAtomForm; }
 	}
 
 	[RuleVersion(0)]
-	public AtomicFormulaNameContext atomicFormulaName() {
-		AtomicFormulaNameContext _localctx = new AtomicFormulaNameContext(_ctx, State);
-		EnterRule(_localctx, 58, RULE_atomicFormulaName);
+	public ConstTermAtomFormContext constTermAtomForm() {
+		ConstTermAtomFormContext _localctx = new ConstTermAtomFormContext(_ctx, State);
+		EnterRule(_localctx, 84, RULE_constTermAtomForm);
 		int _la;
 		try {
-			EnterOuterAlt(_localctx, 1);
-			{
-			State = 383; Match(LB);
-			State = 384; predicate();
-			State = 388;
-			_errHandler.Sync(this);
-			_la = _input.La(1);
-			while (_la==NAME) {
-				{
-				{
-				State = 385; Match(NAME);
-				}
-				}
-				State = 390;
-				_errHandler.Sync(this);
-				_la = _input.La(1);
-			}
-			State = 391; Match(RB);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.ReportError(this, re);
-			_errHandler.Recover(this, re);
-		}
-		finally {
-			ExitRule();
-		}
-		return _localctx;
-	}
-
-	public partial class LiteralNameContext : ParserRuleContext {
-		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
-		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public AtomicFormulaNameContext atomicFormulaName() {
-			return GetRuleContext<AtomicFormulaNameContext>(0);
-		}
-		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
-		public LiteralNameContext(ParserRuleContext parent, int invokingState)
-			: base(parent, invokingState)
-		{
-		}
-		public override int GetRuleIndex() { return RULE_literalName; }
-	}
-
-	[RuleVersion(0)]
-	public LiteralNameContext literalName() {
-		LiteralNameContext _localctx = new LiteralNameContext(_ctx, State);
-		EnterRule(_localctx, 60, RULE_literalName);
-		try {
-			State = 399;
-			switch ( Interpreter.AdaptivePredict(_input,36,_ctx) ) {
+			State = 693;
+			switch ( Interpreter.AdaptivePredict(_input,52,_ctx) ) {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 393; atomicFormulaName();
+				State = 653; Match(LB);
+				State = 654; pred();
+				State = 658;
+				_errHandler.Sync(this);
+				_la = _input.La(1);
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << LB) | (1L << NAME) | (1L << INTEGER))) != 0)) {
+					{
+					{
+					State = 655; constTerm();
+					}
+					}
+					State = 660;
+					_errHandler.Sync(this);
+					_la = _input.La(1);
+				}
+				State = 661; Match(RB);
 				}
 				break;
 
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 394; Match(LB);
-				State = 395; Match(NOT);
-				State = 396; atomicFormulaName();
-				State = 397; Match(RB);
+				State = 663; Match(LB);
+				State = 664; Match(EQ);
+				State = 665; constTerm();
+				State = 666; constTerm();
+				State = 667; Match(RB);
+				}
+				break;
+
+			case 3:
+				EnterOuterAlt(_localctx, 3);
+				{
+				State = 669; Match(LB);
+				State = 670; Match(LT);
+				State = 671; constTerm();
+				State = 672; constTerm();
+				State = 673; Match(RB);
+				}
+				break;
+
+			case 4:
+				EnterOuterAlt(_localctx, 4);
+				{
+				State = 675; Match(LB);
+				State = 676; Match(LEQ);
+				State = 677; constTerm();
+				State = 678; constTerm();
+				State = 679; Match(RB);
+				}
+				break;
+
+			case 5:
+				EnterOuterAlt(_localctx, 5);
+				{
+				State = 681; Match(LB);
+				State = 682; Match(GT);
+				State = 683; constTerm();
+				State = 684; constTerm();
+				State = 685; Match(RB);
+				}
+				break;
+
+			case 6:
+				EnterOuterAlt(_localctx, 6);
+				{
+				State = 687; Match(LB);
+				State = 688; Match(GEQ);
+				State = 689; constTerm();
+				State = 690; constTerm();
+				State = 691; Match(RB);
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.ReportError(this, re);
+			_errHandler.Recover(this, re);
+		}
+		finally {
+			ExitRule();
+		}
+		return _localctx;
+	}
+
+	public partial class ConstTermLiteralContext : ParserRuleContext {
+		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
+		public ConstTermAtomFormContext constTermAtomForm() {
+			return GetRuleContext<ConstTermAtomFormContext>(0);
+		}
+		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
+		public ITerminalNode NOT() { return GetToken(PlanningParser.NOT, 0); }
+		public ConstTermLiteralContext(ParserRuleContext parent, int invokingState)
+			: base(parent, invokingState)
+		{
+		}
+		public override int GetRuleIndex() { return RULE_constTermLiteral; }
+	}
+
+	[RuleVersion(0)]
+	public ConstTermLiteralContext constTermLiteral() {
+		ConstTermLiteralContext _localctx = new ConstTermLiteralContext(_ctx, State);
+		EnterRule(_localctx, 86, RULE_constTermLiteral);
+		try {
+			State = 701;
+			switch ( Interpreter.AdaptivePredict(_input,53,_ctx) ) {
+			case 1:
+				EnterOuterAlt(_localctx, 1);
+				{
+				State = 695; constTermAtomForm();
+				}
+				break;
+
+			case 2:
+				EnterOuterAlt(_localctx, 2);
+				{
+				State = 696; Match(LB);
+				State = 697; Match(NOT);
+				State = 698; constTermAtomForm();
+				State = 699; Match(RB);
 				}
 				break;
 			}
@@ -1941,6 +3031,9 @@ public partial class PlanningParser : Parser {
 			return GetRuleContext<DomainNameContext>(0);
 		}
 		public IReadOnlyList<ITerminalNode> COLON() { return GetTokens(PlanningParser.COLON); }
+		public ConstSettingContext constSetting() {
+			return GetRuleContext<ConstSettingContext>(0);
+		}
 		public ClientProblemContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1951,53 +3044,61 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public ClientProblemContext clientProblem() {
 		ClientProblemContext _localctx = new ClientProblemContext(_ctx, State);
-		EnterRule(_localctx, 62, RULE_clientProblem);
+		EnterRule(_localctx, 88, RULE_clientProblem);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 401; Match(LB);
-			State = 402; Match(DEF);
-			State = 403; Match(LB);
-			State = 404; Match(PROM);
-			State = 405; problemName();
-			State = 406; Match(RB);
-			State = 407; Match(LB);
-			State = 408; Match(COLON);
-			State = 409; Match(DOM);
-			State = 410; domainName();
-			State = 411; Match(RB);
-			State = 412; agentDefine();
-			State = 413; Match(LB);
-			State = 414; Match(COLON);
-			State = 415; Match(AGENTID);
-			State = 416; agentId();
-			State = 417; Match(RB);
-			State = 419;
-			switch ( Interpreter.AdaptivePredict(_input,37,_ctx) ) {
+			State = 703; Match(LB);
+			State = 704; Match(DEF);
+			State = 705; Match(LB);
+			State = 706; Match(PROM);
+			State = 707; problemName();
+			State = 708; Match(RB);
+			State = 709; Match(LB);
+			State = 710; Match(COLON);
+			State = 711; Match(DOM);
+			State = 712; domainName();
+			State = 713; Match(RB);
+			State = 714; agentDefine();
+			State = 715; Match(LB);
+			State = 716; Match(COLON);
+			State = 717; Match(AGENTID);
+			State = 718; agentId();
+			State = 719; Match(RB);
+			State = 721;
+			switch ( Interpreter.AdaptivePredict(_input,54,_ctx) ) {
 			case 1:
 				{
-				State = 418; objectDeclaration();
+				State = 720; objectDeclaration();
 				}
 				break;
 			}
-			State = 422;
-			switch ( Interpreter.AdaptivePredict(_input,38,_ctx) ) {
+			State = 724;
+			switch ( Interpreter.AdaptivePredict(_input,55,_ctx) ) {
 			case 1:
 				{
-				State = 421; initKnowledge();
+				State = 723; constSetting();
 				}
 				break;
 			}
-			State = 425;
+			State = 727;
+			switch ( Interpreter.AdaptivePredict(_input,56,_ctx) ) {
+			case 1:
+				{
+				State = 726; initKnowledge();
+				}
+				break;
+			}
+			State = 730;
 			_la = _input.La(1);
 			if (_la==LB) {
 				{
-				State = 424; initBelief();
+				State = 729; initBelief();
 				}
 			}
 
-			State = 427; Match(RB);
+			State = 732; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2012,11 +3113,11 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class InitKnowledgeContext : ParserRuleContext {
+		public ConstTermGdContext constTermGd() {
+			return GetRuleContext<ConstTermGdContext>(0);
+		}
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public GdNameContext gdName() {
-			return GetRuleContext<GdNameContext>(0);
-		}
 		public ITerminalNode INITKNOWLEDGE() { return GetToken(PlanningParser.INITKNOWLEDGE, 0); }
 		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
 		public InitKnowledgeContext(ParserRuleContext parent, int invokingState)
@@ -2029,15 +3130,15 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public InitKnowledgeContext initKnowledge() {
 		InitKnowledgeContext _localctx = new InitKnowledgeContext(_ctx, State);
-		EnterRule(_localctx, 64, RULE_initKnowledge);
+		EnterRule(_localctx, 90, RULE_initKnowledge);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 429; Match(LB);
-			State = 430; Match(COLON);
-			State = 431; Match(INITKNOWLEDGE);
-			State = 432; gdName();
-			State = 433; Match(RB);
+			State = 734; Match(LB);
+			State = 735; Match(COLON);
+			State = 736; Match(INITKNOWLEDGE);
+			State = 737; constTermGd();
+			State = 738; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2052,12 +3153,12 @@ public partial class PlanningParser : Parser {
 	}
 
 	public partial class InitBeliefContext : ParserRuleContext {
+		public ConstTermGdContext constTermGd() {
+			return GetRuleContext<ConstTermGdContext>(0);
+		}
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
 		public ITerminalNode INITBELIEF() { return GetToken(PlanningParser.INITBELIEF, 0); }
 		public ITerminalNode RB() { return GetToken(PlanningParser.RB, 0); }
-		public GdNameContext gdName() {
-			return GetRuleContext<GdNameContext>(0);
-		}
 		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
 		public InitBeliefContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -2069,15 +3170,15 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public InitBeliefContext initBelief() {
 		InitBeliefContext _localctx = new InitBeliefContext(_ctx, State);
-		EnterRule(_localctx, 66, RULE_initBelief);
+		EnterRule(_localctx, 92, RULE_initBelief);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 435; Match(LB);
-			State = 436; Match(COLON);
-			State = 437; Match(INITBELIEF);
-			State = 438; gdName();
-			State = 439; Match(RB);
+			State = 740; Match(LB);
+			State = 741; Match(COLON);
+			State = 742; Match(INITBELIEF);
+			State = 743; constTermGd();
+			State = 744; Match(RB);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2103,11 +3204,11 @@ public partial class PlanningParser : Parser {
 	[RuleVersion(0)]
 	public AgentIdContext agentId() {
 		AgentIdContext _localctx = new AgentIdContext(_ctx, State);
-		EnterRule(_localctx, 68, RULE_agentId);
+		EnterRule(_localctx, 94, RULE_agentId);
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 441; Match(NAME);
+			State = 746; Match(NAME);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2122,182 +3223,309 @@ public partial class PlanningParser : Parser {
 	}
 
 	public static readonly string _serializedATN =
-		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x30\x1BE\x4\x2"+
+		"\x3\xAF6F\x8320\x479D\xB75C\x4880\x1605\x191C\xAB37\x3\x41\x2EF\x4\x2"+
 		"\t\x2\x4\x3\t\x3\x4\x4\t\x4\x4\x5\t\x5\x4\x6\t\x6\x4\a\t\a\x4\b\t\b\x4"+
 		"\t\t\t\x4\n\t\n\x4\v\t\v\x4\f\t\f\x4\r\t\r\x4\xE\t\xE\x4\xF\t\xF\x4\x10"+
 		"\t\x10\x4\x11\t\x11\x4\x12\t\x12\x4\x13\t\x13\x4\x14\t\x14\x4\x15\t\x15"+
 		"\x4\x16\t\x16\x4\x17\t\x17\x4\x18\t\x18\x4\x19\t\x19\x4\x1A\t\x1A\x4\x1B"+
 		"\t\x1B\x4\x1C\t\x1C\x4\x1D\t\x1D\x4\x1E\t\x1E\x4\x1F\t\x1F\x4 \t \x4!"+
-		"\t!\x4\"\t\"\x4#\t#\x4$\t$\x3\x2\x3\x2\x3\x2\x3\x2\x3\x2\x3\x2\x3\x2\x5"+
-		"\x2P\n\x2\x3\x2\x5\x2S\n\x2\x3\x2\a\x2V\n\x2\f\x2\xE\x2Y\v\x2\x3\x2\x3"+
-		"\x2\x3\x3\x3\x3\x3\x3\x3\x3\x3\x3\x3\x3\x3\x4\x3\x4\x3\x4\x3\x4\x6\x4"+
-		"g\n\x4\r\x4\xE\x4h\x3\x4\x3\x4\x3\x5\x3\x5\x3\x5\x3\x5\x3\x5\x3\x6\x3"+
-		"\x6\x3\a\x3\a\x3\b\x3\b\x3\b\x3\b\x6\bz\n\b\r\b\xE\b{\x3\b\x3\b\x5\b\x80"+
-		"\n\b\x3\t\x3\t\x3\t\x3\t\x3\t\x3\t\x3\t\x3\t\x3\t\x3\t\x6\t\x8C\n\t\r"+
-		"\t\xE\t\x8D\x3\t\x3\t\x3\n\x3\n\x3\v\x3\v\x6\v\x96\n\v\r\v\xE\v\x97\x3"+
-		"\v\x3\v\x3\f\x3\f\x3\f\x3\f\x5\f\xA0\n\f\x3\f\x3\f\x3\f\x5\f\xA5\n\f\x3"+
-		"\f\x3\f\x3\f\x5\f\xAA\n\f\x3\f\x3\f\x3\r\x3\r\x3\r\x5\r\xB1\n\r\x3\xE"+
-		"\x3\xE\x3\xE\x5\xE\xB6\n\xE\x3\xF\a\xF\xB9\n\xF\f\xF\xE\xF\xBC\v\xF\x3"+
-		"\xF\x6\xF\xBF\n\xF\r\xF\xE\xF\xC0\x3\xF\x3\xF\x3\xF\x3\xF\x5\xF\xC7\n"+
-		"\xF\x3\x10\a\x10\xCA\n\x10\f\x10\xE\x10\xCD\v\x10\x3\x10\x6\x10\xD0\n"+
-		"\x10\r\x10\xE\x10\xD1\x3\x10\x3\x10\x3\x10\x3\x10\x5\x10\xD8\n\x10\x3"+
-		"\x11\x3\x11\x3\x11\x3\x11\x3\x11\x6\x11\xDF\n\x11\r\x11\xE\x11\xE0\x3"+
-		"\x11\x3\x11\x3\x11\x3\x11\x3\x11\x6\x11\xE8\n\x11\r\x11\xE\x11\xE9\x3"+
-		"\x11\x3\x11\x3\x11\x3\x11\x3\x11\x3\x11\x3\x11\x3\x11\x3\x11\x3\x11\x3"+
-		"\x11\x3\x11\x3\x11\x5\x11\xF9\n\x11\x3\x12\x3\x12\x3\x12\a\x12\xFE\n\x12"+
-		"\f\x12\xE\x12\x101\v\x12\x3\x12\x3\x12\x3\x13\x3\x13\x3\x13\x3\x13\x3"+
-		"\x13\x3\x13\x5\x13\x10B\n\x13\x3\x14\x3\x14\x3\x15\x3\x15\x3\x15\x6\x15"+
-		"\x112\n\x15\r\x15\xE\x15\x113\x3\x15\x3\x15\x3\x15\x5\x15\x119\n\x15\x3"+
-		"\x16\x3\x16\x3\x16\x3\x16\x3\x16\x3\x16\x3\x16\x5\x16\x122\n\x16\x3\x17"+
-		"\x3\x17\x3\x17\x6\x17\x127\n\x17\r\x17\xE\x17\x128\x3\x17\x3\x17\x3\x17"+
-		"\x5\x17\x12E\n\x17\x3\x18\x3\x18\x3\x18\x3\x18\x3\x18\x3\x18\x3\x18\x3"+
-		"\x18\x3\x18\x3\x18\x3\x18\x3\x18\x3\x18\x5\x18\x13D\n\x18\x3\x18\x3\x18"+
-		"\x3\x18\x3\x19\x3\x19\x3\x1A\x3\x1A\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x6\x1B"+
-		"\x14A\n\x1B\r\x1B\xE\x1B\x14B\x3\x1B\x3\x1B\x3\x1C\x3\x1C\x3\x1C\x3\x1C"+
-		"\x3\x1C\x3\x1C\x3\x1D\x3\x1D\x3\x1D\x3\x1D\a\x1D\x15A\n\x1D\f\x1D\xE\x1D"+
-		"\x15D\v\x1D\x3\x1D\x3\x1D\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x6\x1E\x166"+
-		"\n\x1E\r\x1E\xE\x1E\x167\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x6\x1E\x16F"+
-		"\n\x1E\r\x1E\xE\x1E\x170\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3"+
-		"\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x3\x1E\x5\x1E\x180\n\x1E\x3\x1F"+
-		"\x3\x1F\x3\x1F\a\x1F\x185\n\x1F\f\x1F\xE\x1F\x188\v\x1F\x3\x1F\x3\x1F"+
-		"\x3 \x3 \x3 \x3 \x3 \x3 \x5 \x192\n \x3!\x3!\x3!\x3!\x3!\x3!\x3!\x3!\x3"+
-		"!\x3!\x3!\x3!\x3!\x3!\x3!\x3!\x3!\x3!\x5!\x1A6\n!\x3!\x5!\x1A9\n!\x3!"+
-		"\x5!\x1AC\n!\x3!\x3!\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3#\x3#\x3#\x3#\x3"+
-		"#\x3#\x3$\x3$\x3$\x2\x2\x2%\x2\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10"+
-		"\x2\x12\x2\x14\x2\x16\x2\x18\x2\x1A\x2\x1C\x2\x1E\x2 \x2\"\x2$\x2&\x2"+
-		"(\x2*\x2,\x2.\x2\x30\x2\x32\x2\x34\x2\x36\x2\x38\x2:\x2<\x2>\x2@\x2\x42"+
-		"\x2\x44\x2\x46\x2\x2\x4\x4\x2\r\xE((\x4\x2((--\x1CA\x2H\x3\x2\x2\x2\x4"+
-		"\\\x3\x2\x2\x2\x6\x62\x3\x2\x2\x2\bl\x3\x2\x2\x2\nq\x3\x2\x2\x2\fs\x3"+
-		"\x2\x2\x2\xE\x7F\x3\x2\x2\x2\x10\x81\x3\x2\x2\x2\x12\x91\x3\x2\x2\x2\x14"+
-		"\x93\x3\x2\x2\x2\x16\x9B\x3\x2\x2\x2\x18\xB0\x3\x2\x2\x2\x1A\xB5\x3\x2"+
-		"\x2\x2\x1C\xC6\x3\x2\x2\x2\x1E\xD7\x3\x2\x2\x2 \xF8\x3\x2\x2\x2\"\xFA"+
-		"\x3\x2\x2\x2$\x10A\x3\x2\x2\x2&\x10C\x3\x2\x2\x2(\x118\x3\x2\x2\x2*\x121"+
-		"\x3\x2\x2\x2,\x12D\x3\x2\x2\x2.\x12F\x3\x2\x2\x2\x30\x141\x3\x2\x2\x2"+
-		"\x32\x143\x3\x2\x2\x2\x34\x145\x3\x2\x2\x2\x36\x14F\x3\x2\x2\x2\x38\x155"+
-		"\x3\x2\x2\x2:\x17F\x3\x2\x2\x2<\x181\x3\x2\x2\x2>\x191\x3\x2\x2\x2@\x193"+
-		"\x3\x2\x2\x2\x42\x1AF\x3\x2\x2\x2\x44\x1B5\x3\x2\x2\x2\x46\x1BB\x3\x2"+
-		"\x2\x2HI\a\x16\x2\x2IJ\a\x5\x2\x2JK\a\x16\x2\x2KL\a\x3\x2\x2LM\a(\x2\x2"+
-		"MO\a\x17\x2\x2NP\x5\x4\x3\x2ON\x3\x2\x2\x2OP\x3\x2\x2\x2PR\x3\x2\x2\x2"+
-		"QS\x5\x6\x4\x2RQ\x3\x2\x2\x2RS\x3\x2\x2\x2SW\x3\x2\x2\x2TV\x5\x10\t\x2"+
-		"UT\x3\x2\x2\x2VY\x3\x2\x2\x2WU\x3\x2\x2\x2WX\x3\x2\x2\x2XZ\x3\x2\x2\x2"+
-		"YW\x3\x2\x2\x2Z[\a\x17\x2\x2[\x3\x3\x2\x2\x2\\]\a\x16\x2\x2]^\a\x1A\x2"+
-		"\x2^_\a\a\x2\x2_`\x5\x1C\xF\x2`\x61\a\x17\x2\x2\x61\x5\x3\x2\x2\x2\x62"+
-		"\x63\a\x16\x2\x2\x63\x64\a\x1A\x2\x2\x64\x66\a\b\x2\x2\x65g\x5\b\x5\x2"+
-		"\x66\x65\x3\x2\x2\x2gh\x3\x2\x2\x2h\x66\x3\x2\x2\x2hi\x3\x2\x2\x2ij\x3"+
-		"\x2\x2\x2jk\a\x17\x2\x2k\a\x3\x2\x2\x2lm\a\x16\x2\x2mn\x5\n\x6\x2no\x5"+
-		"\x1E\x10\x2op\a\x17\x2\x2p\t\x3\x2\x2\x2qr\a(\x2\x2r\v\x3\x2\x2\x2st\t"+
-		"\x2\x2\x2t\r\x3\x2\x2\x2u\x80\x5\f\a\x2vw\a\x16\x2\x2wy\a\xF\x2\x2xz\x5"+
-		"\f\a\x2yx\x3\x2\x2\x2z{\x3\x2\x2\x2{y\x3\x2\x2\x2{|\x3\x2\x2\x2|}\x3\x2"+
-		"\x2\x2}~\a\x17\x2\x2~\x80\x3\x2\x2\x2\x7Fu\x3\x2\x2\x2\x7Fv\x3\x2\x2\x2"+
-		"\x80\xF\x3\x2\x2\x2\x81\x82\a\x16\x2\x2\x82\x83\a\x1A\x2\x2\x83\x84\a"+
-		"\t\x2\x2\x84\x85\x5\x12\n\x2\x85\x86\a\x1A\x2\x2\x86\x87\a\n\x2\x2\x87"+
-		"\x88\a\x16\x2\x2\x88\x89\x5\x1E\x10\x2\x89\x8B\a\x17\x2\x2\x8A\x8C\x5"+
-		"\x14\v\x2\x8B\x8A\x3\x2\x2\x2\x8C\x8D\x3\x2\x2\x2\x8D\x8B\x3\x2\x2\x2"+
-		"\x8D\x8E\x3\x2\x2\x2\x8E\x8F\x3\x2\x2\x2\x8F\x90\a\x17\x2\x2\x90\x11\x3"+
-		"\x2\x2\x2\x91\x92\a(\x2\x2\x92\x13\x3\x2\x2\x2\x93\x95\a\x16\x2\x2\x94"+
-		"\x96\x5\x16\f\x2\x95\x94\x3\x2\x2\x2\x96\x97\x3\x2\x2\x2\x97\x95\x3\x2"+
-		"\x2\x2\x97\x98\x3\x2\x2\x2\x98\x99\x3\x2\x2\x2\x99\x9A\a\x17\x2\x2\x9A"+
-		"\x15\x3\x2\x2\x2\x9B\x9F\a\x16\x2\x2\x9C\x9D\a\x1A\x2\x2\x9D\x9E\a\x30"+
-		"\x2\x2\x9E\xA0\a*\x2\x2\x9F\x9C\x3\x2\x2\x2\x9F\xA0\x3\x2\x2\x2\xA0\xA4"+
-		"\x3\x2\x2\x2\xA1\xA2\a\x1A\x2\x2\xA2\xA3\a\v\x2\x2\xA3\xA5\x5\x18\r\x2"+
-		"\xA4\xA1\x3\x2\x2\x2\xA4\xA5\x3\x2\x2\x2\xA5\xA9\x3\x2\x2\x2\xA6\xA7\a"+
-		"\x1A\x2\x2\xA7\xA8\a\f\x2\x2\xA8\xAA\x5\x1A\xE\x2\xA9\xA6\x3\x2\x2\x2"+
-		"\xA9\xAA\x3\x2\x2\x2\xAA\xAB\x3\x2\x2\x2\xAB\xAC\a\x17\x2\x2\xAC\x17\x3"+
-		"\x2\x2\x2\xAD\xB1\x5 \x11\x2\xAE\xAF\a\x16\x2\x2\xAF\xB1\a\x17\x2\x2\xB0"+
-		"\xAD\x3\x2\x2\x2\xB0\xAE\x3\x2\x2\x2\xB1\x19\x3\x2\x2\x2\xB2\xB6\x5(\x15"+
-		"\x2\xB3\xB4\a\x16\x2\x2\xB4\xB6\a\x17\x2\x2\xB5\xB2\x3\x2\x2\x2\xB5\xB3"+
-		"\x3\x2\x2\x2\xB6\x1B\x3\x2\x2\x2\xB7\xB9\a(\x2\x2\xB8\xB7\x3\x2\x2\x2"+
-		"\xB9\xBC\x3\x2\x2\x2\xBA\xB8\x3\x2\x2\x2\xBA\xBB\x3\x2\x2\x2\xBB\xC7\x3"+
-		"\x2\x2\x2\xBC\xBA\x3\x2\x2\x2\xBD\xBF\a(\x2\x2\xBE\xBD\x3\x2\x2\x2\xBF"+
-		"\xC0\x3\x2\x2\x2\xC0\xBE\x3\x2\x2\x2\xC0\xC1\x3\x2\x2\x2\xC1\xC2\x3\x2"+
-		"\x2\x2\xC2\xC3\a\x1E\x2\x2\xC3\xC4\x5\xE\b\x2\xC4\xC5\x5\x1C\xF\x2\xC5"+
-		"\xC7\x3\x2\x2\x2\xC6\xBA\x3\x2\x2\x2\xC6\xBE\x3\x2\x2\x2\xC7\x1D\x3\x2"+
-		"\x2\x2\xC8\xCA\a-\x2\x2\xC9\xC8\x3\x2\x2\x2\xCA\xCD\x3\x2\x2\x2\xCB\xC9"+
-		"\x3\x2\x2\x2\xCB\xCC\x3\x2\x2\x2\xCC\xD8\x3\x2\x2\x2\xCD\xCB\x3\x2\x2"+
-		"\x2\xCE\xD0\a-\x2\x2\xCF\xCE\x3\x2\x2\x2\xD0\xD1\x3\x2\x2\x2\xD1\xCF\x3"+
-		"\x2\x2\x2\xD1\xD2\x3\x2\x2\x2\xD2\xD3\x3\x2\x2\x2\xD3\xD4\a\x1E\x2\x2"+
-		"\xD4\xD5\x5\xE\b\x2\xD5\xD6\x5\x1E\x10\x2\xD6\xD8\x3\x2\x2\x2\xD7\xCB"+
-		"\x3\x2\x2\x2\xD7\xCF\x3\x2\x2\x2\xD8\x1F\x3\x2\x2\x2\xD9\xF9\x5\"\x12"+
-		"\x2\xDA\xF9\x5$\x13\x2\xDB\xDC\a\x16\x2\x2\xDC\xDE\a\x1F\x2\x2\xDD\xDF"+
-		"\x5 \x11\x2\xDE\xDD\x3\x2\x2\x2\xDF\xE0\x3\x2\x2\x2\xE0\xDE\x3\x2\x2\x2"+
-		"\xE0\xE1\x3\x2\x2\x2\xE1\xE2\x3\x2\x2\x2\xE2\xE3\a\x17\x2\x2\xE3\xF9\x3"+
-		"\x2\x2\x2\xE4\xE5\a\x16\x2\x2\xE5\xE7\a \x2\x2\xE6\xE8\x5 \x11\x2\xE7"+
-		"\xE6\x3\x2\x2\x2\xE8\xE9\x3\x2\x2\x2\xE9\xE7\x3\x2\x2\x2\xE9\xEA\x3\x2"+
-		"\x2\x2\xEA\xEB\x3\x2\x2\x2\xEB\xEC\a\x17\x2\x2\xEC\xF9\x3\x2\x2\x2\xED"+
-		"\xEE\a\x16\x2\x2\xEE\xEF\a!\x2\x2\xEF\xF0\x5 \x11\x2\xF0\xF1\a\x17\x2"+
-		"\x2\xF1\xF9\x3\x2\x2\x2\xF2\xF3\a\x16\x2\x2\xF3\xF4\a\"\x2\x2\xF4\xF5"+
-		"\x5 \x11\x2\xF5\xF6\x5 \x11\x2\xF6\xF7\a\x17\x2\x2\xF7\xF9\x3\x2\x2\x2"+
-		"\xF8\xD9\x3\x2\x2\x2\xF8\xDA\x3\x2\x2\x2\xF8\xDB\x3\x2\x2\x2\xF8\xE4\x3"+
-		"\x2\x2\x2\xF8\xED\x3\x2\x2\x2\xF8\xF2\x3\x2\x2\x2\xF9!\x3\x2\x2\x2\xFA"+
-		"\xFB\a\x16\x2\x2\xFB\xFF\x5\n\x6\x2\xFC\xFE\x5&\x14\x2\xFD\xFC\x3\x2\x2"+
-		"\x2\xFE\x101\x3\x2\x2\x2\xFF\xFD\x3\x2\x2\x2\xFF\x100\x3\x2\x2\x2\x100"+
-		"\x102\x3\x2\x2\x2\x101\xFF\x3\x2\x2\x2\x102\x103\a\x17\x2\x2\x103#\x3"+
-		"\x2\x2\x2\x104\x10B\x5\"\x12\x2\x105\x106\a\x16\x2\x2\x106\x107\a!\x2"+
-		"\x2\x107\x108\x5\"\x12\x2\x108\x109\a\x17\x2\x2\x109\x10B\x3\x2\x2\x2"+
-		"\x10A\x104\x3\x2\x2\x2\x10A\x105\x3\x2\x2\x2\x10B%\x3\x2\x2\x2\x10C\x10D"+
-		"\t\x3\x2\x2\x10D\'\x3\x2\x2\x2\x10E\x10F\a\x16\x2\x2\x10F\x111\a\x1F\x2"+
-		"\x2\x110\x112\x5*\x16\x2\x111\x110\x3\x2\x2\x2\x112\x113\x3\x2\x2\x2\x113"+
-		"\x111\x3\x2\x2\x2\x113\x114\x3\x2\x2\x2\x114\x115\x3\x2\x2\x2\x115\x116"+
-		"\a\x17\x2\x2\x116\x119\x3\x2\x2\x2\x117\x119\x5*\x16\x2\x118\x10E\x3\x2"+
-		"\x2\x2\x118\x117\x3\x2\x2\x2\x119)\x3\x2\x2\x2\x11A\x11B\a\x16\x2\x2\x11B"+
-		"\x11C\a%\x2\x2\x11C\x11D\x5 \x11\x2\x11D\x11E\x5,\x17\x2\x11E\x11F\a\x17"+
-		"\x2\x2\x11F\x122\x3\x2\x2\x2\x120\x122\x5$\x13\x2\x121\x11A\x3\x2\x2\x2"+
-		"\x121\x120\x3\x2\x2\x2\x122+\x3\x2\x2\x2\x123\x124\a\x16\x2\x2\x124\x126"+
-		"\a\x1F\x2\x2\x125\x127\x5$\x13\x2\x126\x125\x3\x2\x2\x2\x127\x128\x3\x2"+
-		"\x2\x2\x128\x126\x3\x2\x2\x2\x128\x129\x3\x2\x2\x2\x129\x12A\x3\x2\x2"+
-		"\x2\x12A\x12B\a\x17\x2\x2\x12B\x12E\x3\x2\x2\x2\x12C\x12E\x5$\x13\x2\x12D"+
-		"\x123\x3\x2\x2\x2\x12D\x12C\x3\x2\x2\x2\x12E-\x3\x2\x2\x2\x12F\x130\a"+
-		"\x16\x2\x2\x130\x131\a\x5\x2\x2\x131\x132\a\x16\x2\x2\x132\x133\a\x4\x2"+
-		"\x2\x133\x134\x5\x30\x19\x2\x134\x135\a\x17\x2\x2\x135\x136\a\x16\x2\x2"+
-		"\x136\x137\a\x1A\x2\x2\x137\x138\a\x3\x2\x2\x138\x139\x5\x32\x1A\x2\x139"+
-		"\x13A\a\x17\x2\x2\x13A\x13C\x5\x34\x1B\x2\x13B\x13D\x5\x36\x1C\x2\x13C"+
-		"\x13B\x3\x2\x2\x2\x13C\x13D\x3\x2\x2\x2\x13D\x13E\x3\x2\x2\x2\x13E\x13F"+
-		"\x5\x38\x1D\x2\x13F\x140\a\x17\x2\x2\x140/\x3\x2\x2\x2\x141\x142\a(\x2"+
-		"\x2\x142\x31\x3\x2\x2\x2\x143\x144\a(\x2\x2\x144\x33\x3\x2\x2\x2\x145"+
-		"\x146\a\x16\x2\x2\x146\x147\a\x1A\x2\x2\x147\x149\a\x14\x2\x2\x148\x14A"+
-		"\a(\x2\x2\x149\x148\x3\x2\x2\x2\x14A\x14B\x3\x2\x2\x2\x14B\x149\x3\x2"+
-		"\x2\x2\x14B\x14C\x3\x2\x2\x2\x14C\x14D\x3\x2\x2\x2\x14D\x14E\a\x17\x2"+
-		"\x2\x14E\x35\x3\x2\x2\x2\x14F\x150\a\x16\x2\x2\x150\x151\a\x1A\x2\x2\x151"+
-		"\x152\a\x12\x2\x2\x152\x153\x5\x1C\xF\x2\x153\x154\a\x17\x2\x2\x154\x37"+
-		"\x3\x2\x2\x2\x155\x156\a\x16\x2\x2\x156\x157\a\x1A\x2\x2\x157\x15B\a\x13"+
-		"\x2\x2\x158\x15A\x5<\x1F\x2\x159\x158\x3\x2\x2\x2\x15A\x15D\x3\x2\x2\x2"+
-		"\x15B\x159\x3\x2\x2\x2\x15B\x15C\x3\x2\x2\x2\x15C\x15E\x3\x2\x2\x2\x15D"+
-		"\x15B\x3\x2\x2\x2\x15E\x15F\a\x17\x2\x2\x15F\x39\x3\x2\x2\x2\x160\x180"+
-		"\x5<\x1F\x2\x161\x180\x5> \x2\x162\x163\a\x16\x2\x2\x163\x165\a\x1F\x2"+
-		"\x2\x164\x166\x5:\x1E\x2\x165\x164\x3\x2\x2\x2\x166\x167\x3\x2\x2\x2\x167"+
-		"\x165\x3\x2\x2\x2\x167\x168\x3\x2\x2\x2\x168\x169\x3\x2\x2\x2\x169\x16A"+
-		"\a\x17\x2\x2\x16A\x180\x3\x2\x2\x2\x16B\x16C\a\x16\x2\x2\x16C\x16E\a "+
-		"\x2\x2\x16D\x16F\x5:\x1E\x2\x16E\x16D\x3\x2\x2\x2\x16F\x170\x3\x2\x2\x2"+
-		"\x170\x16E\x3\x2\x2\x2\x170\x171\x3\x2\x2\x2\x171\x172\x3\x2\x2\x2\x172"+
-		"\x173\a\x17\x2\x2\x173\x180\x3\x2\x2\x2\x174\x175\a\x16\x2\x2\x175\x176"+
-		"\a!\x2\x2\x176\x177\x5:\x1E\x2\x177\x178\a\x17\x2\x2\x178\x180\x3\x2\x2"+
-		"\x2\x179\x17A\a\x16\x2\x2\x17A\x17B\a\"\x2\x2\x17B\x17C\x5:\x1E\x2\x17C"+
-		"\x17D\x5:\x1E\x2\x17D\x17E\a\x17\x2\x2\x17E\x180\x3\x2\x2\x2\x17F\x160"+
-		"\x3\x2\x2\x2\x17F\x161\x3\x2\x2\x2\x17F\x162\x3\x2\x2\x2\x17F\x16B\x3"+
-		"\x2\x2\x2\x17F\x174\x3\x2\x2\x2\x17F\x179\x3\x2\x2\x2\x180;\x3\x2\x2\x2"+
-		"\x181\x182\a\x16\x2\x2\x182\x186\x5\n\x6\x2\x183\x185\a(\x2\x2\x184\x183"+
-		"\x3\x2\x2\x2\x185\x188\x3\x2\x2\x2\x186\x184\x3\x2\x2\x2\x186\x187\x3"+
-		"\x2\x2\x2\x187\x189\x3\x2\x2\x2\x188\x186\x3\x2\x2\x2\x189\x18A\a\x17"+
-		"\x2\x2\x18A=\x3\x2\x2\x2\x18B\x192\x5<\x1F\x2\x18C\x18D\a\x16\x2\x2\x18D"+
-		"\x18E\a!\x2\x2\x18E\x18F\x5<\x1F\x2\x18F\x190\a\x17\x2\x2\x190\x192\x3"+
-		"\x2\x2\x2\x191\x18B\x3\x2\x2\x2\x191\x18C\x3\x2\x2\x2\x192?\x3\x2\x2\x2"+
-		"\x193\x194\a\x16\x2\x2\x194\x195\a\x5\x2\x2\x195\x196\a\x16\x2\x2\x196"+
-		"\x197\a\x4\x2\x2\x197\x198\x5\x30\x19\x2\x198\x199\a\x17\x2\x2\x199\x19A"+
-		"\a\x16\x2\x2\x19A\x19B\a\x1A\x2\x2\x19B\x19C\a\x3\x2\x2\x19C\x19D\x5\x32"+
-		"\x1A\x2\x19D\x19E\a\x17\x2\x2\x19E\x19F\x5\x34\x1B\x2\x19F\x1A0\a\x16"+
-		"\x2\x2\x1A0\x1A1\a\x1A\x2\x2\x1A1\x1A2\a\x6\x2\x2\x1A2\x1A3\x5\x46$\x2"+
-		"\x1A3\x1A5\a\x17\x2\x2\x1A4\x1A6\x5\x36\x1C\x2\x1A5\x1A4\x3\x2\x2\x2\x1A5"+
-		"\x1A6\x3\x2\x2\x2\x1A6\x1A8\x3\x2\x2\x2\x1A7\x1A9\x5\x42\"\x2\x1A8\x1A7"+
-		"\x3\x2\x2\x2\x1A8\x1A9\x3\x2\x2\x2\x1A9\x1AB\x3\x2\x2\x2\x1AA\x1AC\x5"+
-		"\x44#\x2\x1AB\x1AA\x3\x2\x2\x2\x1AB\x1AC\x3\x2\x2\x2\x1AC\x1AD\x3\x2\x2"+
-		"\x2\x1AD\x1AE\a\x17\x2\x2\x1AE\x41\x3\x2\x2\x2\x1AF\x1B0\a\x16\x2\x2\x1B0"+
-		"\x1B1\a\x1A\x2\x2\x1B1\x1B2\a\x10\x2\x2\x1B2\x1B3\x5:\x1E\x2\x1B3\x1B4"+
-		"\a\x17\x2\x2\x1B4\x43\x3\x2\x2\x2\x1B5\x1B6\a\x16\x2\x2\x1B6\x1B7\a\x1A"+
-		"\x2\x2\x1B7\x1B8\a\x11\x2\x2\x1B8\x1B9\x5:\x1E\x2\x1B9\x1BA\a\x17\x2\x2"+
-		"\x1BA\x45\x3\x2\x2\x2\x1BB\x1BC\a(\x2\x2\x1BCG\x3\x2\x2\x2*ORWh{\x7F\x8D"+
-		"\x97\x9F\xA4\xA9\xB0\xB5\xBA\xC0\xC6\xCB\xD1\xD7\xE0\xE9\xF8\xFF\x10A"+
-		"\x113\x118\x121\x128\x12D\x13C\x14B\x15B\x167\x170\x17F\x186\x191\x1A5"+
-		"\x1A8\x1AB";
+		"\t!\x4\"\t\"\x4#\t#\x4$\t$\x4%\t%\x4&\t&\x4\'\t\'\x4(\t(\x4)\t)\x4*\t"+
+		"*\x4+\t+\x4,\t,\x4-\t-\x4.\t.\x4/\t/\x4\x30\t\x30\x4\x31\t\x31\x3\x2\x3"+
+		"\x2\x3\x2\x3\x2\x3\x2\x3\x2\x3\x2\x5\x2j\n\x2\x3\x2\x5\x2m\n\x2\x3\x2"+
+		"\x5\x2p\n\x2\x3\x2\a\x2s\n\x2\f\x2\xE\x2v\v\x2\x3\x2\a\x2y\n\x2\f\x2\xE"+
+		"\x2|\v\x2\x3\x2\a\x2\x7F\n\x2\f\x2\xE\x2\x82\v\x2\x3\x2\x3\x2\x3\x3\x3"+
+		"\x3\x3\x3\x3\x3\x6\x3\x8A\n\x3\r\x3\xE\x3\x8B\x3\x3\x3\x3\x3\x4\x3\x4"+
+		"\x3\x5\x3\x5\x3\x5\x3\x5\x6\x5\x96\n\x5\r\x5\xE\x5\x97\x3\x5\x3\x5\x3"+
+		"\x6\x3\x6\x3\x6\x3\x6\x6\x6\xA0\n\x6\r\x6\xE\x6\xA1\x3\x6\x3\x6\x3\a\x3"+
+		"\a\x3\a\x3\a\x3\a\x3\b\x3\b\x3\t\x3\t\x3\t\x5\t\xB0\n\t\x3\n\x3\n\x3\v"+
+		"\x3\v\x3\v\x3\v\x3\v\x3\v\x3\f\x3\f\x3\f\x3\f\x3\f\x3\f\x3\f\x3\f\x3\f"+
+		"\x3\f\x5\f\xC4\n\f\x3\f\x3\f\x3\f\x5\f\xC9\n\f\x3\f\x3\f\x3\f\x5\f\xCE"+
+		"\n\f\x3\f\x3\f\x3\r\x3\r\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3"+
+		"\xE\x3\xE\x3\xE\x5\xE\xDE\n\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3\xE\x3\xF\x3"+
+		"\xF\x3\x10\x3\x10\x3\x10\x3\x10\x3\x10\x3\x10\x3\x10\x3\x10\x3\x10\x3"+
+		"\x10\x6\x10\xF1\n\x10\r\x10\xE\x10\xF2\x3\x10\x3\x10\x3\x11\x3\x11\x3"+
+		"\x12\x6\x12\xFA\n\x12\r\x12\xE\x12\xFB\x3\x12\x3\x12\x3\x12\x3\x12\x3"+
+		"\x12\x6\x12\x103\n\x12\r\x12\xE\x12\x104\x5\x12\x107\n\x12\x3\x13\x3\x13"+
+		"\x3\x14\x3\x14\x3\x14\x3\x14\x3\x14\x3\x14\x3\x14\x5\x14\x112\n\x14\x3"+
+		"\x14\x3\x14\x3\x14\x3\x14\x3\x14\x3\x15\x3\x15\x3\x16\x3\x16\x3\x16\x5"+
+		"\x16\x11E\n\x16\x3\x17\x3\x17\x3\x17\x5\x17\x123\n\x17\x3\x18\a\x18\x126"+
+		"\n\x18\f\x18\xE\x18\x129\v\x18\x3\x18\x6\x18\x12C\n\x18\r\x18\xE\x18\x12D"+
+		"\x3\x18\x3\x18\x3\x18\x3\x18\x5\x18\x134\n\x18\x3\x19\a\x19\x137\n\x19"+
+		"\f\x19\xE\x19\x13A\v\x19\x3\x19\x6\x19\x13D\n\x19\r\x19\xE\x19\x13E\x3"+
+		"\x19\x3\x19\x3\x19\x3\x19\x5\x19\x145\n\x19\x3\x1A\x3\x1A\x3\x1A\x3\x1A"+
+		"\x3\x1A\x6\x1A\x14C\n\x1A\r\x1A\xE\x1A\x14D\x3\x1A\x3\x1A\x3\x1A\x3\x1A"+
+		"\x3\x1A\x6\x1A\x155\n\x1A\r\x1A\xE\x1A\x156\x3\x1A\x3\x1A\x3\x1A\x3\x1A"+
+		"\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A"+
+		"\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A"+
+		"\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x3\x1A\x5\x1A\x176\n\x1A\x3\x1B\x3\x1B\x3"+
+		"\x1B\a\x1B\x17B\n\x1B\f\x1B\xE\x1B\x17E\v\x1B\x3\x1B\x3\x1B\x3\x1B\x3"+
+		"\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3"+
+		"\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3"+
+		"\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x3\x1B\x5\x1B\x1A0"+
+		"\n\x1B\x3\x1C\x3\x1C\x3\x1C\x3\x1C\x3\x1C\x3\x1C\x5\x1C\x1A8\n\x1C\x3"+
+		"\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x6\x1D\x1B3"+
+		"\n\x1D\r\x1D\xE\x1D\x1B4\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x6\x1D\x1BC"+
+		"\n\x1D\r\x1D\xE\x1D\x1BD\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3"+
+		"\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3\x1D\x3"+
+		"\x1D\x3\x1D\x5\x1D\x1D2\n\x1D\x3\x1E\x3\x1E\x3\x1E\a\x1E\x1D7\n\x1E\f"+
+		"\x1E\xE\x1E\x1DA\v\x1E\x3\x1E\x3\x1E\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F"+
+		"\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F\x3\x1F"+
+		"\x5\x1F\x1ED\n\x1F\x3 \x3 \x3 \x3 \x3 \x3 \x3 \x3 \x3 \x3 \x3 \x3 \x3"+
+		" \x3 \x5 \x1FD\n \x3!\x3!\x3!\x6!\x202\n!\r!\xE!\x203\x3!\x3!\x3!\x5!"+
+		"\x209\n!\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3\"\x3"+
+		"\"\x5\"\x218\n\"\x3#\x3#\x3#\x6#\x21D\n#\r#\xE#\x21E\x3#\x3#\x3#\x5#\x224"+
+		"\n#\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x3$\x5$\x233\n$\x3"+
+		"$\x5$\x236\n$\x3$\x3$\x3$\x3%\x3%\x3&\x3&\x3\'\x3\'\x3\'\x3\'\x6\'\x243"+
+		"\n\'\r\'\xE\'\x244\x3\'\x3\'\x3(\x3(\x3(\x3(\x3(\x3(\x3)\x3)\x3)\x3)\x3"+
+		")\x3*\x3*\x3*\x3*\a*\x258\n*\f*\xE*\x25B\v*\x3*\x3*\x3+\x3+\x3+\x3+\x3"+
+		"+\x6+\x264\n+\r+\xE+\x265\x3+\x3+\x3+\x3+\x3+\x6+\x26D\n+\r+\xE+\x26E"+
+		"\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3"+
+		"+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x3+\x5+\x28E\n+\x3,\x3,\x3,"+
+		"\a,\x293\n,\f,\xE,\x296\v,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3"+
+		",\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,\x3,"+
+		"\x3,\x3,\x3,\x3,\x5,\x2B8\n,\x3-\x3-\x3-\x3-\x3-\x3-\x5-\x2C0\n-\x3.\x3"+
+		".\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x3.\x5."+
+		"\x2D4\n.\x3.\x5.\x2D7\n.\x3.\x5.\x2DA\n.\x3.\x5.\x2DD\n.\x3.\x3.\x3/\x3"+
+		"/\x3/\x3/\x3/\x3/\x3\x30\x3\x30\x3\x30\x3\x30\x3\x30\x3\x30\x3\x31\x3"+
+		"\x31\x3\x31\x2\x2\x2\x32\x2\x2\x4\x2\x6\x2\b\x2\n\x2\f\x2\xE\x2\x10\x2"+
+		"\x12\x2\x14\x2\x16\x2\x18\x2\x1A\x2\x1C\x2\x1E\x2 \x2\"\x2$\x2&\x2(\x2"+
+		"*\x2,\x2.\x2\x30\x2\x32\x2\x34\x2\x36\x2\x38\x2:\x2<\x2>\x2@\x2\x42\x2"+
+		"\x44\x2\x46\x2H\x2J\x2L\x2N\x2P\x2R\x2T\x2V\x2X\x2Z\x2\\\x2^\x2`\x2\x2"+
+		"\x3\x4\x2\x12\x13\x38\x38\x316\x2\x62\x3\x2\x2\x2\x4\x85\x3\x2\x2\x2\x6"+
+		"\x8F\x3\x2\x2\x2\b\x91\x3\x2\x2\x2\n\x9B\x3\x2\x2\x2\f\xA5\x3\x2\x2\x2"+
+		"\xE\xAA\x3\x2\x2\x2\x10\xAF\x3\x2\x2\x2\x12\xB1\x3\x2\x2\x2\x14\xB3\x3"+
+		"\x2\x2\x2\x16\xB9\x3\x2\x2\x2\x18\xD1\x3\x2\x2\x2\x1A\xD3\x3\x2\x2\x2"+
+		"\x1C\xE4\x3\x2\x2\x2\x1E\xE6\x3\x2\x2\x2 \xF6\x3\x2\x2\x2\"\x106\x3\x2"+
+		"\x2\x2$\x108\x3\x2\x2\x2&\x10A\x3\x2\x2\x2(\x118\x3\x2\x2\x2*\x11D\x3"+
+		"\x2\x2\x2,\x122\x3\x2\x2\x2.\x133\x3\x2\x2\x2\x30\x144\x3\x2\x2\x2\x32"+
+		"\x175\x3\x2\x2\x2\x34\x19F\x3\x2\x2\x2\x36\x1A7\x3\x2\x2\x2\x38\x1D1\x3"+
+		"\x2\x2\x2:\x1D3\x3\x2\x2\x2<\x1EC\x3\x2\x2\x2>\x1FC\x3\x2\x2\x2@\x208"+
+		"\x3\x2\x2\x2\x42\x217\x3\x2\x2\x2\x44\x223\x3\x2\x2\x2\x46\x225\x3\x2"+
+		"\x2\x2H\x23A\x3\x2\x2\x2J\x23C\x3\x2\x2\x2L\x23E\x3\x2\x2\x2N\x248\x3"+
+		"\x2\x2\x2P\x24E\x3\x2\x2\x2R\x253\x3\x2\x2\x2T\x28D\x3\x2\x2\x2V\x2B7"+
+		"\x3\x2\x2\x2X\x2BF\x3\x2\x2\x2Z\x2C1\x3\x2\x2\x2\\\x2E0\x3\x2\x2\x2^\x2E6"+
+		"\x3\x2\x2\x2`\x2EC\x3\x2\x2\x2\x62\x63\a\x1C\x2\x2\x63\x64\a\x5\x2\x2"+
+		"\x64\x65\a\x1C\x2\x2\x65\x66\a\x3\x2\x2\x66g\a\x38\x2\x2gi\a\x1D\x2\x2"+
+		"hj\x5\x4\x3\x2ih\x3\x2\x2\x2ij\x3\x2\x2\x2jl\x3\x2\x2\x2km\x5\b\x5\x2"+
+		"lk\x3\x2\x2\x2lm\x3\x2\x2\x2mo\x3\x2\x2\x2np\x5\n\x6\x2on\x3\x2\x2\x2"+
+		"op\x3\x2\x2\x2pt\x3\x2\x2\x2qs\x5\x16\f\x2rq\x3\x2\x2\x2sv\x3\x2\x2\x2"+
+		"tr\x3\x2\x2\x2tu\x3\x2\x2\x2uz\x3\x2\x2\x2vt\x3\x2\x2\x2wy\x5\x1E\x10"+
+		"\x2xw\x3\x2\x2\x2y|\x3\x2\x2\x2zx\x3\x2\x2\x2z{\x3\x2\x2\x2{\x80\x3\x2"+
+		"\x2\x2|z\x3\x2\x2\x2}\x7F\x5&\x14\x2~}\x3\x2\x2\x2\x7F\x82\x3\x2\x2\x2"+
+		"\x80~\x3\x2\x2\x2\x80\x81\x3\x2\x2\x2\x81\x83\x3\x2\x2\x2\x82\x80\x3\x2"+
+		"\x2\x2\x83\x84\a\x1D\x2\x2\x84\x3\x3\x2\x2\x2\x85\x86\a\x1C\x2\x2\x86"+
+		"\x87\a!\x2\x2\x87\x89\a\a\x2\x2\x88\x8A\x5\x6\x4\x2\x89\x88\x3\x2\x2\x2"+
+		"\x8A\x8B\x3\x2\x2\x2\x8B\x89\x3\x2\x2\x2\x8B\x8C\x3\x2\x2\x2\x8C\x8D\x3"+
+		"\x2\x2\x2\x8D\x8E\a\x1D\x2\x2\x8E\x5\x3\x2\x2\x2\x8F\x90\a\x38\x2\x2\x90"+
+		"\a\x3\x2\x2\x2\x91\x92\a\x1C\x2\x2\x92\x93\a!\x2\x2\x93\x95\a\b\x2\x2"+
+		"\x94\x96\x5\x10\t\x2\x95\x94\x3\x2\x2\x2\x96\x97\x3\x2\x2\x2\x97\x95\x3"+
+		"\x2\x2\x2\x97\x98\x3\x2\x2\x2\x98\x99\x3\x2\x2\x2\x99\x9A\a\x1D\x2\x2"+
+		"\x9A\t\x3\x2\x2\x2\x9B\x9C\a\x1C\x2\x2\x9C\x9D\a!\x2\x2\x9D\x9F\a\t\x2"+
+		"\x2\x9E\xA0\x5\f\a\x2\x9F\x9E\x3\x2\x2\x2\xA0\xA1\x3\x2\x2\x2\xA1\x9F"+
+		"\x3\x2\x2\x2\xA1\xA2\x3\x2\x2\x2\xA2\xA3\x3\x2\x2\x2\xA3\xA4\a\x1D\x2"+
+		"\x2\xA4\v\x3\x2\x2\x2\xA5\xA6\a\x1C\x2\x2\xA6\xA7\x5\xE\b\x2\xA7\xA8\x5"+
+		"\x30\x19\x2\xA8\xA9\a\x1D\x2\x2\xA9\r\x3\x2\x2\x2\xAA\xAB\a\x38\x2\x2"+
+		"\xAB\xF\x3\x2\x2\x2\xAC\xB0\a\x38\x2\x2\xAD\xAE\a\x38\x2\x2\xAE\xB0\x5"+
+		"\x14\v\x2\xAF\xAC\x3\x2\x2\x2\xAF\xAD\x3\x2\x2\x2\xB0\x11\x3\x2\x2\x2"+
+		"\xB1\xB2\t\x2\x2\x2\xB2\x13\x3\x2\x2\x2\xB3\xB4\a\x1E\x2\x2\xB4\xB5\x5"+
+		"> \x2\xB5\xB6\a \x2\x2\xB6\xB7\x5> \x2\xB7\xB8\a\x1F\x2\x2\xB8\x15\x3"+
+		"\x2\x2\x2\xB9\xBA\a\x1C\x2\x2\xBA\xBB\a!\x2\x2\xBB\xBC\a\v\x2\x2\xBC\xC3"+
+		"\x5\x18\r\x2\xBD\xBE\a!\x2\x2\xBE\xBF\a\r\x2\x2\xBF\xC0\a\x1C\x2\x2\xC0"+
+		"\xC1\x5\x30\x19\x2\xC1\xC2\a\x1D\x2\x2\xC2\xC4\x3\x2\x2\x2\xC3\xBD\x3"+
+		"\x2\x2\x2\xC3\xC4\x3\x2\x2\x2\xC4\xC8\x3\x2\x2\x2\xC5\xC6\a!\x2\x2\xC6"+
+		"\xC7\a\xE\x2\x2\xC7\xC9\x5*\x16\x2\xC8\xC5\x3\x2\x2\x2\xC8\xC9\x3\x2\x2"+
+		"\x2\xC9\xCD\x3\x2\x2\x2\xCA\xCB\a!\x2\x2\xCB\xCC\a\x11\x2\x2\xCC\xCE\x5"+
+		",\x17\x2\xCD\xCA\x3\x2\x2\x2\xCD\xCE\x3\x2\x2\x2\xCE\xCF\x3\x2\x2\x2\xCF"+
+		"\xD0\a\x1D\x2\x2\xD0\x17\x3\x2\x2\x2\xD1\xD2\a\x38\x2\x2\xD2\x19\x3\x2"+
+		"\x2\x2\xD3\xD4\a\x1C\x2\x2\xD4\xD5\a!\x2\x2\xD5\xD6\a\xF\x2\x2\xD6\xDD"+
+		"\x5\x1C\xF\x2\xD7\xD8\a!\x2\x2\xD8\xD9\a\r\x2\x2\xD9\xDA\a\x1C\x2\x2\xDA"+
+		"\xDB\x5\x30\x19\x2\xDB\xDC\a\x1D\x2\x2\xDC\xDE\x3\x2\x2\x2\xDD\xD7\x3"+
+		"\x2\x2\x2\xDD\xDE\x3\x2\x2\x2\xDE\xDF\x3\x2\x2\x2\xDF\xE0\a!\x2\x2\xE0"+
+		"\xE1\a\f\x2\x2\xE1\xE2\x5\x38\x1D\x2\xE2\xE3\a\x1D\x2\x2\xE3\x1B\x3\x2"+
+		"\x2\x2\xE4\xE5\a\x38\x2\x2\xE5\x1D\x3\x2\x2\x2\xE6\xE7\a\x1C\x2\x2\xE7"+
+		"\xE8\a!\x2\x2\xE8\xE9\a\n\x2\x2\xE9\xEA\x5 \x11\x2\xEA\xEB\a!\x2\x2\xEB"+
+		"\xEC\a\r\x2\x2\xEC\xED\a\x1C\x2\x2\xED\xEE\x5\x30\x19\x2\xEE\xF0\a\x1D"+
+		"\x2\x2\xEF\xF1\x5\x1A\xE\x2\xF0\xEF\x3\x2\x2\x2\xF1\xF2\x3\x2\x2\x2\xF2"+
+		"\xF0\x3\x2\x2\x2\xF2\xF3\x3\x2\x2\x2\xF3\xF4\x3\x2\x2\x2\xF4\xF5\a\x1D"+
+		"\x2\x2\xF5\x1F\x3\x2\x2\x2\xF6\xF7\a\x38\x2\x2\xF7!\x3\x2\x2\x2\xF8\xFA"+
+		"\x5\x38\x1D\x2\xF9\xF8\x3\x2\x2\x2\xFA\xFB\x3\x2\x2\x2\xFB\xF9\x3\x2\x2"+
+		"\x2\xFB\xFC\x3\x2\x2\x2\xFC\x107\x3\x2\x2\x2\xFD\xFE\a\x1C\x2\x2\xFE\xFF"+
+		"\x5$\x13\x2\xFF\x100\x5\x38\x1D\x2\x100\x101\a\x1D\x2\x2\x101\x103\x3"+
+		"\x2\x2\x2\x102\xFD\x3\x2\x2\x2\x103\x104\x3\x2\x2\x2\x104\x102\x3\x2\x2"+
+		"\x2\x104\x105\x3\x2\x2\x2\x105\x107\x3\x2\x2\x2\x106\xF9\x3\x2\x2\x2\x106"+
+		"\x102\x3\x2\x2\x2\x107#\x3\x2\x2\x2\x108\x109\a:\x2\x2\x109%\x3\x2\x2"+
+		"\x2\x10A\x10B\a\x1C\x2\x2\x10B\x10C\a!\x2\x2\x10C\x10D\a\x10\x2\x2\x10D"+
+		"\x111\x5(\x15\x2\x10E\x10F\a!\x2\x2\x10F\x110\a\xE\x2\x2\x110\x112\x5"+
+		"*\x16\x2\x111\x10E\x3\x2\x2\x2\x111\x112\x3\x2\x2\x2\x112\x113\x3\x2\x2"+
+		"\x2\x113\x114\a!\x2\x2\x114\x115\a\f\x2\x2\x115\x116\x5\"\x12\x2\x116"+
+		"\x117\a\x1D\x2\x2\x117\'\x3\x2\x2\x2\x118\x119\a\x38\x2\x2\x119)\x3\x2"+
+		"\x2\x2\x11A\x11E\x5\x32\x1A\x2\x11B\x11C\a\x1C\x2\x2\x11C\x11E\a\x1D\x2"+
+		"\x2\x11D\x11A\x3\x2\x2\x2\x11D\x11B\x3\x2\x2\x2\x11E+\x3\x2\x2\x2\x11F"+
+		"\x123\x5@!\x2\x120\x121\a\x1C\x2\x2\x121\x123\a\x1D\x2\x2\x122\x11F\x3"+
+		"\x2\x2\x2\x122\x120\x3\x2\x2\x2\x123-\x3\x2\x2\x2\x124\x126\a\x38\x2\x2"+
+		"\x125\x124\x3\x2\x2\x2\x126\x129\x3\x2\x2\x2\x127\x125\x3\x2\x2\x2\x127"+
+		"\x128\x3\x2\x2\x2\x128\x134\x3\x2\x2\x2\x129\x127\x3\x2\x2\x2\x12A\x12C"+
+		"\a\x38\x2\x2\x12B\x12A\x3\x2\x2\x2\x12C\x12D\x3\x2\x2\x2\x12D\x12B\x3"+
+		"\x2\x2\x2\x12D\x12E\x3\x2\x2\x2\x12E\x12F\x3\x2\x2\x2\x12F\x130\a%\x2"+
+		"\x2\x130\x131\x5\x12\n\x2\x131\x132\x5.\x18\x2\x132\x134\x3\x2\x2\x2\x133"+
+		"\x127\x3\x2\x2\x2\x133\x12B\x3\x2\x2\x2\x134/\x3\x2\x2\x2\x135\x137\a"+
+		"=\x2\x2\x136\x135\x3\x2\x2\x2\x137\x13A\x3\x2\x2\x2\x138\x136\x3\x2\x2"+
+		"\x2\x138\x139\x3\x2\x2\x2\x139\x145\x3\x2\x2\x2\x13A\x138\x3\x2\x2\x2"+
+		"\x13B\x13D\a=\x2\x2\x13C\x13B\x3\x2\x2\x2\x13D\x13E\x3\x2\x2\x2\x13E\x13C"+
+		"\x3\x2\x2\x2\x13E\x13F\x3\x2\x2\x2\x13F\x140\x3\x2\x2\x2\x140\x141\a%"+
+		"\x2\x2\x141\x142\x5\x12\n\x2\x142\x143\x5\x30\x19\x2\x143\x145\x3\x2\x2"+
+		"\x2\x144\x138\x3\x2\x2\x2\x144\x13C\x3\x2\x2\x2\x145\x31\x3\x2\x2\x2\x146"+
+		"\x176\x5\x34\x1B\x2\x147\x176\x5\x36\x1C\x2\x148\x149\a\x1C\x2\x2\x149"+
+		"\x14B\a/\x2\x2\x14A\x14C\x5\x32\x1A\x2\x14B\x14A\x3\x2\x2\x2\x14C\x14D"+
+		"\x3\x2\x2\x2\x14D\x14B\x3\x2\x2\x2\x14D\x14E\x3\x2\x2\x2\x14E\x14F\x3"+
+		"\x2\x2\x2\x14F\x150\a\x1D\x2\x2\x150\x176\x3\x2\x2\x2\x151\x152\a\x1C"+
+		"\x2\x2\x152\x154\a\x30\x2\x2\x153\x155\x5\x32\x1A\x2\x154\x153\x3\x2\x2"+
+		"\x2\x155\x156\x3\x2\x2\x2\x156\x154\x3\x2\x2\x2\x156\x157\x3\x2\x2\x2"+
+		"\x157\x158\x3\x2\x2\x2\x158\x159\a\x1D\x2\x2\x159\x176\x3\x2\x2\x2\x15A"+
+		"\x15B\a\x1C\x2\x2\x15B\x15C\a\x31\x2\x2\x15C\x15D\x5\x32\x1A\x2\x15D\x15E"+
+		"\a\x1D\x2\x2\x15E\x176\x3\x2\x2\x2\x15F\x160\a\x1C\x2\x2\x160\x161\a\x32"+
+		"\x2\x2\x161\x162\x5\x32\x1A\x2\x162\x163\x5\x32\x1A\x2\x163\x164\a\x1D"+
+		"\x2\x2\x164\x176\x3\x2\x2\x2\x165\x166\a\x1C\x2\x2\x166\x167\a\x34\x2"+
+		"\x2\x167\x168\a\x1C\x2\x2\x168\x169\x5\x30\x19\x2\x169\x16A\a\x1D\x2\x2"+
+		"\x16A\x16B\x5\x32\x1A\x2\x16B\x16C\a\x1D\x2\x2\x16C\x176\x3\x2\x2\x2\x16D"+
+		"\x16E\a\x1C\x2\x2\x16E\x16F\a\x33\x2\x2\x16F\x170\a\x1C\x2\x2\x170\x171"+
+		"\x5\x30\x19\x2\x171\x172\a\x1D\x2\x2\x172\x173\x5\x32\x1A\x2\x173\x174"+
+		"\a\x1D\x2\x2\x174\x176\x3\x2\x2\x2\x175\x146\x3\x2\x2\x2\x175\x147\x3"+
+		"\x2\x2\x2\x175\x148\x3\x2\x2\x2\x175\x151\x3\x2\x2\x2\x175\x15A\x3\x2"+
+		"\x2\x2\x175\x15F\x3\x2\x2\x2\x175\x165\x3\x2\x2\x2\x175\x16D\x3\x2\x2"+
+		"\x2\x176\x33\x3\x2\x2\x2\x177\x178\a\x1C\x2\x2\x178\x17C\x5\xE\b\x2\x179"+
+		"\x17B\x5<\x1F\x2\x17A\x179\x3\x2\x2\x2\x17B\x17E\x3\x2\x2\x2\x17C\x17A"+
+		"\x3\x2\x2\x2\x17C\x17D\x3\x2\x2\x2\x17D\x17F\x3\x2\x2\x2\x17E\x17C\x3"+
+		"\x2\x2\x2\x17F\x180\a\x1D\x2\x2\x180\x1A0\x3\x2\x2\x2\x181\x182\a\x1C"+
+		"\x2\x2\x182\x183\a*\x2\x2\x183\x184\x5<\x1F\x2\x184\x185\x5<\x1F\x2\x185"+
+		"\x186\a\x1D\x2\x2\x186\x1A0\x3\x2\x2\x2\x187\x188\a\x1C\x2\x2\x188\x189"+
+		"\a+\x2\x2\x189\x18A\x5<\x1F\x2\x18A\x18B\x5<\x1F\x2\x18B\x18C\a\x1D\x2"+
+		"\x2\x18C\x1A0\x3\x2\x2\x2\x18D\x18E\a\x1C\x2\x2\x18E\x18F\a,\x2\x2\x18F"+
+		"\x190\x5<\x1F\x2\x190\x191\x5<\x1F\x2\x191\x192\a\x1D\x2\x2\x192\x1A0"+
+		"\x3\x2\x2\x2\x193\x194\a\x1C\x2\x2\x194\x195\a-\x2\x2\x195\x196\x5<\x1F"+
+		"\x2\x196\x197\x5<\x1F\x2\x197\x198\a\x1D\x2\x2\x198\x1A0\x3\x2\x2\x2\x199"+
+		"\x19A\a\x1C\x2\x2\x19A\x19B\a.\x2\x2\x19B\x19C\x5<\x1F\x2\x19C\x19D\x5"+
+		"<\x1F\x2\x19D\x19E\a\x1D\x2\x2\x19E\x1A0\x3\x2\x2\x2\x19F\x177\x3\x2\x2"+
+		"\x2\x19F\x181\x3\x2\x2\x2\x19F\x187\x3\x2\x2\x2\x19F\x18D\x3\x2\x2\x2"+
+		"\x19F\x193\x3\x2\x2\x2\x19F\x199\x3\x2\x2\x2\x1A0\x35\x3\x2\x2\x2\x1A1"+
+		"\x1A8\x5\x34\x1B\x2\x1A2\x1A3\a\x1C\x2\x2\x1A3\x1A4\a\x31\x2\x2\x1A4\x1A5"+
+		"\x5\x34\x1B\x2\x1A5\x1A6\a\x1D\x2\x2\x1A6\x1A8\x3\x2\x2\x2\x1A7\x1A1\x3"+
+		"\x2\x2\x2\x1A7\x1A2\x3\x2\x2\x2\x1A8\x37\x3\x2\x2\x2\x1A9\x1D2\x5:\x1E"+
+		"\x2\x1AA\x1AB\a\x1C\x2\x2\x1AB\x1AC\a\x31\x2\x2\x1AC\x1AD\x5\x38\x1D\x2"+
+		"\x1AD\x1AE\a\x1D\x2\x2\x1AE\x1D2\x3\x2\x2\x2\x1AF\x1B0\a\x1C\x2\x2\x1B0"+
+		"\x1B2\a/\x2\x2\x1B1\x1B3\x5\x38\x1D\x2\x1B2\x1B1\x3\x2\x2\x2\x1B3\x1B4"+
+		"\x3\x2\x2\x2\x1B4\x1B2\x3\x2\x2\x2\x1B4\x1B5\x3\x2\x2\x2\x1B5\x1B6\x3"+
+		"\x2\x2\x2\x1B6\x1B7\a\x1D\x2\x2\x1B7\x1D2\x3\x2\x2\x2\x1B8\x1B9\a\x1C"+
+		"\x2\x2\x1B9\x1BB\a\x30\x2\x2\x1BA\x1BC\x5\x38\x1D\x2\x1BB\x1BA\x3\x2\x2"+
+		"\x2\x1BC\x1BD\x3\x2\x2\x2\x1BD\x1BB\x3\x2\x2\x2\x1BD\x1BE\x3\x2\x2\x2"+
+		"\x1BE\x1BF\x3\x2\x2\x2\x1BF\x1C0\a\x1D\x2\x2\x1C0\x1D2\x3\x2\x2\x2\x1C1"+
+		"\x1C2\a\x1C\x2\x2\x1C2\x1C3\a\x34\x2\x2\x1C3\x1C4\a\x1C\x2\x2\x1C4\x1C5"+
+		"\x5\x30\x19\x2\x1C5\x1C6\a\x1D\x2\x2\x1C6\x1C7\x5\x38\x1D\x2\x1C7\x1C8"+
+		"\a\x1D\x2\x2\x1C8\x1D2\x3\x2\x2\x2\x1C9\x1CA\a\x1C\x2\x2\x1CA\x1CB\a\x33"+
+		"\x2\x2\x1CB\x1CC\a\x1C\x2\x2\x1CC\x1CD\x5\x30\x19\x2\x1CD\x1CE\a\x1D\x2"+
+		"\x2\x1CE\x1CF\x5\x38\x1D\x2\x1CF\x1D0\a\x1D\x2\x2\x1D0\x1D2\x3\x2\x2\x2"+
+		"\x1D1\x1A9\x3\x2\x2\x2\x1D1\x1AA\x3\x2\x2\x2\x1D1\x1AF\x3\x2\x2\x2\x1D1"+
+		"\x1B8\x3\x2\x2\x2\x1D1\x1C1\x3\x2\x2\x2\x1D1\x1C9\x3\x2\x2\x2\x1D2\x39"+
+		"\x3\x2\x2\x2\x1D3\x1D4\a\x1C\x2\x2\x1D4\x1D8\x5\x18\r\x2\x1D5\x1D7\x5"+
+		"<\x1F\x2\x1D6\x1D5\x3\x2\x2\x2\x1D7\x1DA\x3\x2\x2\x2\x1D8\x1D6\x3\x2\x2"+
+		"\x2\x1D8\x1D9\x3\x2\x2\x2\x1D9\x1DB\x3\x2\x2\x2\x1DA\x1D8\x3\x2\x2\x2"+
+		"\x1DB\x1DC\a\x1D\x2\x2\x1DC;\x3\x2\x2\x2\x1DD\x1ED\a\x38\x2\x2\x1DE\x1ED"+
+		"\a=\x2\x2\x1DF\x1ED\a:\x2\x2\x1E0\x1E1\a\x1C\x2\x2\x1E1\x1E2\a\'\x2\x2"+
+		"\x1E2\x1E3\x5<\x1F\x2\x1E3\x1E4\x5<\x1F\x2\x1E4\x1E5\a\x1D\x2\x2\x1E5"+
+		"\x1ED\x3\x2\x2\x2\x1E6\x1E7\a\x1C\x2\x2\x1E7\x1E8\a&\x2\x2\x1E8\x1E9\x5"+
+		"<\x1F\x2\x1E9\x1EA\x5<\x1F\x2\x1EA\x1EB\a\x1D\x2\x2\x1EB\x1ED\x3\x2\x2"+
+		"\x2\x1EC\x1DD\x3\x2\x2\x2\x1EC\x1DE\x3\x2\x2\x2\x1EC\x1DF\x3\x2\x2\x2"+
+		"\x1EC\x1E0\x3\x2\x2\x2\x1EC\x1E6\x3\x2\x2\x2\x1ED=\x3\x2\x2\x2\x1EE\x1FD"+
+		"\x5\x6\x4\x2\x1EF\x1FD\a:\x2\x2\x1F0\x1F1\a\x1C\x2\x2\x1F1\x1F2\a\'\x2"+
+		"\x2\x1F2\x1F3\x5> \x2\x1F3\x1F4\x5> \x2\x1F4\x1F5\a\x1D\x2\x2\x1F5\x1FD"+
+		"\x3\x2\x2\x2\x1F6\x1F7\a\x1C\x2\x2\x1F7\x1F8\a&\x2\x2\x1F8\x1F9\x5> \x2"+
+		"\x1F9\x1FA\x5> \x2\x1FA\x1FB\a\x1D\x2\x2\x1FB\x1FD\x3\x2\x2\x2\x1FC\x1EE"+
+		"\x3\x2\x2\x2\x1FC\x1EF\x3\x2\x2\x2\x1FC\x1F0\x3\x2\x2\x2\x1FC\x1F6\x3"+
+		"\x2\x2\x2\x1FD?\x3\x2\x2\x2\x1FE\x1FF\a\x1C\x2\x2\x1FF\x201\a/\x2\x2\x200"+
+		"\x202\x5\x42\"\x2\x201\x200\x3\x2\x2\x2\x202\x203\x3\x2\x2\x2\x203\x201"+
+		"\x3\x2\x2\x2\x203\x204\x3\x2\x2\x2\x204\x205\x3\x2\x2\x2\x205\x206\a\x1D"+
+		"\x2\x2\x206\x209\x3\x2\x2\x2\x207\x209\x5\x42\"\x2\x208\x1FE\x3\x2\x2"+
+		"\x2\x208\x207\x3\x2\x2\x2\x209\x41\x3\x2\x2\x2\x20A\x20B\a\x1C\x2\x2\x20B"+
+		"\x20C\a\x33\x2\x2\x20C\x20D\x5\x30\x19\x2\x20D\x20E\x5@!\x2\x20E\x20F"+
+		"\a\x1D\x2\x2\x20F\x218\x3\x2\x2\x2\x210\x211\a\x1C\x2\x2\x211\x212\a\x35"+
+		"\x2\x2\x212\x213\x5\x32\x1A\x2\x213\x214\x5\x44#\x2\x214\x215\a\x1D\x2"+
+		"\x2\x215\x218\x3\x2\x2\x2\x216\x218\x5\x36\x1C\x2\x217\x20A\x3\x2\x2\x2"+
+		"\x217\x210\x3\x2\x2\x2\x217\x216\x3\x2\x2\x2\x218\x43\x3\x2\x2\x2\x219"+
+		"\x21A\a\x1C\x2\x2\x21A\x21C\a/\x2\x2\x21B\x21D\x5\x36\x1C\x2\x21C\x21B"+
+		"\x3\x2\x2\x2\x21D\x21E\x3\x2\x2\x2\x21E\x21C\x3\x2\x2\x2\x21E\x21F\x3"+
+		"\x2\x2\x2\x21F\x220\x3\x2\x2\x2\x220\x221\a\x1D\x2\x2\x221\x224\x3\x2"+
+		"\x2\x2\x222\x224\x5\x36\x1C\x2\x223\x219\x3\x2\x2\x2\x223\x222\x3\x2\x2"+
+		"\x2\x224\x45\x3\x2\x2\x2\x225\x226\a\x1C\x2\x2\x226\x227\a\x5\x2\x2\x227"+
+		"\x228\a\x1C\x2\x2\x228\x229\a\x4\x2\x2\x229\x22A\x5H%\x2\x22A\x22B\a\x1D"+
+		"\x2\x2\x22B\x22C\a\x1C\x2\x2\x22C\x22D\a!\x2\x2\x22D\x22E\a\x3\x2\x2\x22E"+
+		"\x22F\x5J&\x2\x22F\x230\a\x1D\x2\x2\x230\x232\x5L\'\x2\x231\x233\x5N("+
+		"\x2\x232\x231\x3\x2\x2\x2\x232\x233\x3\x2\x2\x2\x233\x235\x3\x2\x2\x2"+
+		"\x234\x236\x5P)\x2\x235\x234\x3\x2\x2\x2\x235\x236\x3\x2\x2\x2\x236\x237"+
+		"\x3\x2\x2\x2\x237\x238\x5R*\x2\x238\x239\a\x1D\x2\x2\x239G\x3\x2\x2\x2"+
+		"\x23A\x23B\a\x38\x2\x2\x23BI\x3\x2\x2\x2\x23C\x23D\a\x38\x2\x2\x23DK\x3"+
+		"\x2\x2\x2\x23E\x23F\a\x1C\x2\x2\x23F\x240\a!\x2\x2\x240\x242\a@\x2\x2"+
+		"\x241\x243\a\x38\x2\x2\x242\x241\x3\x2\x2\x2\x243\x244\x3\x2\x2\x2\x244"+
+		"\x242\x3\x2\x2\x2\x244\x245\x3\x2\x2\x2\x245\x246\x3\x2\x2\x2\x246\x247"+
+		"\a\x1D\x2\x2\x247M\x3\x2\x2\x2\x248\x249\a\x1C\x2\x2\x249\x24A\a!\x2\x2"+
+		"\x24A\x24B\a\x41\x2\x2\x24B\x24C\x5.\x18\x2\x24C\x24D\a\x1D\x2\x2\x24D"+
+		"O\x3\x2\x2\x2\x24E\x24F\a\x1C\x2\x2\x24F\x250\x5\x6\x4\x2\x250\x251\a"+
+		":\x2\x2\x251\x252\a\x1D\x2\x2\x252Q\x3\x2\x2\x2\x253\x254\a\x1C\x2\x2"+
+		"\x254\x255\a!\x2\x2\x255\x259\a\x1A\x2\x2\x256\x258\x5V,\x2\x257\x256"+
+		"\x3\x2\x2\x2\x258\x25B\x3\x2\x2\x2\x259\x257\x3\x2\x2\x2\x259\x25A\x3"+
+		"\x2\x2\x2\x25A\x25C\x3\x2\x2\x2\x25B\x259\x3\x2\x2\x2\x25C\x25D\a\x1D"+
+		"\x2\x2\x25DS\x3\x2\x2\x2\x25E\x28E\x5V,\x2\x25F\x28E\x5X-\x2\x260\x261"+
+		"\a\x1C\x2\x2\x261\x263\a/\x2\x2\x262\x264\x5T+\x2\x263\x262\x3\x2\x2\x2"+
+		"\x264\x265\x3\x2\x2\x2\x265\x263\x3\x2\x2\x2\x265\x266\x3\x2\x2\x2\x266"+
+		"\x267\x3\x2\x2\x2\x267\x268\a\x1D\x2\x2\x268\x28E\x3\x2\x2\x2\x269\x26A"+
+		"\a\x1C\x2\x2\x26A\x26C\a\x30\x2\x2\x26B\x26D\x5T+\x2\x26C\x26B\x3\x2\x2"+
+		"\x2\x26D\x26E\x3\x2\x2\x2\x26E\x26C\x3\x2\x2\x2\x26E\x26F\x3\x2\x2\x2"+
+		"\x26F\x270\x3\x2\x2\x2\x270\x271\a\x1D\x2\x2\x271\x28E\x3\x2\x2\x2\x272"+
+		"\x273\a\x1C\x2\x2\x273\x274\a\x31\x2\x2\x274\x275\x5T+\x2\x275\x276\a"+
+		"\x1D\x2\x2\x276\x28E\x3\x2\x2\x2\x277\x278\a\x1C\x2\x2\x278\x279\a\x32"+
+		"\x2\x2\x279\x27A\x5T+\x2\x27A\x27B\x5T+\x2\x27B\x27C\a\x1D\x2\x2\x27C"+
+		"\x28E\x3\x2\x2\x2\x27D\x27E\a\x1C\x2\x2\x27E\x27F\a\x34\x2\x2\x27F\x280"+
+		"\a\x1C\x2\x2\x280\x281\x5\x30\x19\x2\x281\x282\a\x1D\x2\x2\x282\x283\x5"+
+		"\x32\x1A\x2\x283\x284\a\x1D\x2\x2\x284\x28E\x3\x2\x2\x2\x285\x286\a\x1C"+
+		"\x2\x2\x286\x287\a\x33\x2\x2\x287\x288\a\x1C\x2\x2\x288\x289\x5\x30\x19"+
+		"\x2\x289\x28A\a\x1D\x2\x2\x28A\x28B\x5\x32\x1A\x2\x28B\x28C\a\x1D\x2\x2"+
+		"\x28C\x28E\x3\x2\x2\x2\x28D\x25E\x3\x2\x2\x2\x28D\x25F\x3\x2\x2\x2\x28D"+
+		"\x260\x3\x2\x2\x2\x28D\x269\x3\x2\x2\x2\x28D\x272\x3\x2\x2\x2\x28D\x277"+
+		"\x3\x2\x2\x2\x28D\x27D\x3\x2\x2\x2\x28D\x285\x3\x2\x2\x2\x28EU\x3\x2\x2"+
+		"\x2\x28F\x290\a\x1C\x2\x2\x290\x294\x5\xE\b\x2\x291\x293\x5> \x2\x292"+
+		"\x291\x3\x2\x2\x2\x293\x296\x3\x2\x2\x2\x294\x292\x3\x2\x2\x2\x294\x295"+
+		"\x3\x2\x2\x2\x295\x297\x3\x2\x2\x2\x296\x294\x3\x2\x2\x2\x297\x298\a\x1D"+
+		"\x2\x2\x298\x2B8\x3\x2\x2\x2\x299\x29A\a\x1C\x2\x2\x29A\x29B\a*\x2\x2"+
+		"\x29B\x29C\x5> \x2\x29C\x29D\x5> \x2\x29D\x29E\a\x1D\x2\x2\x29E\x2B8\x3"+
+		"\x2\x2\x2\x29F\x2A0\a\x1C\x2\x2\x2A0\x2A1\a+\x2\x2\x2A1\x2A2\x5> \x2\x2A2"+
+		"\x2A3\x5> \x2\x2A3\x2A4\a\x1D\x2\x2\x2A4\x2B8\x3\x2\x2\x2\x2A5\x2A6\a"+
+		"\x1C\x2\x2\x2A6\x2A7\a,\x2\x2\x2A7\x2A8\x5> \x2\x2A8\x2A9\x5> \x2\x2A9"+
+		"\x2AA\a\x1D\x2\x2\x2AA\x2B8\x3\x2\x2\x2\x2AB\x2AC\a\x1C\x2\x2\x2AC\x2AD"+
+		"\a-\x2\x2\x2AD\x2AE\x5> \x2\x2AE\x2AF\x5> \x2\x2AF\x2B0\a\x1D\x2\x2\x2B0"+
+		"\x2B8\x3\x2\x2\x2\x2B1\x2B2\a\x1C\x2\x2\x2B2\x2B3\a.\x2\x2\x2B3\x2B4\x5"+
+		"> \x2\x2B4\x2B5\x5> \x2\x2B5\x2B6\a\x1D\x2\x2\x2B6\x2B8\x3\x2\x2\x2\x2B7"+
+		"\x28F\x3\x2\x2\x2\x2B7\x299\x3\x2\x2\x2\x2B7\x29F\x3\x2\x2\x2\x2B7\x2A5"+
+		"\x3\x2\x2\x2\x2B7\x2AB\x3\x2\x2\x2\x2B7\x2B1\x3\x2\x2\x2\x2B8W\x3\x2\x2"+
+		"\x2\x2B9\x2C0\x5V,\x2\x2BA\x2BB\a\x1C\x2\x2\x2BB\x2BC\a\x31\x2\x2\x2BC"+
+		"\x2BD\x5V,\x2\x2BD\x2BE\a\x1D\x2\x2\x2BE\x2C0\x3\x2\x2\x2\x2BF\x2B9\x3"+
+		"\x2\x2\x2\x2BF\x2BA\x3\x2\x2\x2\x2C0Y\x3\x2\x2\x2\x2C1\x2C2\a\x1C\x2\x2"+
+		"\x2C2\x2C3\a\x5\x2\x2\x2C3\x2C4\a\x1C\x2\x2\x2C4\x2C5\a\x4\x2\x2\x2C5"+
+		"\x2C6\x5H%\x2\x2C6\x2C7\a\x1D\x2\x2\x2C7\x2C8\a\x1C\x2\x2\x2C8\x2C9\a"+
+		"!\x2\x2\x2C9\x2CA\a\x3\x2\x2\x2CA\x2CB\x5J&\x2\x2CB\x2CC\a\x1D\x2\x2\x2CC"+
+		"\x2CD\x5L\'\x2\x2CD\x2CE\a\x1C\x2\x2\x2CE\x2CF\a!\x2\x2\x2CF\x2D0\a\x6"+
+		"\x2\x2\x2D0\x2D1\x5`\x31\x2\x2D1\x2D3\a\x1D\x2\x2\x2D2\x2D4\x5N(\x2\x2D3"+
+		"\x2D2\x3\x2\x2\x2\x2D3\x2D4\x3\x2\x2\x2\x2D4\x2D6\x3\x2\x2\x2\x2D5\x2D7"+
+		"\x5P)\x2\x2D6\x2D5\x3\x2\x2\x2\x2D6\x2D7\x3\x2\x2\x2\x2D7\x2D9\x3\x2\x2"+
+		"\x2\x2D8\x2DA\x5\\/\x2\x2D9\x2D8\x3\x2\x2\x2\x2D9\x2DA\x3\x2\x2\x2\x2DA"+
+		"\x2DC\x3\x2\x2\x2\x2DB\x2DD\x5^\x30\x2\x2DC\x2DB\x3\x2\x2\x2\x2DC\x2DD"+
+		"\x3\x2\x2\x2\x2DD\x2DE\x3\x2\x2\x2\x2DE\x2DF\a\x1D\x2\x2\x2DF[\x3\x2\x2"+
+		"\x2\x2E0\x2E1\a\x1C\x2\x2\x2E1\x2E2\a!\x2\x2\x2E2\x2E3\a\x15\x2\x2\x2E3"+
+		"\x2E4\x5T+\x2\x2E4\x2E5\a\x1D\x2\x2\x2E5]\x3\x2\x2\x2\x2E6\x2E7\a\x1C"+
+		"\x2\x2\x2E7\x2E8\a!\x2\x2\x2E8\x2E9\a\x16\x2\x2\x2E9\x2EA\x5T+\x2\x2EA"+
+		"\x2EB\a\x1D\x2\x2\x2EB_\x3\x2\x2\x2\x2EC\x2ED\a\x38\x2\x2\x2ED\x61\x3"+
+		"\x2\x2\x2<ilotz\x80\x8B\x97\xA1\xAF\xC3\xC8\xCD\xDD\xF2\xFB\x104\x106"+
+		"\x111\x11D\x122\x127\x12D\x133\x138\x13E\x144\x14D\x156\x175\x17C\x19F"+
+		"\x1A7\x1B4\x1BD\x1D1\x1D8\x1EC\x1FC\x203\x208\x217\x21E\x223\x232\x235"+
+		"\x244\x259\x265\x26E\x28D\x294\x2B7\x2BF\x2D3\x2D6\x2D9\x2DC";
 	public static readonly ATN _ATN =
 		new ATNDeserializer().Deserialize(_serializedATN.ToCharArray());
 }

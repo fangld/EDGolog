@@ -59,6 +59,7 @@
     <Compile Include="GroundAction.cs" />
     <Compile Include="GroundPredicate.cs" />
     <Compile Include="PlanningLexer.cs" />
+    <Compile Include="PlanningNumericType.cs" />
     <Compile Include="PlanningParser.cs" />
     <Compile Include="Predicate.cs" />
     <Compile Include="Problem.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Servers\ServerAction.cs" />
     <Compile Include="Servers\ServerGroundAction.cs" />
     <Compile Include="Servers\ServerProblem.cs" />
+    <Compile Include="PlanningType.cs" />
     <Compile Include="VariableContainer.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,67 +6,71 @@ grammar Planning;
 
 // Domain description
 domain: LB DEF LB DOM NAME RB
+           constDefine?
 		   typeDefine?
-		   predicatesDefine?
+		   predDefine?
 		   eventDefine*
 		   actionDefine*
 		   observationDefine*
 		RB;
 
-typeDefine: LB COLON TYPE listName RB;
-maxnumDefine: LB COLON MAXNUM INTEGER RB;
+constDefine: LB COLON CONST constSymbol+ RB;
+constSymbol: NAME;
+typeDefine: LB COLON TYPE typeDeclaration+ RB;
 
-predicatesDefine: LB COLON PRED atomicFormulaSkeleton+ RB;
-atomicFormulaSkeleton: LB predicate listVariable RB;
-predicate: NAME;
+predDefine: LB COLON PRED atomFormSkeleton+ RB;
+atomFormSkeleton: LB pred listVariable RB;
+pred: NAME;
 
-/*primitiveType: OBJ | AGT | NUMBERS | NAME;
-type: primitiveType | LB EITHER primitiveType+ RB;*/
-type: OBJ | AGT | NUMBERS | NAME;
+typeDeclaration: NAME | NAME interval;
+
+type: OBJ | AGT | NAME;
+interval: LSB constTerm COMMA constTerm RSB;
+
 
 eventDefine: LB COLON EVT eventSymbol
                 (COLON PARM LB listVariable RB)?
                 (COLON PRE emptyOrPreGD)?
                 (COLON EFF emptyOrEffect)?
 			 RB;
-
 eventSymbol: NAME;
+
 
 responseDefine: LB COLON RESP responseSymbol
                    (COLON PARM LB listVariable RB)?
-                   COLON EVTS 
+                   COLON EVTS gdEvent
                 RB;
-
 responseSymbol: NAME;
 
 actionDefine: LB COLON ACT actionSymbol
                  COLON PARM LB listVariable RB
-		         eventSetDefine+
+		         responseDefine+
 		      RB;
 actionSymbol: NAME;
 
-eventSetDefine: LB eventDefine+ RB;
 
-observationDefine: LB 
+eventModel : gdEvent+
+           | (LB plausibilityDegree gdEvent RB)+;
+
+plausibilityDegree: INTEGER;
+
+
+observationDefine: LB COLON OBS observationSymbol
+                      (COLON PRE emptyOrPreGD)?
+					  COLON EVTS eventModel
                    RB;
 
 observationSymbol: NAME;
+
 
 emptyOrPreGD: gd | LB RB;
 emptyOrEffect: effect | LB RB;
 
 listName: NAME* | NAME+ DASH type listName;
 listVariable: VAR* | VAR+ DASH type listVariable;
-//preGD: gd//prefGD
-     //| LB AND preGD* RB
-	 /*| LB FORALL listVariable preGD RB*///;
-//prefGD: gd | LB PREF prefName gd RB;
-//prefName: NAME;
 
-
-
-gd: atomicFormulaTerm
-  | literalTerm
+gd: termAtomForm
+  | termLiteral
   | LB AND gd+ RB
   | LB OR gd+ RB
   | LB NOT gd RB
@@ -74,47 +78,48 @@ gd: atomicFormulaTerm
   | LB EXISTS LB listVariable RB gd RB
   | LB FORALL LB listVariable RB gd RB;
 
-atomicFormulaTerm: LB predicate term* RB
-                 | LB EQ term term RB
-				 | LB LT term term RB
-				 | LB LEQ term term RB
-				 | LB GT term term RB
-				 | LB GEQ term term RB;
-literalTerm: atomicFormulaTerm | LB NOT atomicFormulaTerm RB;
+termAtomForm: LB pred term* RB
+            | LB EQ term term RB
+			|  LB LT term term RB
+		    | LB LEQ term term RB
+			| LB GT term term RB
+			| LB GEQ term term RB;
+termLiteral: termAtomForm | LB NOT termAtomForm RB;
 
-gdAction: actionFormulaTerm
-        | LB NOT gdAction RB
-		| LB AND gdAction+ RB
-		| LB OR gdAction+ RB
-		| LB EXISTS LB listVariable RB gdAction RB
-		| LB FORALL LB listVariable RB gdAction RB;
-actionFormulaTerm: LB actionSymbol term* RB;
+gdEvent: eventFormulaTerm
+       | LB NOT gdEvent RB
+	   | LB AND gdEvent+ RB
+	   | LB OR gdEvent+ RB
+	   | LB EXISTS LB listVariable RB gdEvent RB
+	   | LB FORALL LB listVariable RB gdEvent RB;
+eventFormulaTerm: LB eventSymbol term* RB;
 
 term: NAME
     | VAR
 	| INTEGER
 	| LB MINUS term term RB
-	| LB PLUS term term RB
-	| LB ABS term RB;// | functionTerm;
+	| LB PLUS term term RB;
+
+constTerm: NAME
+         | INTEGER
+		 | LB MINUS constTerm constTerm RB
+		 | LB MINUS constTerm RB
+	     | LB PLUS constTerm constTerm RB;
 
 effect: LB AND cEffect+ RB
       | cEffect;
-cEffect: /*LB FORALL listVariable effect RB
-       | */LB WHEN gd condEffect RB
-	   | literalTerm;
-/*pEffect: LB NOT atomicFormulaTerm RB
-       | atomicFormulaTerm;*/
-condEffect: LB AND literalTerm+ RB
-          | literalTerm;
-
-//functionTerm: FUNSYM term* ;
-
+cEffect: LB FORALL listVariable effect RB
+       | LB WHEN gd condEffect RB
+	   | termLiteral;
+condEffect: LB AND termLiteral+ RB
+          | termLiteral;
+		  
 // Server problem description
 serverProblem: LB DEF LB PROM problemName RB
 		   LB COLON DOM domainName RB
 		   agentDefine
 		   objectDeclaration?
-		   maxnumDefine?
+		   constSetting?
 		   init
 		 RB;
 
@@ -122,45 +127,40 @@ problemName: NAME;
 domainName: NAME;
 agentDefine: LB COLON AGENTS NAME+ RB;
 objectDeclaration: LB COLON OBJS listName RB;
+constSetting: LB constSymbol INTEGER RB;
 
-init: LB COLON INIT atomicFormulaName* RB;
-gdName: atomicFormulaName
-  | literalName
-  | LB AND gdName+ RB
-  | LB OR gdName+ RB
-  | LB NOT gdName RB
-  | LB IMPLY gdName gdName RB
-  | LB EXISTS LB listVariable RB gd RB
-  | LB FORALL LB listVariable RB gd RB;
+init: LB COLON INIT constTermAtomForm* RB;
+constTermGd: constTermAtomForm
+           | constTermLiteral
+           | LB AND constTermGd+ RB
+           | LB OR constTermGd+ RB
+           | LB NOT constTermGd RB
+           | LB IMPLY constTermGd constTermGd RB
+           | LB EXISTS LB listVariable RB gd RB
+           | LB FORALL LB listVariable RB gd RB;
 
-atomicFormulaName: LB predicate NAME* RB
-                 | LB EQ NAME NAME RB;
-literalName: atomicFormulaName | LB NOT atomicFormulaName RB;
+constTermAtomForm: LB pred constTerm* RB
+                 | LB EQ constTerm constTerm RB
+				 | LB LT constTerm constTerm RB
+				 | LB LEQ constTerm constTerm RB
+				 | LB GT constTerm constTerm RB
+				 | LB GEQ constTerm constTerm RB;
+constTermLiteral: constTermAtomForm | LB NOT constTermAtomForm RB;
 
 // Client problem description
 clientProblem: LB DEF LB PROM problemName RB
-		   LB COLON DOM domainName RB
-		   agentDefine
-		   LB COLON AGENTID agentId RB		   
-		   objectDeclaration?
-		   maxnumDefine?
-		   initKnowledge?
-		   initBelief?
-		 RB;
-initKnowledge: LB COLON INITKNOWLEDGE gdName RB;
-initBelief: LB COLON INITBELIEF gdName RB;
+                      LB COLON DOM domainName RB
+			          agentDefine
+			          LB COLON AGENTID agentId RB
+			          objectDeclaration?
+			          constSetting?
+			          initKnowledge?
+			          initBelief?
+			   RB;
+
+initKnowledge: LB COLON INITKNOWLEDGE constTermGd RB;
+initBelief: LB COLON INITBELIEF constTermGd RB;
 agentId: NAME;
-
-/*initEl: literalName
-      | LB AT NUMBER literalName RB
-	  | LB EQ basicFunctionTerm NUMBER RB
-	  | LB EQ basicFunctionTerm NAME RB;
-basicFunctionTerm: functionSymbol
-                 | LB functionSymbol NAME* RB;
-functionSymbol: NAME;*/
-
-
-//goal: LB COLON GOAL preGD RB;
 
 /*
  * Lexer Rules
@@ -171,7 +171,7 @@ DOM: 'domain';
 PROM: 'problem';
 DEF: 'define';
 AGENTID: 'agentid';
-//REQ: 'requirements';
+CONST: 'constants';
 TYPE: 'types';
 PRED: 'predicates';
 ACT: 'action';
@@ -180,30 +180,27 @@ EVTS: 'events';
 PARM: 'parameters';
 PRE: 'precondition';
 RESP: 'response';
+OBS: 'observation';
 EFF: 'effect';
 OBJ: 'object';
 AGT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';
-MAXNUM: 'maxnumber';
 
-NUMBERS: 'numbers';
-OBJS: 'objects';
-AGENTS: 'agents';
+//NUMBERTYPE: 'numbers';
+//OBJTYPE: 'objects';
+//AGENTTYPE: 'agents';
 
 INIT: 'init';
 GOAL: 'goal';
-//AT: 'at';
-
-//STRIPS: 'strips'; // Basic STRIPS-style adds and deletes
-//TYPING: 'typing'; // Allow type names in declarations of variables
 
 // Common used in domain and problem
 LB: '(';
 RB: ')';
 LSB: '[';
 RSB: ']';
+COMMA: ',';
 COLON: ':';
 QM: '?';
 POINT: '.';
@@ -218,7 +215,6 @@ LT: '<';
 LEQ: '<=';
 GT: '>';
 GEQ: '>=';
-ABS: 'ABS';
 AND: 'and';
 OR: 'or';
 NOT: 'not';
@@ -226,9 +222,6 @@ IMPLY: 'imply';
 FORALL: 'forall';
 EXISTS: 'exists';
 WHEN: 'when';
-//PREF: 'preference';
-//BINCOMP: EQ | LT | GT | LEQ | GEQ ;
-//BINOP: PLUS | MINUS | MULT | DIV ;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 

@@ -1,33 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PAT.Common.Classes.CUDDLib;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
+//using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
-{
-    public class EventSet
-    {
-        #region Fields
+//namespace Planning
+//{
+//    public class EventSet
+//    {
+//        #region Fields
 
-        private List<Event> _eventList;
+//        private List<Event> _eventList;
 
-        #endregion
+//        #endregion
 
-        #region Properties
+//        #region Properties
 
-        public CUDDNode SuccessorStateAxiom { get; set; }
+//        public CUDDNode SuccessorStateAxiom { get; set; }
 
-        #endregion
+//        #endregion
 
-        #region Constructors
+//        #region Constructors
 
-        public EventSet()
-        {
+//        public EventSet()
+//        {
             
-        }
+//        }
 
-        #endregion
-    }
-}
+//        #endregion
+//    }
+//}
