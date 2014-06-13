@@ -77,21 +77,23 @@ namespace Planning
 
         private void HandleTypeDefine(PlanningParser.TypeDefineContext context)
         {
-            foreach (var typeContext in context.typeDeclaration())
-            {
-                PlanningType type;
-                if (typeContext.interval() == null)
-                {
-                    type = new PlanningType {Name = typeContext.GetText()};
-                }
-                else
-                {
-                    string name = typeContext.GetText();
-                    int min = typeContext.interval().
-                }
+            //foreach (var typeContext in context.typeDeclaration())
+            //{
+            //    PlanningType type;
+            //    if (typeContext.LB() == null)
+            //    {
+            //        type = new PlanningType {Name = typeContext.GetText()};
+            //    }
+            //    else
+            //    {
+            //        string name = typeContext.GetText();
+            //        int min = int.Parse(typeContext.constTerm(0).GetText());
+            //        int max = int.Parse(typeContext.constTerm(1).GetText());
+            //        type = new PlanningNumericType {Name = name, Min = min, Max = max};
+            //    }
 
-                _typeList.Add(type.GetText());
-            }
+            //    _typeList.Add(type);
+            //}
         }
 
         //private void HandlePredicatesDefine(PlanningParser.PredicatesDefineContext context)

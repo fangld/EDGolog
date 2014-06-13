@@ -11,7 +11,7 @@ domain: LB DEF LB DOM NAME RB
 		   predDefine?
 		   eventDefine*
 		   actionDefine*
-		   observationDefine*
+		   obsDefine*
 		RB;
 
 constDefine: LB COLON CONST constSymbol+ RB;
@@ -22,10 +22,10 @@ predDefine: LB COLON PRED atomFormSkeleton+ RB;
 atomFormSkeleton: LB pred listVariable RB;
 pred: NAME;
 
-typeDeclaration: NAME | NAME interval;
+typeDeclaration: LB NAME constTerm constTerm RB;
 
 type: OBJ | AGT | NAME;
-interval: LSB constTerm COMMA constTerm RSB;
+//interval: LSB constTerm constTerm RSB;
 
 
 eventDefine: LB COLON EVT eventSymbol
@@ -43,31 +43,31 @@ responseDefine: LB COLON RESP responseSymbol
 responseSymbol: NAME;
 
 actionDefine: LB COLON ACT actionSymbol
-                 COLON PARM LB listVariable RB
+                 (COLON PARM LB listVariable RB)?
 		         responseDefine+
 		      RB;
 actionSymbol: NAME;
 
 
+obsDefine: LB COLON OBS obsSymbol
+              (COLON PARM LB listVariable RB)?
+              (COLON PRE emptyOrPreGD)?
+			  COLON EVTS eventModel
+           RB;
+
+obsSymbol: NAME;
+
 eventModel : gdEvent+
-           | (LB plausibilityDegree gdEvent RB)+;
+           | LB (LB plDeg gdEvent RB)+ RB;
 
-plausibilityDegree: INTEGER;
-
-
-observationDefine: LB COLON OBS observationSymbol
-                      (COLON PRE emptyOrPreGD)?
-					  COLON EVTS eventModel
-                   RB;
-
-observationSymbol: NAME;
+plDeg: INTEGER;
 
 
 emptyOrPreGD: gd | LB RB;
 emptyOrEffect: effect | LB RB;
 
-listName: NAME* | NAME+ DASH type listName;
-listVariable: VAR* | VAR+ DASH type listVariable;
+listName: NAME* | NAME+ MINUS type listName;
+listVariable: VAR* | VAR+ MINUS type listVariable;
 
 gd: termAtomForm
   | termLiteral
@@ -80,7 +80,7 @@ gd: termAtomForm
 
 termAtomForm: LB pred term* RB
             | LB EQ term term RB
-			|  LB LT term term RB
+			| LB LT term term RB
 		    | LB LEQ term term RB
 			| LB GT term term RB
 			| LB GEQ term term RB;
@@ -88,27 +88,28 @@ termLiteral: termAtomForm | LB NOT termAtomForm RB;
 
 gdEvent: eventFormulaTerm
        | LB NOT gdEvent RB
-	   | LB AND gdEvent+ RB
+	   //| LB AND gdEvent+ RB
 	   | LB OR gdEvent+ RB
-	   | LB EXISTS LB listVariable RB gdEvent RB
-	   | LB FORALL LB listVariable RB gdEvent RB;
+	   | LB EXISTS LB listVariable RB gdEvent RB;
+	   //| LB FORALL LB listVariable RB gdEvent RB;
 eventFormulaTerm: LB eventSymbol term* RB;
+
+constTerm: NAME
+         | INTEGER
+		 | LB MINUS constTerm RB
+		 | LB MINUS constTerm constTerm RB	 
+	     | LB PLUS constTerm constTerm RB;
 
 term: NAME
     | VAR
 	| INTEGER
+	| LB MINUS term RB
 	| LB MINUS term term RB
 	| LB PLUS term term RB;
 
-constTerm: NAME
-         | INTEGER
-		 | LB MINUS constTerm constTerm RB
-		 | LB MINUS constTerm RB
-	     | LB PLUS constTerm constTerm RB;
-
 effect: LB AND cEffect+ RB
       | cEffect;
-cEffect: LB FORALL listVariable effect RB
+cEffect: LB FORALL LB listVariable RB effect RB
        | LB WHEN gd condEffect RB
 	   | termLiteral;
 condEffect: LB AND termLiteral+ RB
@@ -181,16 +182,14 @@ PARM: 'parameters';
 PRE: 'precondition';
 RESP: 'response';
 OBS: 'observation';
+MIN: 'min';
+MAX: 'max';
 EFF: 'effect';
 OBJ: 'object';
 AGT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';
-
-//NUMBERTYPE: 'numbers';
-//OBJTYPE: 'objects';
-//AGENTTYPE: 'agents';
 
 INIT: 'init';
 GOAL: 'goal';
@@ -200,14 +199,12 @@ LB: '(';
 RB: ')';
 LSB: '[';
 RSB: ']';
-COMMA: ',';
 COLON: ':';
 QM: '?';
 POINT: '.';
 UL: '_';
-DASH: '-';
-PLUS: '+';
 MINUS: '-';
+PLUS: '+';
 MULT: '*';
 DIV: '/';
 EQ: '=';
@@ -222,15 +219,17 @@ IMPLY: 'imply';
 FORALL: 'forall';
 EXISTS: 'exists';
 WHEN: 'when';
-LETTER: [a-zA-Z];
-DIGIT: [0-9];
 
 NAME: LETTER CHAR*;
-CHAR: LETTER | DIGIT | DASH | UL;
-INTEGER: [1-9] DIGIT*;
-NUMBER: DIGIT+ DECIMAL?;
-DECIMAL: POINT DIGIT+;
+INTEGER: DIGIT+;
+
+fragment LETTER: [a-zA-Z];
+fragment DIGIT: [0-9];
+fragment CHAR: LETTER | DIGIT | MINUS | UL;
+
+//NUMBER: 
+//DECIMAL: POINT DIGIT+;
 VAR: QM NAME;
-FUNSYM : NAME;
+//FUNSYM : NAME;
 
 WS: [ \t\r\n]+ -> channel(HIDDEN);

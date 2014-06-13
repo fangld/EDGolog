@@ -1,10 +1,10 @@
 (define (domain squirrelsWorlds)
 	(:constants maxLoc maxAcorn noticeRelLoc errorSencingAcorn)
-	(:types numOfAcorn [0, maxAcorn] 
-	        point [0, maxLoc]
-	        leftRelLoc [(- noticeRelLoc), (+ noticeRelLoc 1)] 
-			rightRelLoc [(- (- noticeRelLoc) 1), noticeRelLoc] 
-			noiseSensingAcorn [(- errorSencingAcorn), errorSencingAcorn]
+	(:types (numOfAcorn 0 maxAcorn)
+	        (point 0 maxLoc)
+	        (leftRelLoc (- noticeRelLoc) (+ noticeRelLoc 1))
+			(rightRelLoc (- (- noticeRelLoc) 1) noticeRelLoc)
+			(noiseSensingAcorn (- errorSencingAcorn) errorSencingAcorn)
 			)
     
 (:predicates
@@ -41,7 +41,7 @@
 :parameters (?i - agent ?d - rightRelLoc)
 :precondition (exists (?x - point ?y - point) (and (loc ?i ?x) (loc j ?y) (= ?x (+ ?y ?d))))
 :effect (forall (?x - point) 
-               (when (and (loc ?i ?x) (not (?x maxLoc))) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
+               (when (and (loc ?i ?x) (not (= ?x maxLoc))) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
@@ -64,7 +64,7 @@
 :parameters (?i - agent)
 :precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i))))
 :effect (forall (?x - point ?n - numOfAcorn)
-                (when (and (loc ?i ?x) (acorn ?x ?n) (not (= ?n 0))) (and (acorn(?x (- ?n 1))) (not (acorn(?x ?n))) (hold ?i))))
+                (when (and (loc ?i ?x) (acorn ?x ?n) (not (= ?n 0))) (and (acorn ?x (- ?n 1)) (not (acorn ?x ?n)) (hold ?i))))
 )
 
 (:event pickFail
@@ -76,7 +76,7 @@
 :parameters (?i - agent)
 :precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i))))
 :effect (forall (?x - point ?n - numOfAcorn) 
-                (when (and (loc ?i ?x) (acorn ?x ?n) (not (= ?n maxAcorn))) (and (acorn(?x (+ ?n 1))) (not (acorn(?x ?n))) (not (hold ?i)))))
+                (when (and (loc ?i ?x) (acorn ?x ?n) (not (= ?n maxAcorn))) (and (acorn ?x (+ ?n 1)) (not (acorn ?x ?n)) (not (hold ?i)))))
 )
 
 (:event dropFail
@@ -104,7 +104,7 @@
 :events (leftSucWithoutNotice self))
 
 (:response fail
-:exists (leftFail self))
+:events (leftFail self))
 )
 
 
@@ -118,7 +118,7 @@
 :events (rightSucWithoutNotice self))
 
 (:response fail
-:exists (leftFail self))
+:events (leftFail self))
 )
 
 
@@ -128,7 +128,7 @@
 :events (pickSuc self))
 
 (:response fail
-:exists (pickFail self) 
+:events (pickFail self) 
 ))
 
 
@@ -137,7 +137,7 @@
 (:response suc
 :events (dropSuc self))
 (:response fail
-:exists (dropFail self) 
+:events (dropFail self) 
 ))
 
 
@@ -222,4 +222,5 @@
 	   (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn other ?m ?d))
 	   ))
 	   )
+)
 )

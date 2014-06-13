@@ -56,6 +56,7 @@ namespace ObjectWorlds
             PlanningParser parser = new PlanningParser(tokens);
 
             var domainContext = parser.domain();// begin parsing at init rule
+            Console.WriteLine(domainContext.ToStringTree(parser));
             tr.Close();
             var domain = Domain.CreateInstance(domainContext);
             ShowDomainInfo(domain);
