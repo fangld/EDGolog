@@ -49,7 +49,7 @@ namespace Planning
 
         private Domain()//PlanningParser.DomainContext context)
         {
-            _typeList = new List<PlanningType> {VariableContainer.ObjectType, VariableContainer.AgentType};
+            _typeList = new List<PlanningType> { PlanningType.ObjectType, PlanningType.AgentType };
             _predDict = new Dictionary<string, Predicate>();
             _actionDict = new Dictionary<string, Action>();
             CurrentCuddIndex = 0;

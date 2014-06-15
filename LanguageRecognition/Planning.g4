@@ -22,7 +22,7 @@ predDefine: LB COLON PRED atomFormSkeleton+ RB;
 atomFormSkeleton: LB pred listVariable RB;
 pred: NAME;
 
-typeDeclaration: LB NAME constTerm constTerm RB;
+typeDeclaration: NAME | LB NAME constTerm constTerm RB;
 
 type: OBJ | AGT | NAME;
 //interval: LSB constTerm constTerm RSB;
@@ -117,18 +117,19 @@ condEffect: LB AND termLiteral+ RB
 		  
 // Server problem description
 serverProblem: LB DEF LB PROM problemName RB
-		   LB COLON DOM domainName RB
-		   agentDefine
-		   objectDeclaration?
-		   constSetting?
-		   init
-		 RB;
+		              LB COLON DOM domainName RB
+		              constSetting?
+		              objectDeclaration?
+		              init
+		       RB;
 
 problemName: NAME;
 domainName: NAME;
 agentDefine: LB COLON AGENTS NAME+ RB;
 objectDeclaration: LB COLON OBJS listName RB;
-constSetting: LB constSymbol INTEGER RB;
+constSetting: LB COLON CONST (LB constSymbol INTEGER RB)+
+              RB;
+
 
 init: LB COLON INIT constTermAtomForm* RB;
 constTermGd: constTermAtomForm
@@ -190,6 +191,8 @@ AGT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';
+
+OBJS: 'objects';
 
 INIT: 'init';
 GOAL: 'goal';

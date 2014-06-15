@@ -11,6 +11,7 @@ using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 using Planning;
 //using Planning.Servers;
+using Planning.Servers;
 
 namespace ObjectWorlds
 {
@@ -32,7 +33,6 @@ namespace ObjectWorlds
                 domainFileName = "swDomain.pddl";
                 problemFileName = "swServerProblem.pddl";
             }
-
 
             Test1(domainFileName, problemFileName);
             Console.ReadLine();
@@ -56,28 +56,29 @@ namespace ObjectWorlds
             PlanningParser parser = new PlanningParser(tokens);
 
             var domainContext = parser.domain();// begin parsing at init rule
-            Console.WriteLine(domainContext.ToStringTree(parser));
+            //Console.WriteLine(domainContext.ToStringTree(parser));
             tr.Close();
             var domain = Domain.CreateInstance(domainContext);
             ShowDomainInfo(domain);
 
-            //// Create a TextReader that reads from a file
-            //tr = new StreamReader(problemFileName);
+            // Create a TextReader that reads from a file
+            tr = new StreamReader(problemFileName);
 
-            //// create a CharStream that reads from standard input
-            //input = new AntlrInputStream(tr);
-            //// create a lexer that feeds off of input CharStream
+            // create a CharStream that reads from standard input
+            input = new AntlrInputStream(tr);
+            // create a lexer that feeds off of input CharStream
 
-            //lexer = new PlanningLexer(input);
-            //// create a buffer of tokens pulled from the lexer
-            //tokens = new CommonTokenStream(lexer);
-            //// create a parser that feeds off the tokens buffer
-            //parser = new PlanningParser(tokens);
+            lexer = new PlanningLexer(input);
+            // create a buffer of tokens pulled from the lexer
+            tokens = new CommonTokenStream(lexer);
+            // create a parser that feeds off the tokens buffer
+            parser = new PlanningParser(tokens);
 
-            //var serverProblem = parser.serverProblem();// begin parsing at init rule
-            //tr.Close();
-            //ServerProblem problem = ServerProblem.CreateInstance(domain, serverProblem);
-            //problem.ShowInfo();
+            var serverProblemContext = parser.serverProblem();// begin parsing at init rule
+            //Console.WriteLine(serverProblemContext.ToStringTree(parser));
+            tr.Close();
+            ServerProblem problem = ServerProblem.CreateInstance(domainContext, serverProblemContext);
+            problem.ShowInfo();
 
             //Server server = new Server(port, listenBacklog, problem);
             //server.Run();

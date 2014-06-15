@@ -22,16 +22,6 @@ namespace Planning
         #region Properties
 
         /// <summary>
-        /// The name of object type
-        /// </summary>
-        public static readonly PlanningType ObjectType = new PlanningType() {Name = "object"};
-
-        /// <summary>
-        /// The name of agent type
-        /// </summary>
-        public static readonly PlanningType AgentType = new PlanningType() { Name = "agent" };
-
-        /// <summary>
         /// The name of variable container
         /// </summary>
         public string Name { get; set; }
@@ -74,7 +64,7 @@ namespace Planning
             {
                 if (context.VAR().Count != 0)
                 {
-                    string type = context.type() == null ? ObjectType.Name : context.type().GetText();
+                    string type = context.type() == null ? PlanningType.ObjectType.Name : context.type().GetText();
 
                     foreach (var varNode in context.VAR())
                     {

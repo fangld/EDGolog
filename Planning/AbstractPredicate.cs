@@ -1,79 +1,79 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Runtime.Remoting.Messaging;
-//using System.Text;
-//using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using System.Text;
+using System.Threading.Tasks;
 
-//namespace Planning
-//{
-//    public class AbstractPredicate : IEquatable<AbstractPredicate>
-//    {
-//        #region Fields
+namespace Planning
+{
+    public class AbstractPredicate : IEquatable<AbstractPredicate>
+    {
+        #region Fields
 
-//        private List<string> _parameterList;
+        private List<string> _parameterList;
 
-//        #endregion
+        #endregion
 
-//        #region Properties
+        #region Properties
 
-//        public Predicate Predicate { get; set; }
+        public Predicate Predicate { get; set; }
 
-//        public IReadOnlyList<string> ParameterList
-//        {
-//            get { return _parameterList; }
-//        }
+        public IReadOnlyList<string> ParameterList
+        {
+            get { return _parameterList; }
+        }
 
-//        public int PreviousCuddIndex { get; set; }
+        public int PreviousCuddIndex { get; set; }
 
-//        public int SuccessiveCuddIndex { get; set; }
+        public int SuccessiveCuddIndex { get; set; }
 
-//        #endregion
+        #endregion
 
-//        #region Constructors
+        #region Constructors
 
-//        public AbstractPredicate(Predicate pred, List<string> parameterList)
-//        {
-//            Predicate = pred;
-//            _parameterList = parameterList;
-//        }
+        public AbstractPredicate(Predicate pred, List<string> parameterList)
+        {
+            Predicate = pred;
+            _parameterList = parameterList;
+        }
 
-//        #endregion
+        #endregion
 
-//        #region Overriden Methods
+        #region Overriden Methods
 
-//        public bool Equals(AbstractPredicate other)
-//        {
-//            if (Predicate.Name == other.Predicate.Name)
-//            {
-//                if (_parameterList.Count == other.ParameterList.Count)
-//                {
-//                    for (int i = 0; i < _parameterList.Count; i++)
-//                    {
-//                        if (_parameterList[i] != other.ParameterList[i])
-//                        {
-//                            return false;
-//                        }
-//                    }
+        public bool Equals(AbstractPredicate other)
+        {
+            if (Predicate.Name == other.Predicate.Name)
+            {
+                if (_parameterList.Count == other.ParameterList.Count)
+                {
+                    for (int i = 0; i < _parameterList.Count; i++)
+                    {
+                        if (_parameterList[i] != other.ParameterList[i])
+                        {
+                            return false;
+                        }
+                    }
 
-//                    for (int i = 0; i < Predicate.VariableList.Count; i++)
-//                    {
-//                        if (Predicate.VariableList[i] != other.Predicate.VariableList[i])
-//                        {
-//                            return false;
-//                        }
-//                    }
-//                    return true;
-//                }
-//            }
-//            return false;
-//        }
+                    for (int i = 0; i < Predicate.VariableList.Count; i++)
+                    {
+                        if (Predicate.VariableList[i] != other.Predicate.VariableList[i])
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
 
-//        public override string ToString()
-//        {
-//            return VariableContainer.GetFullName(Predicate.Name, _parameterList);
-//        }
+        public override string ToString()
+        {
+            return VariableContainer.GetFullName(Predicate.Name, _parameterList);
+        }
 
-//        #endregion
-//    }
-//}
+        #endregion
+    }
+}

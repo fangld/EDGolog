@@ -8,9 +8,11 @@
 
 //namespace Planning
 //{
-//    public class Event
+//    public class Event : VariableContainer 
 //    {
 //        #region Fields
+
+//        protected Dictionary<string, AbstractPredicate> _abstractPredDict;
 
 //        private List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> _effect;
 
@@ -61,7 +63,7 @@
 //            }
 //        }
 
-//        protected AbstractPredicate GetAbstractPredicate(PlanningParser.AtomicFormulaTermContext context)
+//        protected AbstractPredicate GetAbstractPredicate(PlanningParser.TermAtomFormContext context)
 //        {
 //            string abstractPredName = VariableContainer.GetFullName(context);
 //            AbstractPredicate result = _abstractPredDict[abstractPredName];

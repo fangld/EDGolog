@@ -1,6 +1,6 @@
 (define (problem sw-7-3)
 	(:domain squirrelsWorlds)
-	(:constant (maxLoc 7) (maxAcorn 3))
+	(:constants (maxLoc 7) (maxAcorn 3) (noticeRelLoc 1) (errorSencingAcorn 1))
 	(:init 
 		(loc a1 0)
 		(loc a2 7)
@@ -12,5 +12,5 @@
 		(acorn 5 2)
 		(acorn 6 2)
 		(acorn 7 2)
-   )
+    )
 )

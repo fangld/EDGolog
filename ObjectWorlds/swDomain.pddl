@@ -10,7 +10,7 @@
 (:predicates
 	(hold ?i - agent)
 	(loc ?i - agent ?x - point)
-	(acorn ?x - loc ?n - numOfAcorn)
+	(acorn ?x - point ?n - numOfAcorn)
 )
 
 (:event leftSucWithNotice
@@ -211,6 +211,11 @@
 (:observation otherSmell
 :precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
 :events (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn other ?m ?d))
+)
+
+(:observation noticeEmtpy
+:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
+:events (nil other)
 )
 
 (:observation noinfo
