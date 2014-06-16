@@ -24,7 +24,7 @@
 
 (:event leftSucWithoutNotice
 :parameters (?i - agent)
-:precondition (exists (?x - point ?y - point ?j - agent) 
+:precondition (exists (?x - point ?y - point ?j - agent)
                       (and (not (= ?i ?j)) (loc ?i ?x) (loc ?j ?y) (forall (?r - leftRelLoc) (not  (= ?x (+ ?y ?r)))))
 			  )
 :effect (forall (?x - point)
@@ -40,14 +40,14 @@
 (:event rightSucWithNotice
 :parameters (?i - agent ?d - rightRelLoc)
 :precondition (exists (?x - point ?y - point) (and (loc ?i ?x) (loc j ?y) (= ?x (+ ?y ?d))))
-:effect (forall (?x - point) 
+:effect (forall (?x - point)
                (when (and (loc ?i ?x) (not (= ?x maxLoc))) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
 (:event rightSucWithoutNotice
 :parameters (?i - agent)
-:precondition (exists (?x - point ?y - point ?j - agent) 
+:precondition (exists (?x - point ?y - point ?j - agent)
                       (and (not (= ?i ?j)) (loc ?i ?x) (loc ?j ?y) (forall (?r - rightRelLoc) (not  (= ?x (+ ?y ?r)))))
 			  )			   
 :effect (forall (?x - point)
