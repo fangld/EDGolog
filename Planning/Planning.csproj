@@ -52,10 +52,12 @@
     <Compile Include="Domain.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventSet.cs" />
-    <Compile Include="Formulas\BinaryOperatorFormula.cs" />
+    <Compile Include="Formulas\BinaryFormula.cs" />
     <Compile Include="Formulas\Constant.cs" />
     <Compile Include="Formulas\Formula.cs" />
-    <Compile Include="Formulas\UnaryOperatorFormula.cs" />
+    <Compile Include="Formulas\MultiFormula.cs" />
+    <Compile Include="Formulas\UnaryFormula.cs" />
+    <Compile Include="Globals.cs" />
     <Compile Include="Ground.cs" />
     <Compile Include="GroundAction.cs" />
     <Compile Include="GroundPredicate.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Servers\ServerGroundAction.cs" />
     <Compile Include="Servers\ServerProblem.cs" />
     <Compile Include="PlanningType.cs" />
+    <Compile Include="TermHandler.cs" />
     <Compile Include="VariableContainer.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -113,12 +113,13 @@ namespace Planning
         public static string GetFullName(PlanningParser.TermAtomFormContext context)
         {
             string name = context.pred().GetText();
-            List<string> constantList = new List<string>();
+            List<string> constList = new List<string>();
             foreach (var termContext in context.term())
             {
-                constantList.Add(termContext.GetText());
+                string termString = Globals.TermHandler.GetString(termContext);
+                constList.Add(termString);
             }
-            return GetFullName(name, constantList);
+            return GetFullName(name, constList);
         }
 
         public static string GetFullName(PlanningParser.ConstTermAtomFormContext context)

@@ -58,8 +58,8 @@ namespace ObjectWorlds
             var domainContext = parser.domain();// begin parsing at init rule
             //Console.WriteLine(domainContext.ToStringTree(parser));
             tr.Close();
-            var domain = Domain.CreateInstance(domainContext);
-            ShowDomainInfo(domain);
+            //var domain = Domain.CreateInstance(domainContext);
+            //ShowDomainInfo(domain);
 
             // Create a TextReader that reads from a file
             tr = new StreamReader(problemFileName);

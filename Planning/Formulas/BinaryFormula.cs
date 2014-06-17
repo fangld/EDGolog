@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace Planning.Formulas
 {
-    public class UnaryOperatorFormula : Formula
+    public class BinaryFormula : Formula
     {
         #region Fields
 
-        public Formula SubFormula { get; set; }
+        public Formula LeftSubFormula { get; set; }
+
+        public Formula RightSubFormula { get; set; }
 
         #endregion
     }

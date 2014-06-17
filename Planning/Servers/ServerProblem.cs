@@ -8,23 +8,22 @@ using PAT.Common.Classes.CUDDLib;
 
 namespace Planning.Servers
 {
-    public class ServerProblem// : Problem<ServerAction, ServerGroundAction>
+    public class ServerProblem
     {
         #region Fields
 
-        private const string Agent1Id = "a1";
-        private const string Agent2Id = "a2";
+        //private const string Agent1Id = "a1";
+        //private const string Agent2Id = "a2";
 
+        //private ConstTermComputer _computer;
 
-        private ConstTermComputer _computer;
-
-        private Dictionary<string, PlanningType> _typeDict;
+        //private Dictionary<string, PlanningType> _typeDict;
 
         private Dictionary<string, Predicate> _predDict;
 
-        private Dictionary<string, string> _constantTypeMap;
+        //private Dictionary<string, string> _constantTypeMap;
 
-        private Dictionary<string, List<string>> _typeConstantListMap;
+        //private Dictionary<string, List<string>> _typeConstantListMap;
 
         private Dictionary<string, GroundPredicate> _gndPredDict;
 
@@ -56,13 +55,18 @@ namespace Planning.Servers
         {
             _currentCuddIndex = 0;
 
-            ConstructComputer(serverProblemContext.constSetting());
+            //ConstructComputer(serverProblemContext.constSetting());
             DomainName = domainContext.NAME().GetText();
-            HandleTypeDefine(domainContext.typeDefine());
+            ProblemName = serverProblemContext.problemName().GetText();
+            //HandleTypeDefine(domainContext.typeDefine());
+            Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(), domainContext.typeDefine(),
+                serverProblemContext.objectDeclaration());
             HandlePredDefine(domainContext.predDefine());
-            BuildConstantTypeMap(serverProblemContext.objectDeclaration());
+            //Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(),
+            //    serverProblemContext.objectDeclaration(), _typeDict);
+            //BuildConstantTypeMap(serverProblemContext.objectDeclaration());
             BuildGroundPredicate();
-            BuildTruePredicateSet(serverProblemContext.init());
+            HandleInit(serverProblemContext.init());
             //HandleServerProblem(context);
         }
 
@@ -76,106 +80,107 @@ namespace Planning.Servers
             return result;
         }
 
-        private void ConstructComputer(PlanningParser.ConstSettingContext context)
-        {
-            if (context != null)
-            {
-                _computer = new ConstTermComputer(context);
-            }
-        }
+        //private void ConstructComputer(PlanningParser.NumericSettingContext context)
+        //{
+        //    if (context != null)
+        //    {
+        //        Globals.ConstTermComputer = new ConstTermComputer(context);
+        //        //_computer = new ConstTermComputer(context);
+        //    }
+        //}
 
-        private void HandleDomain(PlanningParser.DomainContext context)
-        {
-            DomainName = context.NAME().GetText();
-            HandleTypeDefine(context.typeDefine());
-            HandlePredDefine(context.predDefine());
-            //HandleActionsDefine(context.actionDefine());
-        }
+        //private void HandleDomain(PlanningParser.DomainContext context)
+        //{
+        //    DomainName = context.NAME().GetText();
+        //    HandleTypeDefine(context.typeDefine());
+        //    HandlePredDefine(context.predDefine());
+        //    //HandleActionsDefine(context.actionDefine());
+        //}
 
-        private void HandleTypeDefine(PlanningParser.TypeDefineContext context)
-        {
-            _typeDict = new Dictionary<string, PlanningType>();
+        //private void HandleTypeDefine(PlanningParser.TypeDefineContext context)
+        //{
+        //    _typeDict = new Dictionary<string, PlanningType>();
 
-            if (context != null)
-            {
-                _typeDict.Add(PlanningType.ObjectType.Name, PlanningType.ObjectType);
-                _typeDict.Add(PlanningType.AgentType.Name, PlanningType.AgentType);
+        //    if (context != null)
+        //    {
+        //        _typeDict.Add(PlanningType.ObjectType.Name, PlanningType.ObjectType);
+        //        _typeDict.Add(PlanningType.AgentType.Name, PlanningType.AgentType);
 
-                foreach (var typeContext in context.typeDeclaration())
-                {
-                    PlanningType type;
-                    string name = typeContext.NAME().GetText();
-                    if (typeContext.LB() == null)
-                    {
-                        type = new PlanningType { Name = name };
-                    }
-                    else
-                    {
-                        int min = _computer.GetValue(typeContext.constTerm(0));
-                        int max = _computer.GetValue(typeContext.constTerm(1));
-                        type = new PlanningNumericType {Name = name, Min = min, Max = max};
-                    }
+        //        foreach (var typeContext in context.typeDeclaration())
+        //        {
+        //            PlanningType type;
+        //            string name = typeContext.NAME().GetText();
+        //            if (typeContext.LB() == null)
+        //            {
+        //                type = new PlanningType { Name = name };
+        //            }
+        //            else
+        //            {
+        //                int min = Globals.TermHandler.GetValue(typeContext.constTerm(0));
+        //                int max = Globals.TermHandler.GetValue(typeContext.constTerm(1));
+        //                type = new PlanningNumericType {Name = name, Min = min, Max = max};
+        //            }
 
-                    _typeDict.Add(name, type);
-                }
-            }
-        }
+        //            _typeDict.Add(name, type);
+        //        }
+        //    }
+        //}
 
-        private void BuildConstantTypeMap(PlanningParser.ObjectDeclarationContext context)
-        {
-            _constantTypeMap = new Dictionary<string, string>();
-            _typeConstantListMap = new Dictionary<string, List<string>>();
+        //private void BuildConstantTypeMap(PlanningParser.ObjectDeclarationContext context)
+        //{
+        //    _constantTypeMap = new Dictionary<string, string>();
+        //    _typeConstantListMap = new Dictionary<string, List<string>>();
 
-            _constantTypeMap.Add(Agent1Id, PlanningType.AgentType.Name);
-            _constantTypeMap.Add(Agent2Id, PlanningType.AgentType.Name);
-            _typeConstantListMap.Add(PlanningType.AgentType.Name, new List<string> {Agent1Id, Agent2Id});
+        //    _constantTypeMap.Add(Agent1Id, PlanningType.AgentType.Name);
+        //    _constantTypeMap.Add(Agent2Id, PlanningType.AgentType.Name);
+        //    _typeConstantListMap.Add(PlanningType.AgentType.Name, new List<string> {Agent1Id, Agent2Id});
 
 
-            foreach (var pair in _typeDict)
-            {
-                if (pair.Value is PlanningNumericType)
-                {
-                    PlanningNumericType type = pair.Value as PlanningNumericType;
-                    List<string> constantList = new List<string>(type.Max - type.Min + 1);
-                    for (int i = type.Min; i <= type.Max; i++)
-                    {
-                        constantList.Add(i.ToString());
-                    }
-                    _typeConstantListMap.Add(type.Name, constantList);
-                }
-            }
+        //    foreach (var pair in _typeDict)
+        //    {
+        //        if (pair.Value is PlanningNumericType)
+        //        {
+        //            PlanningNumericType type = pair.Value as PlanningNumericType;
+        //            List<string> constantList = new List<string>(type.Max - type.Min + 1);
+        //            for (int i = type.Min; i <= type.Max; i++)
+        //            {
+        //                constantList.Add(i.ToString());
+        //            }
+        //            _typeConstantListMap.Add(type.Name, constantList);
+        //        }
+        //    }
 
-            if (context != null)
-            {
-                var listNameContext = context.listName();
-                do
-                {
-                    string type = listNameContext.type() != null
-                        ? listNameContext.type().GetText()
-                        : PlanningType.ObjectType.Name;
+        //    if (context != null)
+        //    {
+        //        var listNameContext = context.listName();
+        //        do
+        //        {
+        //            string type = listNameContext.type() != null
+        //                ? listNameContext.type().GetText()
+        //                : PlanningType.ObjectType.Name;
 
-                    List<string> constantList;
+        //            List<string> constantList;
 
-                    if (_typeConstantListMap.ContainsKey(type))
-                    {
-                        constantList = _typeConstantListMap[type];
-                    }
-                    else
-                    {
-                        constantList = new List<string>(listNameContext.NAME().Count);
-                        _typeConstantListMap.Add(type, constantList);
-                    }
+        //            if (_typeConstantListMap.ContainsKey(type))
+        //            {
+        //                constantList = _typeConstantListMap[type];
+        //            }
+        //            else
+        //            {
+        //                constantList = new List<string>(listNameContext.NAME().Count);
+        //                _typeConstantListMap.Add(type, constantList);
+        //            }
 
-                    foreach (var nameNode in listNameContext.NAME())
-                    {
-                        _constantTypeMap.Add(nameNode.GetText(), type);
-                        constantList.Add(nameNode.GetText());
-                    }
+        //            foreach (var nameNode in listNameContext.NAME())
+        //            {
+        //                _constantTypeMap.Add(nameNode.GetText(), type);
+        //                constantList.Add(nameNode.GetText());
+        //            }
 
-                    listNameContext = listNameContext.listName();
-                } while (listNameContext != null);
-            }
-        }
+        //            listNameContext = listNameContext.listName();
+        //        } while (listNameContext != null);
+        //    }
+        //}
 
         private void HandlePredDefine(PlanningParser.PredDefineContext context)
         {
@@ -219,8 +224,9 @@ namespace Planning.Servers
                 for (int i = 0; i < container.Count; i++)
                 {
                     Tuple<string, string> variable = container.VariableList[i];
-                    List<string> constantList = _typeConstantListMap[variable.Item2];
-                    collection.Add(constantList);
+                    List<string> constList = Globals.TermHandler.GetConstList(variable.Item2);
+                        //_typeConstantListMap[variable.Item2];
+                    collection.Add(constList);
                 }
 
                 ScanMixedRadix(container.Name, collection, action);
@@ -266,7 +272,7 @@ namespace Planning.Servers
         //    HandleInit(context.init());
         //}
 
-        private void BuildTruePredicateSet(PlanningParser.InitContext context)
+        private void HandleInit(PlanningParser.InitContext context)
         {
             TruePredSet = new HashSet<string>();
             foreach (var atomForm in context.constTermAtomForm())
@@ -283,10 +289,17 @@ namespace Planning.Servers
             }
         }
 
-        //private void HandleInit(PlanningParser.InitContext context)
-        //{
-        //    BuildTruePredicateSet(context);
-        //}
+        private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
+        {
+            foreach (var eventDefineContext in contexts)
+            {
+                Event e = Event.From(eventDefineContext);
+
+                //Action action = Action.From(CurrentCuddIndex, actionDefineContext, PredicateDict);
+                //_actionDict.Add(action.Name, action);
+                //CurrentCuddIndex = action.CurrentCuddIndex;
+            }
+        }
 
         public void ShowInfo()
         {
@@ -296,18 +309,13 @@ namespace Planning.Servers
             Console.WriteLine("Problem Name: {0}", ProblemName);
             Console.WriteLine(Domain.BarLine);
 
-            if (_computer != null)
-            {
-                _computer.ShowInfo();
-            }
-            Console.WriteLine(Domain.BarLine);
-
-            Console.WriteLine("Types:");
-            foreach (var type in _typeDict)
-            {
-                Console.WriteLine("  {0}", type.Value);
-            }
-            Console.WriteLine(Domain.BarLine);
+            Globals.TermHandler.ShowInfo();
+            //Console.WriteLine("Types:");
+            //foreach (var type in _typeDict)
+            //{
+            //    Console.WriteLine("  {0}", type.Value);
+            //}
+            //Console.WriteLine(Domain.BarLine);
 
             Console.WriteLine("Predicates:");
             foreach (var pred in _predDict.Values)
@@ -323,12 +331,12 @@ namespace Planning.Servers
             }
             Console.WriteLine(Domain.BarLine);
 
-            Console.WriteLine("Constants:");
-            foreach (var pair in _constantTypeMap)
-            {
-                Console.WriteLine("  Name: {0}, Type: {1}", pair.Key, pair.Value);
-            }
-            Console.WriteLine(Domain.BarLine);
+            //Console.WriteLine("Constants:");
+            //foreach (var pair in _constantTypeMap)
+            //{
+            //    Console.WriteLine("  Name: {0}, Type: {1}", pair.Key, pair.Value);
+            //}
+            //Console.WriteLine(Domain.BarLine);
 
             Console.WriteLine("Ground predicates:");
             foreach (var pair in _gndPredDict)

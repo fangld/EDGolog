@@ -6,7 +6,7 @@ grammar Planning;
 
 // Domain description
 domain: LB DEF LB DOM NAME RB
-           constDefine?
+           numericDefine?
 		   typeDefine?
 		   predDefine?
 		   eventDefine*
@@ -14,8 +14,8 @@ domain: LB DEF LB DOM NAME RB
 		   obsDefine*
 		RB;
 
-constDefine: LB COLON CONST constSymbol+ RB;
-constSymbol: NAME;
+numericDefine: LB COLON NUMS numericSymbol+ RB;
+numericSymbol: NAME;
 typeDefine: LB COLON TYPE typeDeclaration+ RB;
 
 predDefine: LB COLON PRED atomFormSkeleton+ RB;
@@ -70,7 +70,6 @@ listName: NAME* | NAME+ MINUS type listName;
 listVariable: VAR* | VAR+ MINUS type listVariable;
 
 gd: termAtomForm
-  | termLiteral
   | LB AND gd+ RB
   | LB OR gd+ RB
   | LB NOT gd RB
@@ -80,6 +79,7 @@ gd: termAtomForm
 
 termAtomForm: LB pred term* RB
             | LB EQ term term RB
+            | LB NEQ term term RB
 			| LB LT term term RB
 		    | LB LEQ term term RB
 			| LB GT term term RB
@@ -118,7 +118,7 @@ condEffect: LB AND termLiteral+ RB
 // Server problem description
 serverProblem: LB DEF LB PROM problemName RB
 		              LB COLON DOM domainName RB
-		              constSetting?
+		              numericSetting?
 		              objectDeclaration?
 		              init
 		       RB;
@@ -127,7 +127,7 @@ problemName: NAME;
 domainName: NAME;
 agentDefine: LB COLON AGENTS NAME+ RB;
 objectDeclaration: LB COLON OBJS listName RB;
-constSetting: LB COLON CONST (LB constSymbol INTEGER RB)+
+numericSetting: LB COLON NUMS (LB numericSymbol INTEGER RB)+
               RB;
 
 
@@ -155,7 +155,7 @@ clientProblem: LB DEF LB PROM problemName RB
 			          agentDefine
 			          LB COLON AGENTID agentId RB
 			          objectDeclaration?
-			          constSetting?
+			          numericSetting?
 			          initKnowledge?
 			          initBelief?
 			   RB;
@@ -185,6 +185,7 @@ RESP: 'response';
 OBS: 'observation';
 MIN: 'min';
 MAX: 'max';
+NUMS: 'numbers';
 EFF: 'effect';
 OBJ: 'object';
 AGT: 'agent';
@@ -211,6 +212,7 @@ PLUS: '+';
 MULT: '*';
 DIV: '/';
 EQ: '=';
+NEQ: '!=';
 LT: '<';
 LEQ: '<=';
 GT: '>';

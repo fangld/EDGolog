@@ -1,5 +1,5 @@
 (define (domain squirrelsWorlds)
-	(:constants maxLoc maxAcorn noticeRelLoc errorSencingAcorn)
+	(:numbers maxLoc maxAcorn noticeRelLoc errorSencingAcorn)
 	(:types (numOfAcorn 0 maxAcorn)
 	        (point 0 maxLoc)
 	        (leftRelLoc (- noticeRelLoc) (+ noticeRelLoc 1))
@@ -15,20 +15,21 @@
 
 (:event leftSucWithNotice
 :parameters (?i - agent ?d - leftRelLoc)
-:precondition (exists (?x - point ?y - point ?j - agent) 
-                      (and (not (= ?i ?j)) (loc ?i ?x) (loc ?j ?y) (= ?x (+ ?y ?d))))
+:precondition (exists (?x - point ?y - point ?j - agent)
+                      (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (= ?x (+ ?y ?d)) (!= ?x 0))
+			  )
 :effect (forall (?x - point)
-               (when (and (loc ?i ?x) (not (= ?x 0))) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
+               (when (and (loc ?i ?x) (!= ?x 0)) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
 (:event leftSucWithoutNotice
 :parameters (?i - agent)
 :precondition (exists (?x - point ?y - point ?j - agent)
-                      (and (not (= ?i ?j)) (loc ?i ?x) (loc ?j ?y) (forall (?r - leftRelLoc) (not  (= ?x (+ ?y ?r)))))
+                      (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (!= ?x 0) (forall (?r - leftRelLoc) (!= ?x (+ ?y ?r))))
 			  )
 :effect (forall (?x - point)
-                (when (and (loc ?i ?x) (not (= ?x 0))) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
+                (when (and (loc ?i ?x) (!= ?x 0)) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
@@ -39,19 +40,21 @@
 
 (:event rightSucWithNotice
 :parameters (?i - agent ?d - rightRelLoc)
-:precondition (exists (?x - point ?y - point) (and (loc ?i ?x) (loc j ?y) (= ?x (+ ?y ?d))))
+:precondition (exists (?x - point ?y - point) 
+                      (and (loc ?i ?x) (loc j ?y) (= ?x (+ ?y ?d)) (!= ?x maxLoc))
+			  )
 :effect (forall (?x - point)
-               (when (and (loc ?i ?x) (not (= ?x maxLoc))) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
+               (when (and (loc ?i ?x) (!= ?x maxLoc)) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
 (:event rightSucWithoutNotice
 :parameters (?i - agent)
 :precondition (exists (?x - point ?y - point ?j - agent)
-                      (and (not (= ?i ?j)) (loc ?i ?x) (loc ?j ?y) (forall (?r - rightRelLoc) (not  (= ?x (+ ?y ?r)))))
-			  )			   
+                      (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (!= ?x maxLoc) (forall (?r - rightRelLoc) (!= ?x (+ ?y ?r))))
+			  )
 :effect (forall (?x - point)
-               (when (and (loc ?i ?x) (not (= ?x 0))) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
+               (when (and (loc ?i ?x) (!= ?x maxLoc)) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
@@ -64,7 +67,7 @@
 :parameters (?i - agent)
 :precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i))))
 :effect (forall (?x - point ?n - numOfAcorn)
-                (when (and (loc ?i ?x) (acorn ?x ?n) (not (= ?n 0))) (and (acorn ?x (- ?n 1)) (not (acorn ?x ?n)) (hold ?i))))
+                (when (and (loc ?i ?x) (acorn ?x ?n) (!= ?n 0)) (and (acorn ?x (- ?n 1)) (not (acorn ?x ?n)) (hold ?i))))
 )
 
 (:event pickFail
@@ -76,7 +79,7 @@
 :parameters (?i - agent)
 :precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i))))
 :effect (forall (?x - point ?n - numOfAcorn) 
-                (when (and (loc ?i ?x) (acorn ?x ?n) (not (= ?n maxAcorn))) (and (acorn ?x (+ ?n 1)) (not (acorn ?x ?n)) (not (hold ?i)))))
+                (when (and (loc ?i ?x) (acorn ?x ?n) (!= ?n maxAcorn)) (and (acorn ?x (+ ?n 1)) (not (acorn ?x ?n)) (not (hold ?i)))))
 )
 
 (:event dropFail
@@ -92,6 +95,7 @@
 (:event nil
 :parameters (?i - agent)
 )
+
 
 
 
@@ -136,6 +140,7 @@
 (:action drop
 (:response suc
 :events (dropSuc self))
+
 (:response fail
 :events (dropFail self) 
 ))
@@ -219,7 +224,9 @@
 )
 
 (:observation noinfo
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (not (= xi (+ xj 1))) (not (= xi (- xj 1))) (not (= xi xj))))
+:precondition (exists (?x - point ?y - point) 
+                      (and (loc other ?x) (loc self ?y) (!= xi (+ xj 1)) (!= xi (- xj 1)) (!= xi xj))
+					  )
 :events 
 ((0 (nil other))
 (1 (or (leftSucWithoutNotice other) (rightSucWithoutNotice other)
