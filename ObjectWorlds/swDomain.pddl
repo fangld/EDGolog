@@ -132,8 +132,8 @@
 :events (pickSuc self))
 
 (:response fail
-:events (pickFail self) 
-))
+:events (pickFail self))
+)
 
 
 
@@ -142,15 +142,15 @@
 :events (dropSuc self))
 
 (:response fail
-:events (dropFail self) 
-))
+:events (dropFail self))
+)
 
 
 (:action smell
 (:response noise
 :parameters (?m - numOfAcorn)
-:events (exists (?d - noiseSensingAcorn) (learn self ?m ?d))
-))
+:events (exists (?d - noiseSensingAcorn) (learn self ?m ?d)))
+)
 
 
 

@@ -93,7 +93,7 @@ namespace Planning
         //    return result;
         //}
 
-        private CUDDNode GetCuddNode(PlanningParser.TermAtomFormContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> varDict, bool isPrevious = true)
+        private CUDDNode GetCuddNode(PlanningParser.TermAtomFormContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, bool isPrevious = true)
         {
             CUDDNode result = CUDD.ONE;
             if (context.pred() != null)
@@ -105,8 +105,8 @@ namespace Planning
             }
             else 
             {
-                string firstTermString = Globals.TermHandler.GetString(context.term(0), varDict);
-                string secondTermString = Globals.TermHandler.GetString(context.term(1), varDict);
+                string firstTermString = Globals.TermHandler.GetString(context.term(0), assignment);
+                string secondTermString = Globals.TermHandler.GetString(context.term(1), assignment);
                 int firstValue = int.Parse(firstTermString);
                 int secondValue = int.Parse(secondTermString);
                 if (context.EQ() != null)
@@ -138,20 +138,20 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode GetCuddNode(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> varDict, bool isPrevious = true)
+        private CUDDNode GetCuddNode(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, bool isPrevious = true)
         {
             CUDDNode result = null;
 
             if (context.termAtomForm() != null)
             {
-                result = GetCuddNode(context.termAtomForm(), gndPredDict, varDict, isPrevious);
+                result = GetCuddNode(context.termAtomForm(), gndPredDict, assignment, isPrevious);
             }
             else if (context.AND() != null)
             {
-                result = GetCuddNode(context.gd()[0], gndPredDict, varDict, isPrevious);
+                result = GetCuddNode(context.gd()[0], gndPredDict, assignment, isPrevious);
                 for (int i = 1; i < context.gd().Count; i++)
                 {
-                    CUDDNode gdNode = GetCuddNode(context.gd()[i], gndPredDict, varDict, isPrevious);
+                    CUDDNode gdNode = GetCuddNode(context.gd()[i], gndPredDict, assignment, isPrevious);
                     CUDDNode andNode = CUDD.Function.And(result, gdNode);
                     CUDD.Ref(andNode);
                     CUDD.Deref(result);
@@ -161,10 +161,10 @@ namespace Planning
             }
             else if (context.OR() != null)
             {
-                result = GetCuddNode(context.gd()[0], gndPredDict, varDict, isPrevious);
+                result = GetCuddNode(context.gd()[0], gndPredDict, assignment, isPrevious);
                 for (int i = 1; i < context.gd().Count; i++)
                 {
-                    CUDDNode gdNode = GetCuddNode(context.gd()[i], gndPredDict, varDict, isPrevious);
+                    CUDDNode gdNode = GetCuddNode(context.gd()[i], gndPredDict, assignment, isPrevious);
                     CUDDNode orNode = CUDD.Function.Or(result, gdNode);
                     CUDD.Ref(orNode);
                     CUDD.Deref(result);
@@ -174,48 +174,78 @@ namespace Planning
             }
             else if (context.NOT() != null)
             {
-                CUDDNode gdNode = GetCuddNode(context.gd()[0], gndPredDict, varDict, isPrevious);
+                CUDDNode gdNode = GetCuddNode(context.gd()[0], gndPredDict, assignment, isPrevious);
                 result = CUDD.Function.Not(gdNode);
                 CUDD.Ref(result);
                 CUDD.Deref(gdNode);
             }
             else if (context.IMPLY() != null)
             {
-                CUDDNode gdNode0 = GetCuddNode(context.gd()[0], gndPredDict, varDict, isPrevious);
-                CUDDNode gdNode1 = GetCuddNode(context.gd()[1], gndPredDict, varDict, isPrevious);
+                CUDDNode gdNode0 = GetCuddNode(context.gd()[0], gndPredDict, assignment, isPrevious);
+                CUDDNode gdNode1 = GetCuddNode(context.gd()[1], gndPredDict, assignment, isPrevious);
 
                 result = CUDD.Function.Implies(gdNode0, gdNode1);
                 CUDD.Ref(result);
                 CUDD.Deref(gdNode0);
                 CUDD.Deref(gdNode1);
             }
-            else if (context.FORALL() != null)
+            else (context.FORALL() != null)
             {
-                result = ScanMixedRadix(CUDD.ONE, gndPredDict, varDict, isPrevious);
-            }
-            else
-            {
-                context.gd(0);
+                List<string> varNameList = null;
+                
+                List<List<string>> collection = new List<List<string>>();
+
+                for (int i = 0; i < container.Count; i++)
+                {
+                    Tuple<string, string> variable = container.VariableList[i];
+                    List<string> constList = Globals.TermHandler.GetConstList(variable.Item2);
+                        //_typeConstantListMap[variable.Item2];
+                    collection.Add(constList);
+                }
+
+                if (context.FORALL() != null)
+                {
+                    List<List<string>> collection = null;
+                    result = ScanMixedRadix(CUDD.ONE, context.gd(0), gndPredDict, varNameList, collection, assignment,
+                        isPrevious);
+                }
+                else
+                {
+                    
+                }
             }
 
             return result;
         }
 
-        private CUDDNode ScanMixedRadix(CUDDNode initialNode, IReadOnlyList<List<string>> collection, )
+        private BuildContainer(Planning)
+
+        private CUDDNode ScanMixedRadix(CUDDNode initialNode, PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, Dictionary<string, string> assignment, bool isPrevious)
         {
-            CUDDNode result = CUDD.ONE;
+            CUDDNode result = initialNode;
 
             int count = collection.Count;
-            string[] scanArray = new string[count];
+            //string[] scanArray = new string[count];
             int[] index = new int[count];
             int[] maxIndex = new int[count];
             Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
 
             do
             {
-                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
+                Parallel.For(0, count, i =>
+                {
+                    string value = collection[i][index[i]];
+                    if (assignment.ContainsKey(varNameList[i]))
+                    {
+                        assignment.Add(varNameList[i], value);
+                    }
+                    else
+                    {
+                        assignment[varNameList[i]] = value;
+                    }
+                });
 
-                CUDDNode gdNode = GetCuddNode(context.gd()[i], gndPredDict, varDict, isPrevious);
+                CUDDNode gdNode = GetCuddNode(context, gndPredDict, assignment, isPrevious);
                 CUDDNode andNode = CUDD.Function.And(result, gdNode);
                 CUDD.Ref(andNode);
                 CUDD.Deref(result);
@@ -239,16 +269,16 @@ namespace Planning
             } while (true);
         }
 
-        private void AddToGroundPredicateDict(string predName, string[] constantList)
-        {
-            Predicate pred = _predDict[predName];
-            GroundPredicate gndPred = new GroundPredicate(pred, constantList);
-            gndPred.PreviousCuddIndex = _currentCuddIndex;
-            _currentCuddIndex++;
-            gndPred.SuccessiveCuddIndex = _currentCuddIndex;
-            _currentCuddIndex++;
-            _gndPredDict.Add(gndPred.ToString(), gndPred);
-        }
+        //private void AddToGroundPredicateDict(string predName, string[] constantList)
+        //{
+        //    Predicate pred = _predDict[predName];
+        //    GroundPredicate gndPred = new GroundPredicate(pred, constantList);
+        //    gndPred.PreviousCuddIndex = _currentCuddIndex;
+        //    _currentCuddIndex++;
+        //    gndPred.SuccessiveCuddIndex = _currentCuddIndex;
+        //    _currentCuddIndex++;
+        //    _gndPredDict.Add(gndPred.ToString(), gndPred);
+        //}
 
         //protected AbstractPredicate GetAbstractPredicate(PlanningParser.TermAtomFormContext context)
         //{

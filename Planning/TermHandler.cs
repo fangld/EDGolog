@@ -169,7 +169,7 @@ namespace Planning
             return result;
         }
 
-        public string GetString(PlanningParser.TermContext context, Dictionary<string, string> varDict)
+        public string GetString(PlanningParser.TermContext context, Dictionary<string, string> assignment)
         {
             string result;
             if (context.NAME() != null)
@@ -187,7 +187,7 @@ namespace Planning
             else if (context.VAR() != null)
             {
                 string variableName = context.VAR().GetText();
-                result = varDict[variableName];
+                result = assignment[variableName];
             }
             else if (context.INTEGER() != null)
             {
@@ -195,14 +195,14 @@ namespace Planning
             }
             else if (context.MINUS() != null && context.term().Count == 1)
             {
-                string termString = GetString(context.term(0), varDict);
+                string termString = GetString(context.term(0), assignment);
                 int value = int.Parse(termString);
                 result = (-value).ToString();
             }
             else if (context.MINUS() != null && context.term().Count == 2)
             {
-                string firstTermString = GetString(context.term(0), varDict);
-                string secondTermString = GetString(context.term(1), varDict);
+                string firstTermString = GetString(context.term(0), assignment);
+                string secondTermString = GetString(context.term(1), assignment);
 
                 int firstValue = int.Parse(firstTermString);
                 int secondValue = int.Parse(secondTermString);
@@ -211,8 +211,8 @@ namespace Planning
             }
             else
             {
-                string firstTermString = GetString(context.term(0), varDict);
-                string secondTermString = GetString(context.term(1), varDict);
+                string firstTermString = GetString(context.term(0), assignment);
+                string secondTermString = GetString(context.term(1), assignment);
 
                 int firstValue = int.Parse(firstTermString);
                 int secondValue = int.Parse(secondTermString);
