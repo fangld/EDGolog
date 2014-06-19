@@ -27,6 +27,8 @@ namespace Planning.Servers
 
         private Dictionary<string, GroundPredicate> _gndPredDict;
 
+        private Dictionary<string, Event> _eventDict;
+
         private int _currentCuddIndex;
 
         #endregion
@@ -67,6 +69,7 @@ namespace Planning.Servers
             //BuildConstantTypeMap(serverProblemContext.objectDeclaration());
             BuildGroundPredicate();
             HandleInit(serverProblemContext.init());
+            HandleEventsDefine(domainContext.eventDefine());
             //HandleServerProblem(context);
         }
 
@@ -206,12 +209,6 @@ namespace Planning.Servers
             _currentCuddIndex++;
             gndPred.SuccessiveCuddIndex = _currentCuddIndex;
             _currentCuddIndex++;
-
-            //for (int i = 0; i < gndPred.CuddIndexList.Count; i++)
-            //{
-            //    gndPred.SetCuddIndex(i, _currentCuddIndex);
-            //    _currentCuddIndex++;
-            //}
             _gndPredDict.Add(gndPred.ToString(), gndPred);
         }
 
@@ -291,14 +288,62 @@ namespace Planning.Servers
 
         private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
         {
+            _eventDict = new Dictionary<string, Event>();
             foreach (var eventDefineContext in contexts)
             {
-                Event e = Event.From(eventDefineContext);
+                string eventName = eventDefineContext.eventSymbol().GetText();
+                List<List<string>> collection = new List<List<string>>();
 
-                //Action action = Action.From(CurrentCuddIndex, actionDefineContext, PredicateDict);
-                //_actionDict.Add(action.Name, action);
-                //CurrentCuddIndex = action.CurrentCuddIndex;
+                var listVariableContext = eventDefineContext.listVariable();
+                do
+                {
+                    if (listVariableContext.VAR().Count != 0)
+                    {
+                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
+
+                        foreach (var varNode in listVariableContext.VAR())
+                        {
+                            List<string> constList = Globals.TermHandler.GetConstList(type);
+                            collection.Add(constList);
+                        }
+                    }
+                    listVariableContext = listVariableContext.listVariable();
+                } while (listVariableContext != null);
+
+                ScanMixedRadix(eventName, collection, eventDefineContext);
             }
+        }
+
+        private void ScanMixedRadix(string eventName, IReadOnlyList<List<string>> collection, PlanningParser.EventDefineContext context)
+        {
+            int count = collection.Count;
+            string[] scanArray = new string[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+
+            do
+            {
+                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
+
+                Event e = Event.From(context, _gndPredDict, scanArray);
+                _eventDict.Add(e.Name, e);
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+                if (j == -1)
+                    return;
+                index[j]++;
+            } while (true);
         }
 
         public void ShowInfo()
@@ -353,47 +398,47 @@ namespace Planning.Servers
             }
             Console.WriteLine(Domain.BarLine);
 
-            //Console.WriteLine("Ground actions:");
-            //foreach (var gndAction in GroundActionDict.Values)
-            //{
-            //    Console.WriteLine("  Name: {0}", gndAction);
-            //    Console.WriteLine("  Precondition:");
-            //    CUDD.Print.PrintMinterm(gndAction.Precondition);
+            Console.WriteLine("Ground events:");
+            foreach (var gndAction in _eventDict.Values)
+            {
+                Console.WriteLine("  Name: {0}", gndAction);
+                Console.WriteLine("  Precondition:");
+                CUDD.Print.PrintMinterm(gndAction.Precondition);
 
-            //    Console.WriteLine("  Effect:");
-            //    for (int i = 0; i < gndAction.Effect.Count; i++)
-            //    {
-            //        Console.WriteLine("    Index: {0}", i);
-            //        Console.WriteLine("    Condition:");
-            //        CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
+                //Console.WriteLine("  Effect:");
+                //for (int i = 0; i < gndAction.Effect.Count; i++)
+                //{
+                //    Console.WriteLine("    Index: {0}", i);
+                //    Console.WriteLine("    Condition:");
+                //    CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
 
-            //        Console.Write("    Literals: { ");
-            //        var literal = gndAction.Effect[i].Item2[0];
-            //        if (literal.Item2)
-            //        {
-            //            Console.Write("{0}", literal.Item1);
-            //        }
-            //        else
-            //        {
-            //            Console.Write("not {0}", literal.Item1);
-            //        }
+                //    Console.Write("    Literals: { ");
+                //    var literal = gndAction.Effect[i].Item2[0];
+                //    if (literal.Item2)
+                //    {
+                //        Console.Write("{0}", literal.Item1);
+                //    }
+                //    else
+                //    {
+                //        Console.Write("not {0}", literal.Item1);
+                //    }
 
-            //        for (int j = 1; j < gndAction.Effect[i].Item2.Count; j++)
-            //        {
-            //            if (literal.Item2)
-            //            {
-            //                Console.Write(", {0}", literal.Item1);
-            //            }
-            //            else
-            //            {
-            //                Console.Write(", not {0}", literal.Item1);
-            //            }
-            //        }
+                //    for (int j = 1; j < gndAction.Effect[i].Item2.Count; j++)
+                //    {
+                //        if (literal.Item2)
+                //        {
+                //            Console.Write(", {0}", literal.Item1);
+                //        }
+                //        else
+                //        {
+                //            Console.Write(", not {0}", literal.Item1);
+                //        }
+                //    }
 
-            //        Console.WriteLine(" }");
-            //    }
-            //    Console.WriteLine();
-            //}
+                //    Console.WriteLine(" }");
+                //}
+                Console.WriteLine();
+            }
         }
 
         #endregion

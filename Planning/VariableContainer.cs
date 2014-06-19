@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -110,13 +111,14 @@ namespace Planning
             return sb.ToString();
         }
 
-        public static string GetFullName(PlanningParser.TermAtomFormContext context)
+        public static string GetFullName(PlanningParser.TermAtomFormContext context, Dictionary<string, string> assignment)
         {
             string name = context.pred().GetText();
             List<string> constList = new List<string>();
             foreach (var termContext in context.term())
             {
-                string termString = Globals.TermHandler.GetString(termContext);
+                //Console.WriteLine("Term context:{0}", termContext.GetText());
+                string termString = Globals.TermHandler.GetString(termContext, assignment);
                 constList.Add(termString);
             }
             return GetFullName(name, constList);

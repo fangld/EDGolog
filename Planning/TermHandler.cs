@@ -24,6 +24,12 @@ namespace Planning
 
         #endregion
 
+        #region Properties
+
+        public static Dictionary<string, string> EmtpyAssignment;
+
+        #endregion
+
         #region Constructors
 
         public TermHandler(PlanningParser.NumericSettingContext numericSettingContext, PlanningParser.TypeDefineContext typeDefineContext,
@@ -32,6 +38,11 @@ namespace Planning
             BuildNumericConst(numericSettingContext);
             BuildTypeDict(typeDefineContext);
             BuildConstTypeMap(objDecContext);
+        }
+
+        static TermHandler()
+        {
+            EmtpyAssignment = new Dictionary<string, string>();
         }
 
         #endregion
@@ -187,6 +198,11 @@ namespace Planning
             else if (context.VAR() != null)
             {
                 string variableName = context.VAR().GetText();
+                //Console.WriteLine("TermHandler: variableName: {0}", variableName);
+                //foreach (var pair in assignment)
+                //{
+                //    Console.WriteLine("  Var name{0}, value:{1}", pair.Key, pair.Value);
+                //}
                 result = assignment[variableName];
             }
             else if (context.INTEGER() != null)
@@ -225,6 +241,7 @@ namespace Planning
 
         public List<string> GetConstList(string type)
         {
+            Console.WriteLine("Type: {0}", type);
             return _typeConstListMap[type];
         }
 

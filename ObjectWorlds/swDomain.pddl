@@ -88,7 +88,7 @@
 )
 
 (:event learn
-:parameters (?i - agent ?m - numOfAcorn ?d - diffSensing)
+:parameters (?i - agent ?m - numOfAcorn ?d - noiseSensingAcorn)
 :precondition (exists (?x - point ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (= ?n (+ ?m ?d))))
 )
 

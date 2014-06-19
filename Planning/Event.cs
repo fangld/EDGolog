@@ -12,7 +12,7 @@ namespace Planning
     {
         #region Fields
 
-        //protected Dictionary<string, AbstractPredicate> _abstractPredDict;
+        private List<string> _constList;
 
         private List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> _effect;
 
@@ -27,12 +27,15 @@ namespace Planning
             get { return _effect; }
         }
 
+        public IReadOnlyList<string> ConstList { get { return _constList; } }
+
         #endregion
 
         #region Constructors
 
         private Event()
         {
+            _constList = new List<string>();
             _effect = new List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>>();
         }
 
@@ -40,13 +43,26 @@ namespace Planning
 
         #region Methods
 
-        public static Event From(PlanningParser.EventDefineContext context)
+        public static Event From(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, string[] constArray)
         {
             Event result = new Event();
+            result.GenerateVariableList(context.listVariable());
+            result.SetConstList(constArray);
+            string eventName = context.eventSymbol().NAME().GetText();
+            result.Name = GetFullName(eventName, result.ConstList);
+            result.GeneratePrecondition(context, gndPredDict);
             return result;
         }
 
         #region Methods for generating precondition
+
+        private void SetConstList(string[] constArray)
+        {
+            for (int i = 0; i < constArray.Length; i++)
+            {
+                _constList.Add(constArray[i]);
+            }
+        }
 
         protected void GeneratePrecondition(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
         {
@@ -56,49 +72,22 @@ namespace Planning
             {
                 if (context.emptyOrPreGD().gd() != null)
                 {
-                    Dictionary<string, string> varDict = new Dictionary<string, string>();
-                    Precondition = GetCuddNode(context.emptyOrPreGD().gd(), gndPredDict, varDict);
+                    Dictionary<string, string> assignment = new Dictionary<string, string>();
+                    for (int i = 0; i < _constList.Count; i++)
+                    {
+                        assignment.Add(VariableList[i].Item1, _constList[i]);
+                    }
+                    Precondition = GetCuddNode(context.emptyOrPreGD().gd(), gndPredDict, assignment);
                 }
             }
         }
-
-        //private string GetTermString(PlanningParser.TermContext context)
-        //{
-        //    string result = string.Empty;
-        //    if (context.NAME() != null)
-        //    {
-        //        Globals.TermHandler.GetString()
-        //    }
-        //    else if (context.VAR() != null)
-        //    {
-                
-        //    }
-        //    else if (context.INTEGER() != null)
-        //    {
-        //        result = context.INTEGER().GetText();
-        //    }
-        //    else if (context.MINUS() != null && context.term().Count == 1)
-        //    {
-                
-        //    }
-        //    else if (context.MINUS() != null && context.term().Count == 2)
-        //    {
-
-        //    }
-        //    else
-        //    {
-                
-        //    }
-
-        //    return result;
-        //}
 
         private CUDDNode GetCuddNode(PlanningParser.TermAtomFormContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, bool isPrevious = true)
         {
             CUDDNode result = CUDD.ONE;
             if (context.pred() != null)
             {
-                string predFullName = GetFullName(context);
+                string predFullName = GetFullName(context, assignment);
                 GroundPredicate gndPred = gndPredDict[predFullName];
                 int cuddIndex = isPrevious ? gndPred.PreviousCuddIndex : gndPred.SuccessiveCuddIndex;
                 result = CUDD.Var(cuddIndex);
@@ -107,31 +96,38 @@ namespace Planning
             {
                 string firstTermString = Globals.TermHandler.GetString(context.term(0), assignment);
                 string secondTermString = Globals.TermHandler.GetString(context.term(1), assignment);
-                int firstValue = int.Parse(firstTermString);
-                int secondValue = int.Parse(secondTermString);
+                //Console.WriteLine("FirstTermString:{0}, SecondTermString:{1}", firstTermString, secondTermString);
+                //int firstValue = int.Parse(firstTermString);
+                //int secondValue = int.Parse(secondTermString);
                 if (context.EQ() != null)
                 {
-                    result = firstValue == secondValue ? CUDD.ONE : CUDD.ZERO;
+                    result = firstTermString == secondTermString ? CUDD.ONE : CUDD.ZERO;
                 }
                 else if (context.NEQ() != null)
                 {
-                    result = firstValue != secondValue ? CUDD.ONE : CUDD.ZERO;
-                }
-                else if (context.LT() != null)
-                {
-                    result = firstValue < secondValue ? CUDD.ONE : CUDD.ZERO;
-                }
-                else if (context.LEQ() != null)
-                {
-                    result = firstValue <= secondValue ? CUDD.ONE : CUDD.ZERO;
-                }
-                else if (context.GT() != null)
-                {
-                    result = firstValue > secondValue ? CUDD.ONE : CUDD.ZERO;
+                    result = firstTermString != secondTermString ? CUDD.ONE : CUDD.ZERO;
                 }
                 else
                 {
-                    result = firstValue >= secondValue ? CUDD.ONE : CUDD.ZERO;
+                    int firstValue = int.Parse(firstTermString);
+                    int secondValue = int.Parse(secondTermString);
+                    if (context.LT() != null)
+                    {
+                        result = firstValue < secondValue ? CUDD.ONE : CUDD.ZERO;
+                    }
+
+                    else if (context.LEQ() != null)
+                    {
+                        result = firstValue <= secondValue ? CUDD.ONE : CUDD.ZERO;
+                    }
+                    else if (context.GT() != null)
+                    {
+                        result = firstValue > secondValue ? CUDD.ONE : CUDD.ZERO;
+                    }
+                    else
+                    {
+                        result = firstValue >= secondValue ? CUDD.ONE : CUDD.ZERO;
+                    }
                 }
             }
 
@@ -189,103 +185,117 @@ namespace Planning
                 CUDD.Deref(gdNode0);
                 CUDD.Deref(gdNode1);
             }
-            else (context.FORALL() != null)
+            else
             {
-                List<string> varNameList = null;
+                List<string> varNameList = new List<string>();
                 
                 List<List<string>> collection = new List<List<string>>();
 
-                for (int i = 0; i < container.Count; i++)
+                var listVariableContext = context.listVariable();
+                do
                 {
-                    Tuple<string, string> variable = container.VariableList[i];
-                    List<string> constList = Globals.TermHandler.GetConstList(variable.Item2);
-                        //_typeConstantListMap[variable.Item2];
-                    collection.Add(constList);
-                }
+                    if (listVariableContext.VAR().Count != 0)
+                    {
+                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
+
+                        foreach (var varNode in listVariableContext.VAR())
+                        {
+                            string varName = varNode.GetText();
+                            varNameList.Add(varName);
+                            List<string> constList = Globals.TermHandler.GetConstList(type);
+                            collection.Add(constList);
+                        }
+                    }
+                    listVariableContext = listVariableContext.listVariable();
+                } while (listVariableContext != null);
 
                 if (context.FORALL() != null)
                 {
-                    List<List<string>> collection = null;
-                    result = ScanMixedRadix(CUDD.ONE, context.gd(0), gndPredDict, varNameList, collection, assignment,
+                    result = ScanMixedRadix(context.gd(0), gndPredDict, assignment, varNameList, collection, 0,
                         isPrevious);
                 }
                 else
                 {
-                    
+                    result = ScanMixedRadix(context.gd(0), gndPredDict, assignment, varNameList, collection, 0,
+                        isPrevious);
                 }
             }
 
             return result;
         }
 
-        private BuildContainer(Planning)
-
-        private CUDDNode ScanMixedRadix(CUDDNode initialNode, PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, Dictionary<string, string> assignment, bool isPrevious)
+        private CUDDNode ScanMixedRadix(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious)
         {
-            CUDDNode result = initialNode;
-
-            int count = collection.Count;
-            //string[] scanArray = new string[count];
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
-
-            do
+            CUDDNode result = CUDD.ONE;
+            if (currentLevel != varNameList.Count)
             {
-                Parallel.For(0, count, i =>
+                for (int i = 0; i < collection[currentLevel].Count; i++)
                 {
-                    string value = collection[i][index[i]];
-                    if (assignment.ContainsKey(varNameList[i]))
+                    string value = collection[currentLevel][i];
+                    string varName = varNameList[currentLevel];
+
+                    if (!assignment.ContainsKey(varName))
                     {
-                        assignment.Add(varNameList[i], value);
+                        assignment.Add(varName, value);
                     }
                     else
                     {
-                        assignment[varNameList[i]] = value;
+                        assignment[varName] = value;
                     }
-                });
-
-                CUDDNode gdNode = GetCuddNode(context, gndPredDict, assignment, isPrevious);
-                CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                CUDD.Ref(andNode);
-                CUDD.Deref(result);
-                CUDD.Deref(gdNode);
-                result = andNode;
-
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
+                    
+                    CUDDNode gdNode = ScanMixedRadix(context, gndPredDict, assignment, varNameList, collection, currentLevel + 1, isPrevious);
+                    if (gdNode.Equals(CUDD.ZERO))
                     {
-                        index[j] = 0;
-                        j--;
-                        continue;
+                        break;
                     }
-                    break;
+                    else
+                    {
+                        CUDDNode temp = result;
+                        result = CUDDFunction.
+                    }
                 }
-                if (j == -1)
-                    return result;
-                index[j]++;
-            } while (true);
+            }
+            else
+            {
+                result = GetCuddNode(context.gd(0), gndPredDict, assignment, isPrevious);
+            }
+            return result;
         }
 
-        //private void AddToGroundPredicateDict(string predName, string[] constantList)
-        //{
-        //    Predicate pred = _predDict[predName];
-        //    GroundPredicate gndPred = new GroundPredicate(pred, constantList);
-        //    gndPred.PreviousCuddIndex = _currentCuddIndex;
-        //    _currentCuddIndex++;
-        //    gndPred.SuccessiveCuddIndex = _currentCuddIndex;
-        //    _currentCuddIndex++;
-        //    _gndPredDict.Add(gndPred.ToString(), gndPred);
-        //}
+        private CUDDNode ScanMixedRadix2(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious)
+        {
+            CUDDNode result = null;
+            if (currentLevel != varNameList.Count)
+            {
+                for (int i = 0; i < collection[currentLevel].Count; i++)
+                {
+                    string value = collection[currentLevel][i];
+                    string varName = varNameList[currentLevel];
 
-        //protected AbstractPredicate GetAbstractPredicate(PlanningParser.TermAtomFormContext context)
-        //{
-        //    string abstractPredName = VariableContainer.GetFullName(context);
-        //    AbstractPredicate result = _abstractPredDict[abstractPredName];
-        //    return result;
-        //}
+                    if (!assignment.ContainsKey(varName))
+                    {
+                        assignment.Add(varName, value);
+                    }
+                    else
+                    {
+                        assignment[varName] = value;
+                    }
+
+                    result = ScanMixedRadix(context, gndPredDict, assignment, varNameList, collection, currentLevel + 1, isPrevious);
+                    if (result.Equals(CUDD.ONE))
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                result = GetCuddNode(context.gd(0), gndPredDict, assignment, isPrevious);
+            }
+            return result;
+        }
+
+        
 
         #endregion
 
