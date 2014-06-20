@@ -51,11 +51,9 @@ namespace Planning
             result.SetConstList(constArray);
             string eventName = context.eventSymbol().NAME().GetText();
             result.Name = GetFullName(eventName, result.ConstList);
-            result.GeneratePrecondition(context, gndPredDict);
+            result.GeneratePrecondition(context.emptyOrPreGD(), gndPredDict);
             return result;
         }
-
-        #region Methods for generating precondition
 
         private void SetConstList(string[] constArray)
         {
@@ -65,20 +63,23 @@ namespace Planning
             }
         }
 
-        protected void GeneratePrecondition(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
+        #region Methods for generating precondition
+
+        private void GeneratePrecondition(PlanningParser.EmptyOrPreGDContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
         {
             Precondition = CUDD.ONE;
 
-            if (context.PRE() != null)
+            if (context != null)
             {
-                if (context.emptyOrPreGD().gd() != null)
+                if (context.gd() != null)
                 {
                     Dictionary<string, string> assignment = new Dictionary<string, string>();
                     for (int i = 0; i < _constList.Count; i++)
                     {
                         assignment.Add(VariableList[i].Item1, _constList[i]);
                     }
-                    Precondition = GetCuddNode(context.emptyOrPreGD().gd(), gndPredDict, assignment);
+                    Precondition = GetCuddNode(context.gd(), gndPredDict, assignment);
                 }
             }
         }
@@ -268,6 +269,51 @@ namespace Planning
             {
                 result = GetCuddNode(context, gndPredDict, assignment, isPrevious);
             }
+            return result;
+        }
+
+        #endregion
+
+        #region Methods for generating effect
+
+        private void GenerateEffect(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        {
+            PlanningParser.EmptyOrEffectContext emptyOrEffectContext = context.actionDefBody().emptyOrEffect();
+            if (emptyOrEffectContext != null)
+            {
+                PlanningParser.EffectContext effectContext = emptyOrEffectContext.effect();
+                if (effectContext != null)
+                {
+                    foreach (var cEffectContext in effectContext.cEffect())
+                    {
+                        var condEffect = GetCondEffect(cEffectContext);
+                        _effect.Add(condEffect);
+                    }
+                }
+            }
+        }
+
+        private Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>> GetCondEffect(PlanningParser.CEffectContext context)
+        {
+            CUDDNode condition;
+            var abstractLiterals = new List<Tuple<AbstractPredicate, bool>>();
+            if (context.termLiteral() != null)
+            {
+                condition = CUDD.ONE;
+                var literal = GetAbstractLiteral(context.termLiteral());
+                abstractLiterals.Add(literal);
+            }
+            else
+            {
+                condition = GetCuddNode(context.gd());
+                foreach (var literalTermNode in context.condEffect().termLiteral())
+                {
+                    var literal = GetAbstractLiteral(literalTermNode);
+                    abstractLiterals.Add(literal);
+                }
+            }
+
+            var result = new Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>(condition, abstractLiterals);
             return result;
         }
 
