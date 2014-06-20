@@ -192,6 +192,7 @@ namespace Planning
                 }
                 else
                 {
+                    //Console.WriteLine("   name:{0}", name);
                     result = _numericConstValues[name].ToString();
                 }
             }
@@ -241,7 +242,7 @@ namespace Planning
 
         public List<string> GetConstList(string type)
         {
-            Console.WriteLine("Type: {0}", type);
+            //Console.WriteLine("Type: {0}", type);
             return _typeConstListMap[type];
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -96,9 +97,6 @@ namespace Planning
             {
                 string firstTermString = Globals.TermHandler.GetString(context.term(0), assignment);
                 string secondTermString = Globals.TermHandler.GetString(context.term(1), assignment);
-                //Console.WriteLine("FirstTermString:{0}, SecondTermString:{1}", firstTermString, secondTermString);
-                //int firstValue = int.Parse(firstTermString);
-                //int secondValue = int.Parse(secondTermString);
                 if (context.EQ() != null)
                 {
                     result = firstTermString == secondTermString ? CUDD.ONE : CUDD.ZERO;
@@ -136,7 +134,7 @@ namespace Planning
 
         private CUDDNode GetCuddNode(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, bool isPrevious = true)
         {
-            CUDDNode result = null;
+            CUDDNode result;
 
             if (context.termAtomForm() != null)
             {
@@ -211,22 +209,21 @@ namespace Planning
 
                 if (context.FORALL() != null)
                 {
-                    result = ScanMixedRadix(context.gd(0), gndPredDict, assignment, varNameList, collection, 0,
-                        isPrevious);
+                    result = ScanVarList(context.gd(0), gndPredDict, assignment, varNameList, collection, 0, isPrevious);
                 }
                 else
                 {
-                    result = ScanMixedRadix(context.gd(0), gndPredDict, assignment, varNameList, collection, 0,
-                        isPrevious);
+                    result = ScanVarList(context.gd(0), gndPredDict, assignment, varNameList, collection, 0, isPrevious,
+                        false);
                 }
             }
 
             return result;
         }
 
-        private CUDDNode ScanMixedRadix(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious)
+        private CUDDNode ScanVarList(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious, bool isForall = true)
         {
-            CUDDNode result = CUDD.ONE;
+            CUDDNode result = isForall ? CUDD.ONE : CUDD.ZERO;
             if (currentLevel != varNameList.Count)
             {
                 for (int i = 0; i < collection[currentLevel].Count; i++)
@@ -242,60 +239,37 @@ namespace Planning
                     {
                         assignment[varName] = value;
                     }
-                    
-                    CUDDNode gdNode = ScanMixedRadix(context, gndPredDict, assignment, varNameList, collection, currentLevel + 1, isPrevious);
-                    if (gdNode.Equals(CUDD.ZERO))
-                    {
-                        break;
-                    }
-                    else
+
+                    CUDDNode gdNode = ScanVarList(context, gndPredDict, assignment, varNameList, collection,
+                        currentLevel + 1, isPrevious, isForall);
+
+                    CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
+                    if (!gdNode.Equals(invalidNode))
                     {
                         CUDDNode temp = result;
-                        result = CUDDFunction.
-                    }
-                }
-            }
-            else
-            {
-                result = GetCuddNode(context.gd(0), gndPredDict, assignment, isPrevious);
-            }
-            return result;
-        }
 
-        private CUDDNode ScanMixedRadix2(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious)
-        {
-            CUDDNode result = null;
-            if (currentLevel != varNameList.Count)
-            {
-                for (int i = 0; i < collection[currentLevel].Count; i++)
-                {
-                    string value = collection[currentLevel][i];
-                    string varName = varNameList[currentLevel];
-
-                    if (!assignment.ContainsKey(varName))
-                    {
-                        assignment.Add(varName, value);
-                    }
-                    else
-                    {
-                        assignment[varName] = value;
+                        result = isForall ? CUDD.Function.And(temp, gdNode) : CUDD.Function.Or(temp, gdNode);
+          
+                        CUDD.Ref(result);
+                        CUDD.Deref(temp);
+                        CUDD.Deref(gdNode);
                     }
 
-                    result = ScanMixedRadix(context, gndPredDict, assignment, varNameList, collection, currentLevel + 1, isPrevious);
-                    if (result.Equals(CUDD.ONE))
+                    CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
+                    if (gdNode.Equals(terminalNode))
                     {
+                        CUDD.Deref(result);
+                        result = CUDD.ZERO;
                         break;
                     }
                 }
             }
             else
             {
-                result = GetCuddNode(context.gd(0), gndPredDict, assignment, isPrevious);
+                result = GetCuddNode(context, gndPredDict, assignment, isPrevious);
             }
             return result;
         }
-
-        
 
         #endregion
 

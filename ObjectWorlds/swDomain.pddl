@@ -40,8 +40,8 @@
 
 (:event rightSucWithNotice
 :parameters (?i - agent ?d - rightRelLoc)
-:precondition (exists (?x - point ?y - point) 
-                      (and (loc ?i ?x) (loc j ?y) (= ?x (+ ?y ?d)) (!= ?x maxLoc))
+:precondition (exists (?x - point ?y - point ?j - agent) 
+                      (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (= ?x (+ ?y ?d)) (!= ?x maxLoc))
 			  )
 :effect (forall (?x - point)
                (when (and (loc ?i ?x) (!= ?x maxLoc)) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
@@ -65,7 +65,7 @@
 
 (:event pickSuc
 :parameters (?i - agent)
-:precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i))))
+:precondition (exists (?x - point ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i)) (> ?n 0)))
 :effect (forall (?x - point ?n - numOfAcorn)
                 (when (and (loc ?i ?x) (acorn ?x ?n) (!= ?n 0)) (and (acorn ?x (- ?n 1)) (not (acorn ?x ?n)) (hold ?i))))
 )
@@ -77,7 +77,7 @@
 
 (:event dropSuc
 :parameters (?i - agent)
-:precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i))))
+:precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i)) (< ?n maxAcorn)))
 :effect (forall (?x - point ?n - numOfAcorn) 
                 (when (and (loc ?i ?x) (acorn ?x ?n) (!= ?n maxAcorn)) (and (acorn ?x (+ ?n 1)) (not (acorn ?x ?n)) (not (hold ?i)))))
 )
