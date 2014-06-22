@@ -38,7 +38,7 @@ eventSymbol: NAME;
 
 responseDefine: LB COLON RESP responseSymbol
                    (COLON PARM LB listVariable RB)?
-                   COLON EVTS gdEvent
+                   COLON EVTS eventModel
                 RB;
 responseSymbol: NAME;
 
@@ -88,11 +88,17 @@ termLiteral: termAtomForm | LB NOT termAtomForm RB;
 
 gdEvent: eventFormulaTerm
        | LB NOT gdEvent RB
-	   //| LB AND gdEvent+ RB
+	   | LB AND gdEvent+ RB
 	   | LB OR gdEvent+ RB
-	   | LB EXISTS LB listVariable RB gdEvent RB;
-	   //| LB FORALL LB listVariable RB gdEvent RB;
-eventFormulaTerm: LB eventSymbol term* RB;
+	   | LB EXISTS LB listVariable RB gdEvent RB
+	   | LB FORALL LB listVariable RB gdEvent RB;
+eventFormulaTerm: LB eventSymbol term* RB
+                | LB EQ term term RB
+                | LB NEQ term term RB
+     			| LB LT term term RB 
+				| LB LEQ term term RB
+				| LB GT term term RB
+				| LB GEQ term term RB;
 
 constTerm: NAME
          | INTEGER

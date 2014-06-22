@@ -159,7 +159,10 @@
 
 (:response noise
 :parameters (?m - numOfAcorn)
-:events (exists (?d - noiseSensingAcorn) (learn ?i ?m ?d)))
+:events ((0 (learn ?i ?m 0)) 
+         (1 (exists (?d - noiseSensingAcorn) (and (!= ?d 0) (learn ?i ?m ?d))))
+		)
+)
 )
 
 
@@ -217,12 +220,16 @@
 
 (:observation otherPickSucOrFail
 :precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
-:events ((0 (pickSuc other)) (1 (pickFail other)))
+:events ((0 (pickSuc other)) 
+         (1 (pickFail other))
+		)
 )
 
 (:observation otherDropSucOrFail
 :precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
-:events ((0 (dropSuc other)) (1 (dropFail other)))
+:events ((0 (dropSuc other)) 
+         (1 (dropFail other)))
+		)
 )
 
 (:observation otherSmell
