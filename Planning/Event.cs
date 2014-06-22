@@ -15,20 +15,27 @@ namespace Planning
 
         private List<string> _constList;
 
-        private List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> _effect;
+        private List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>> _condEffect;
+
+        private Dictionary<string, string> _assignment;
 
         #endregion
 
         #region Properties
-        
+
         public CUDDNode Precondition { get; set; }
 
-        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>> Effect
+        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>> CondEffect
         {
-            get { return _effect; }
+            get { return _condEffect; }
         }
 
-        public IReadOnlyList<string> ConstList { get { return _constList; } }
+        public IReadOnlyList<string> ConstList
+        {
+            get { return _constList; }
+        }
+
+        public CUDDNode SuccessorStateAxiom { get; set; }
 
         #endregion
 
@@ -37,29 +44,39 @@ namespace Planning
         private Event()
         {
             _constList = new List<string>();
-            _effect = new List<Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>>();
+            _condEffect = new List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>>();
         }
 
         #endregion
 
         #region Methods
 
-        public static Event From(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, string[] constArray)
+        public static Event From(PlanningParser.EventDefineContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict, string[] constArray)
         {
             Event result = new Event();
             result.GenerateVariableList(context.listVariable());
             result.SetConstList(constArray);
+            result.BuildAssignment();
             string eventName = context.eventSymbol().NAME().GetText();
             result.Name = GetFullName(eventName, result.ConstList);
             result.GeneratePrecondition(context.emptyOrPreGD(), gndPredDict);
+            result.GenerateEffect(context.emptyOrEffect(), gndPredDict);
+            result.GenerateSuccessorStateAxiom(gndPredDict);
             return result;
         }
 
         private void SetConstList(string[] constArray)
         {
-            for (int i = 0; i < constArray.Length; i++)
+            _constList.AddRange(constArray);
+        }
+
+        private void BuildAssignment()
+        {
+            _assignment = new Dictionary<string, string>();
+            for (int i = 0; i < _constList.Count; i++)
             {
-                _constList.Add(constArray[i]);
+                _assignment.Add(VariableList[i].Item1, _constList[i]);
             }
         }
 
@@ -72,19 +89,17 @@ namespace Planning
 
             if (context != null)
             {
+                PlanningParser.GdContext gdContext = context.gd();
                 if (context.gd() != null)
                 {
-                    Dictionary<string, string> assignment = new Dictionary<string, string>();
-                    for (int i = 0; i < _constList.Count; i++)
-                    {
-                        assignment.Add(VariableList[i].Item1, _constList[i]);
-                    }
-                    Precondition = GetCuddNode(context.gd(), gndPredDict, assignment);
+                    Precondition = GetCuddNode(gdContext, gndPredDict, _assignment);
                 }
             }
         }
 
-        private CUDDNode GetCuddNode(PlanningParser.TermAtomFormContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, bool isPrevious = true)
+        private CUDDNode GetCuddNode(PlanningParser.TermAtomFormContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment,
+            bool isPrevious = true)
         {
             CUDDNode result = CUDD.ONE;
             if (context.pred() != null)
@@ -94,7 +109,7 @@ namespace Planning
                 int cuddIndex = isPrevious ? gndPred.PreviousCuddIndex : gndPred.SuccessiveCuddIndex;
                 result = CUDD.Var(cuddIndex);
             }
-            else 
+            else
             {
                 string firstTermString = Globals.TermHandler.GetString(context.term(0), assignment);
                 string secondTermString = Globals.TermHandler.GetString(context.term(1), assignment);
@@ -133,10 +148,14 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode GetCuddNode(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, bool isPrevious = true)
+        private CUDDNode GetCuddNode(PlanningParser.GdContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment,
+            bool isPrevious = true)
         {
             CUDDNode result;
 
+            //Console.WriteLine("  context is null:{0}", context == null);
+            //Console.WriteLine("  Context:{0}", context.GetText());
             if (context.termAtomForm() != null)
             {
                 result = GetCuddNode(context.termAtomForm(), gndPredDict, assignment, isPrevious);
@@ -187,7 +206,7 @@ namespace Planning
             else
             {
                 List<string> varNameList = new List<string>();
-                
+
                 List<List<string>> collection = new List<List<string>>();
 
                 var listVariableContext = context.listVariable();
@@ -195,7 +214,9 @@ namespace Planning
                 {
                     if (listVariableContext.VAR().Count != 0)
                     {
-                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
+                        string type = listVariableContext.type() == null
+                            ? PlanningType.ObjectType.Name
+                            : listVariableContext.type().GetText();
 
                         foreach (var varNode in listVariableContext.VAR())
                         {
@@ -222,7 +243,10 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode ScanVarList(PlanningParser.GdContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment, IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious, bool isForall = true)
+        private CUDDNode ScanVarList(PlanningParser.GdContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict, Dictionary<string, string> assignment,
+            IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, int currentLevel, bool isPrevious,
+            bool isForall = true)
         {
             CUDDNode result = isForall ? CUDD.ONE : CUDD.ZERO;
             if (currentLevel != varNameList.Count)
@@ -250,7 +274,7 @@ namespace Planning
                         CUDDNode temp = result;
 
                         result = isForall ? CUDD.Function.And(temp, gdNode) : CUDD.Function.Or(temp, gdNode);
-          
+
                         CUDD.Ref(result);
                         CUDD.Deref(temp);
                         CUDD.Deref(gdNode);
@@ -276,44 +300,297 @@ namespace Planning
 
         #region Methods for generating effect
 
-        private void GenerateEffect(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Predicate> predDict)
+        private void GenerateEffect(PlanningParser.EmptyOrEffectContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
         {
-            PlanningParser.EmptyOrEffectContext emptyOrEffectContext = context.actionDefBody().emptyOrEffect();
-            if (emptyOrEffectContext != null)
+            _condEffect = new List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>>();
+            if (context != null)
             {
-                PlanningParser.EffectContext effectContext = emptyOrEffectContext.effect();
+                PlanningParser.EffectContext effectContext = context.effect();
                 if (effectContext != null)
                 {
                     foreach (var cEffectContext in effectContext.cEffect())
                     {
-                        var condEffect = GetCondEffect(cEffectContext);
-                        _effect.Add(condEffect);
+                        var condEffect = GetCondEffectList(CUDD.ONE, cEffectContext, gndPredDict, _assignment);
+                        _condEffect.AddRange(condEffect);
                     }
                 }
             }
         }
 
-        private Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>> GetCondEffect(PlanningParser.CEffectContext context)
+        private List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>> GetCondEffectList(CUDDNode currentCondNode,
+            PlanningParser.EffectContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict,
+            Dictionary<string, string> assignment)
         {
-            CUDDNode condition;
-            var abstractLiterals = new List<Tuple<AbstractPredicate, bool>>();
-            if (context.termLiteral() != null)
+            var result = new List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>>();
+
+            foreach (var cEffectContext in context.cEffect())
             {
-                condition = CUDD.ONE;
-                var literal = GetAbstractLiteral(context.termLiteral());
-                abstractLiterals.Add(literal);
+                var condEffect = GetCondEffectList(currentCondNode, cEffectContext, gndPredDict, assignment);
+                result.AddRange(condEffect);
+            }
+
+            return result;
+        }
+
+        private List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>> GetCondEffectList(CUDDNode currentCondNode,
+            PlanningParser.CEffectContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict,
+            Dictionary<string, string> assignment)
+        {
+            List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>> result;
+            if (context.FORALL() != null)
+            {
+                List<string> varNameList = new List<string>();
+
+                List<List<string>> collection = new List<List<string>>();
+
+                var listVariableContext = context.listVariable();
+                do
+                {
+                    if (listVariableContext.VAR().Count != 0)
+                    {
+                        string type = listVariableContext.type() == null
+                            ? PlanningType.ObjectType.Name
+                            : listVariableContext.type().GetText();
+
+                        foreach (var varNode in listVariableContext.VAR())
+                        {
+                            string varName = varNode.GetText();
+                            varNameList.Add(varName);
+                            List<string> constList = Globals.TermHandler.GetConstList(type);
+                            collection.Add(constList);
+                        }
+                    }
+                    listVariableContext = listVariableContext.listVariable();
+                } while (listVariableContext != null);
+                result = ScanMixedRadix(currentCondNode, context.effect(), gndPredDict, assignment, varNameList,
+                    collection);
+            }
+            else if (context.WHEN() != null)
+            {
+                result = new List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>>();
+                CUDDNode gdNode = GetCuddNode(context.gd(), gndPredDict, assignment);
+                CUDDNode condNode = CUDD.Function.And(currentCondNode, gdNode);
+                if (!condNode.Equals(CUDD.ZERO))
+                {
+                    //Console.WriteLine("  condition context:{0}", context.gd().GetText());
+                    //Console.WriteLine("  condition Node:");
+                    //CUDD.Print.PrintMinterm(condNode);
+
+                    var gndLiterals = GetGroundLiteral(context.condEffect(), gndPredDict);
+                    var condEffect = new Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>(condNode, gndLiterals);
+                    result.Add(condEffect);
+                }
             }
             else
             {
-                condition = GetCuddNode(context.gd());
-                foreach (var literalTermNode in context.condEffect().termLiteral())
+                result = new List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>>();
+                var gndLiterals = GetGroundLiteral(context.condEffect(), gndPredDict);
+                var condEffect = new Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>(currentCondNode, gndLiterals);
+                result.Add(condEffect);
+            }
+            return result;
+        }
+
+        private List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>> ScanMixedRadix(CUDDNode currentCondNode,
+            PlanningParser.EffectContext context, IReadOnlyDictionary<string, GroundPredicate> gndPredDict,
+            Dictionary<string, string> assignment, IReadOnlyList<string> varNameList,
+            IReadOnlyList<List<string>> collection)
+        {
+            var result = new List<Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>>();
+            int count = collection.Count;
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+
+            do
+            {
+                for (int i = 0; i < count; i++)
                 {
-                    var literal = GetAbstractLiteral(literalTermNode);
-                    abstractLiterals.Add(literal);
+                    string value = collection[i][index[i]];
+                    string varName = varNameList[i];
+                    if (!assignment.ContainsKey(varName))
+                    {
+                        assignment.Add(varName, value);
+                    }
+                    else
+                    {
+                        assignment[varName] = value;
+                    }
                 }
+
+                var condEffectList = GetCondEffectList(currentCondNode, context, gndPredDict, assignment);
+                result.AddRange(condEffectList);
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+                if (j == -1)
+                    return result;
+                index[j]++;
+            } while (true);
+        }
+
+        private List<Tuple<GroundPredicate, bool>> GetGroundLiteral(PlanningParser.CondEffectContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
+        {
+            List<Tuple<GroundPredicate, bool>> result =
+                new List<Tuple<GroundPredicate, bool>>(context.termLiteral().Count);
+            foreach (var termLiteralContext in context.termLiteral())
+            {
+                var gndLiteral = GetGroundLiteral(termLiteralContext, gndPredDict);
+                result.Add(gndLiteral);
             }
 
-            var result = new Tuple<CUDDNode, List<Tuple<AbstractPredicate, bool>>>(condition, abstractLiterals);
+            //if (Name == "leftSucWithNotice(a1,0)")
+            //{
+            //    foreach (var tuple in result)
+            //    {
+            //        Console.WriteLine("   GroundLiteral:{0}, value:{1}", tuple.Item1, tuple.Item2);                    
+            //    }
+            //}
+            return result;
+        }
+
+        private Tuple<GroundPredicate, bool> GetGroundLiteral(PlanningParser.TermLiteralContext context,
+            IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
+        {
+            string predFullName = GetFullName(context.termAtomForm(), _assignment);
+            //Console.WriteLine("  Context termAtomForm:{0}", context.termAtomForm().GetText());
+            //Console.WriteLine("  Pred name:{0}", predFullName);
+
+            GroundPredicate gndPred = gndPredDict[predFullName];
+            bool isPositive = context.NOT() == null;
+
+            //if (Name == "leftSucWithNotice(a1,0)")
+            //{
+            //    Console.WriteLine(" GroundLiteral:{0}, value:{1}", gndPred, isPositive);
+            //}
+            return new Tuple<GroundPredicate, bool>(gndPred, isPositive);
+        }
+
+        #endregion
+
+        #region Methods for generating successor state axiom
+
+        private void GenerateSuccessorStateAxiom(IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
+        {
+            CUDDNode effectNode = CUDD.ONE;
+            foreach (var cEffect in CondEffect)
+            {
+                CUDDNode intermediateNode = effectNode;
+                CUDDNode cEffectNode = GetEffectNode(cEffect);
+                //Console.WriteLine("Action:{0}    cEffect:", Name);
+                //CUDD.Print.PrintMinterm(cEffectNode);
+                effectNode = CUDD.Function.And(intermediateNode, cEffectNode);
+                CUDD.Ref(effectNode);
+                CUDD.Deref(intermediateNode);
+                CUDD.Deref(cEffectNode);
+            }
+
+            CUDDNode frame = GetFrameNode(gndPredDict);
+
+            //Console.WriteLine(Name);
+            //Console.WriteLine("       CondEffect:");
+            //CUDD.Print.PrintMinterm(effectNode);
+
+            //Console.WriteLine("       Frame:");
+            //CUDD.Print.PrintMinterm(frame);
+
+            SuccessorStateAxiom = CUDD.Function.And(effectNode, frame);
+            //Console.WriteLine("       Successor state axiom:");
+            //CUDD.Print.PrintMinterm(SuccessorStateAxiom);
+
+            CUDD.Ref(SuccessorStateAxiom);
+            CUDD.Deref(effectNode);
+            CUDD.Deref(frame);
+        }
+
+        private CUDDNode GetEffectNode(Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>> cEffect)
+        {
+            CUDDNode effect = CUDD.ONE;
+
+            foreach (var literal in cEffect.Item2)
+            {
+                CUDDNode intermediate = effect;
+                CUDDNode gndPred = CUDD.Var(literal.Item1.SuccessiveCuddIndex);
+                CUDDNode literalNode = literal.Item2 ? gndPred : CUDD.Function.Not(gndPred);
+                effect = CUDD.Function.And(intermediate, literalNode);
+                CUDD.Ref(effect);
+                CUDD.Deref(intermediate);
+            }
+
+            //Console.WriteLine("    Condition:");
+            //CUDD.Print.PrintMinterm(cEffect.Item1);
+            //Console.WriteLine("    CondEffect:");
+            //CUDD.Print.PrintMinterm(effect);
+
+            CUDDNode result = CUDD.Function.Implies(cEffect.Item1, effect);
+            CUDD.Ref(result);
+            CUDD.Deref(effect);
+
+            return result;
+        }
+
+        private CUDDNode GetFrameNode(IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
+        {
+            CUDDNode result = CUDD.ONE;
+            //Console.WriteLine("    Previous abstract predicate count:{0}", _preAbstractPredDict.Count);
+            foreach (var gndPredPair in gndPredDict)
+            {
+                CUDDNode frameCondition = CUDD.ONE;
+                foreach (var cEffect in CondEffect)
+                {
+                    //Console.Write("    Literals:");
+                    //for (int i = 0; i < cEffect.Item2.Count; i++)
+                    //{
+                    //    Console.Write("{0}, ", cEffect.Item2[i].Item1);
+                    //}
+                    //Console.WriteLine();
+                    //Console.WriteLine("    Abstract predicate:{0}", abstractPredicate.Key);
+                    //Console.WriteLine(cEffect.Item2.Exists(literal => literal.Item1.Equals(abstractPredicate.Value)));
+
+                    if (cEffect.Item2.Exists(literal => literal.Item1.Equals(gndPredPair.Value)))
+                    {
+                        CUDDNode intermediate = frameCondition;
+                        CUDDNode negCondition = CUDD.Function.Not(cEffect.Item1);
+                        CUDD.Ref(negCondition);
+                        frameCondition = CUDD.Function.And(intermediate, negCondition);
+                        CUDD.Ref(frameCondition);
+                        CUDD.Deref(intermediate);
+                        CUDD.Deref(negCondition);
+                    }
+                }
+
+                CUDDNode preAbstractPredNode = CUDD.Var(gndPredPair.Value.PreviousCuddIndex);
+                CUDDNode sucAbstractPredNode = CUDD.Var(gndPredPair.Value.SuccessiveCuddIndex);
+
+                CUDDNode invariant = CUDD.Function.Equal(preAbstractPredNode, sucAbstractPredNode);
+
+                //Console.WriteLine("       Frame condition:");
+                //CUDD.Print.PrintMinterm(frameCondition);
+                //Console.WriteLine("       Invariant:");
+                //CUDD.Print.PrintMinterm(invariant);
+                CUDD.Ref(invariant);
+                CUDDNode frame = CUDD.Function.Implies(frameCondition, invariant);
+                CUDD.Ref(frame);
+                CUDD.Deref(frameCondition);
+                CUDD.Deref(invariant);
+
+                CUDDNode conjunct = result;
+                result = CUDD.Function.And(conjunct, frame);
+                CUDD.Ref(result);
+                CUDD.Deref(conjunct);
+            }
+
             return result;
         }
 

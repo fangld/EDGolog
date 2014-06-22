@@ -54,7 +54,7 @@
                       (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (!= ?x maxLoc) (forall (?r - rightRelLoc) (!= ?x (+ ?y ?r))))
 			  )
 :effect (forall (?x - point)
-               (when (and (loc ?i ?x) (!= ?x maxLoc)) (and (loc ?i (- ?x 1)) (not (loc ?i ?x))))
+               (when (and (loc ?i ?x) (!= ?x maxLoc)) (and (loc ?i (+ ?x 1)) (not (loc ?i ?x))))
 		)
 )
 
@@ -99,64 +99,76 @@
 
 
 
-(:action left 
+(:action left
+:parameters (?i - agent)
+
 (:response sucWithNotice
 :parameters (?d - leftRelLoc)
-:events (leftSucWithNotice self ?d))
+:events (leftSucWithNotice ?i ?d))
 
 (:response sucWithoutNotice
-:events (leftSucWithoutNotice self))
+:events (leftSucWithoutNotice ?i))
 
 (:response fail
-:events (leftFail self))
+:events (leftFail ?i))
 )
 
 
 
-(:action right 
+(:action right
+:parameters (?i - agent)
+
 (:response sucWithNotice
 :parameters (?d - rightRelLoc)
-:events (rightSucWithNotice self ?d))
+:events (rightSucWithNotice ?i ?d))
 
 (:response sucWithoutNotice
-:events (rightSucWithoutNotice self))
+:events (rightSucWithoutNotice ?i))
 
 (:response fail
-:events (leftFail self))
+:events (leftFail ?i))
 )
 
 
 
 (:action pick
+:parameters (?i - agent)
+
 (:response suc
-:events (pickSuc self))
+:events (pickSuc ?i))
 
 (:response fail
-:events (pickFail self))
+:events (pickFail ?i))
 )
 
 
 
 (:action drop
+:parameters (?i - agent)
+
 (:response suc
-:events (dropSuc self))
+:events (dropSuc ?i))
 
 (:response fail
-:events (dropFail self))
+:events (dropFail ?i))
 )
 
 
 (:action smell
+:parameters (?i - agent)
+
 (:response noise
 :parameters (?m - numOfAcorn)
-:events (exists (?d - noiseSensingAcorn) (learn self ?m ?d)))
+:events (exists (?d - noiseSensingAcorn) (learn ?i ?m ?d)))
 )
 
 
 
-(:action empty 
+(:action empty
+:parameters (?i - agent)
+
 (:response suc
-:events (nil self))
+:events (nil ?i))
 )
 
 

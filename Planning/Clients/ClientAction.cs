@@ -136,7 +136,7 @@
 //        private void GenerateSuccessorStateAxiom()
 //        {
 //            CUDDNode effectNode = CUDD.ONE;
-//            foreach (var cEffect in Effect)
+//            foreach (var cEffect in CondEffect)
 //            {
 //                CUDDNode intermediateNode = effectNode;
 //                CUDDNode cEffectNode = GetEffectNode(cEffect);
@@ -151,7 +151,7 @@
 //            CUDDNode frame = GetFrameNode();
 
 //            //Console.WriteLine(Name);
-//            //Console.WriteLine("       Effect:");
+//            //Console.WriteLine("       CondEffect:");
 //            //CUDD.Print.PrintMinterm(effectNode);
 
 //            //Console.WriteLine("       Frame:");
@@ -173,7 +173,7 @@
 //            foreach (var abstractPredPair in _abstractPredDict)
 //            {
 //                CUDDNode frameCondition = CUDD.ONE;
-//                foreach (var cEffect in Effect)
+//                foreach (var cEffect in CondEffect)
 //                {
 //                    //Console.Write("    Literals:");
 //                    //for (int i = 0; i < cEffect.Item2.Count; i++)
@@ -236,7 +236,7 @@
 
 //            //Console.WriteLine("    Condition:");
 //            //CUDD.Print.PrintMinterm(cEffect.Item1);
-//            //Console.WriteLine("    Effect:");
+//            //Console.WriteLine("    CondEffect:");
 //            //CUDD.Print.PrintMinterm(effect);
 
 //            CUDDNode result = CUDD.Function.Implies(cEffect.Item1, effect);

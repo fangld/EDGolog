@@ -17,7 +17,7 @@
 
 //        #region Properties
 
-//        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>> Effect
+//        public IReadOnlyList<Tuple<CUDDNode, List<Tuple<Ground<Predicate>, bool>>>> CondEffect
 //        {
 //            get { return _effect; }
 //        }
@@ -71,7 +71,7 @@
 //                newVars.AddVar(CUDD.Var(gndPred.CuddIndexList[0]));
 //            }
 
-//            foreach (var cEffect in Container.Effect)
+//            foreach (var cEffect in Container.CondEffect)
 //            {
 //                CUDDNode abstractCondition = cEffect.Item1;
 //                CUDDNode gndCondition = CUDD.Variable.SwapVariables(abstractCondition, oldVars, newVars);

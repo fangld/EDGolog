@@ -407,11 +407,12 @@ namespace Planning.Servers
                 //"leftFail(a1)",
                 //"rightSucWithNotice(a2,-2)",
                 "leftSucWithNotice(a1,0)",
-                //"leftSucWithoutNotice(a1)"//,
+                //"leftSucWithoutNotice(a1)",
                 //"leftSucWithoutNotice(a2)",
                 //"rightSucWithoutNotice(a1)",
                 //"rightSucWithoutNotice(a2)",
                 //"dropFail(a1)",
+                //"dropSuc(a1)",
                 //"pickSuc(a2)",
                 //"learn(a1,1,-1)",
                 //"learn(a1,1,0)"
@@ -423,54 +424,34 @@ namespace Planning.Servers
 
             for (int i = 0; i < eventNameArray.Count; i++)
             {
+                string eventName = eventNameArray[i];
+                Event e = _eventDict[eventName];
                 Console.WriteLine("  Name: {0}", eventNameArray[i]);
                 Console.WriteLine("  Precondition:");
-                CUDD.Print.PrintMinterm(_eventDict[eventNameArray[i]].Precondition);
+                CUDD.Print.PrintMinterm(e.Precondition);
+
+                Console.WriteLine("  CondEffect:");
+                //Console.WriteLine("  Count:{0}", e.CondEffect.Count);
+                for (int j = 0; j < e.CondEffect.Count; j++)
+                {
+                    Console.WriteLine("    Index: {0}", j);
+                    Console.WriteLine("    Condition:");
+                    CUDD.Print.PrintMinterm(e.CondEffect[j].Item1);
+                    Console.Write("    Literals: ");
+
+                    foreach (var literal in e.CondEffect[j].Item2)
+                    {
+                        string format = literal.Item2 ? "{0} " : "!{0} ";
+                        Console.Write(format, literal.Item1);
+                    }
+
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine("  Successor state axiom:");
+                CUDD.Print.PrintMinterm(e.Precondition);
+
             }
-            //foreach (var gndEvent in _eventDict.Values)
-            //{
-            //    if (eventNameArray.Contains(gndEvent.Name))
-            //    {
-            //        Console.WriteLine("  Name: {0}", gndEvent.Name);
-            //        Console.WriteLine("  Precondition:");
-            //        CUDD.Print.PrintMinterm(gndEvent.Precondition);
-            //    }
-            //    //Console.WriteLine("  Precondition:");
-            //    //CUDD.Print.PrintMinterm(gndAction.Precondition);
-
-            //    //Console.WriteLine("  Effect:");
-            //    //for (int i = 0; i < gndAction.Effect.Count; i++)
-            //    //{
-            //    //    Console.WriteLine("    Index: {0}", i);
-            //    //    Console.WriteLine("    Condition:");
-            //    //    CUDD.Print.PrintMinterm(gndAction.Effect[i].Item1);
-
-            //    //    Console.Write("    Literals: { ");
-            //    //    var literal = gndAction.Effect[i].Item2[0];
-            //    //    if (literal.Item2)
-            //    //    {
-            //    //        Console.Write("{0}", literal.Item1);
-            //    //    }
-            //    //    else
-            //    //    {
-            //    //        Console.Write("not {0}", literal.Item1);
-            //    //    }
-
-            //    //    for (int j = 1; j < gndAction.Effect[i].Item2.Count; j++)
-            //    //    {
-            //    //        if (literal.Item2)
-            //    //        {
-            //    //            Console.Write(", {0}", literal.Item1);
-            //    //        }
-            //    //        else
-            //    //        {
-            //    //            Console.Write(", not {0}", literal.Item1);
-            //    //        }
-            //    //    }
-
-            //    //    Console.WriteLine(" }");
-            //    //}
-            //}
         }
 
         #endregion

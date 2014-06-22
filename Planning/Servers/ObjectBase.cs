@@ -92,7 +92,7 @@
 //        private List<Tuple<Ground<Predicate>, bool>> GenerateLiteralList(CUDDNode node, ServerGroundAction gndAction)
 //        {
 //            List<Tuple<Ground<Predicate>, bool>> result = new List<Tuple<Ground<Predicate>, bool>>();
-//            foreach (var cEffect in gndAction.Effect)
+//            foreach (var cEffect in gndAction.CondEffect)
 //            {
 //                CUDDNode impliesNode = CUDD.Function.Implies(node, cEffect.Item1);
 //                if (impliesNode.GetValue() > 0.5)
