@@ -448,8 +448,8 @@ namespace Planning.Servers
                     Console.WriteLine();
                 }
 
-                Console.WriteLine("  Successor state axiom:");
-                CUDD.Print.PrintMinterm(e.Precondition);
+                //Console.WriteLine("  Successor state axiom:");
+                //CUDD.Print.PrintMinterm(e.SuccessorStateAxiom);
 
             }
         }
