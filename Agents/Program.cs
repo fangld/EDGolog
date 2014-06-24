@@ -10,7 +10,6 @@ using LanguageRecognition;
 using Agents.HighLevelPrograms;
 using PAT.Common.Classes.CUDDLib;
 using Planning;
-using Planning.Clients;
 
 namespace Agents
 {

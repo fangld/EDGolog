@@ -484,18 +484,6 @@ namespace Planning
         private void GenerateSuccessorStateAxiom(IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
         {
             CUDDNode effectNode = GetEffectNode();
-            //foreach (var cEffect in _condEffect)
-            //{
-            //    CUDDNode intermediateNode = effectNode;
-            //    CUDDNode cEffectNode = GetEffectNode(cEffect);
-            //    //Console.WriteLine("Action:{0}    cEffect:", Name);
-            //    //CUDD.Print.PrintMinterm(cEffectNode);
-            //    effectNode = CUDD.Function.And(intermediateNode, cEffectNode);
-            //    CUDD.Ref(effectNode);
-            //    CUDD.Deref(intermediateNode);
-            //    CUDD.Deref(cEffectNode);
-            //}
-
             CUDDNode frame = GetFrameNode(gndPredDict);
 
             if (Name == "leftSucWithNotice(a1,0)")
@@ -527,9 +515,7 @@ namespace Planning
 
                 CUDDNode gndPred = CUDD.Var(firstLiteral.Item1.SuccessiveCuddIndex);
                 CUDDNode literalsNode = firstLiteral.Item2 ? gndPred : CUDD.Function.Not(gndPred);
-
                 
-
                 for (int i = 1; i < cEffect.Item2.Count; i++)
                 {
                     var literal = cEffect.Item2[i];
@@ -569,7 +555,6 @@ namespace Planning
                 CUDD.Ref(result);
                 CUDD.Deref(conjCEffectNode);
             }
-            
 
             return result;
         }

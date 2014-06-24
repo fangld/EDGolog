@@ -22,19 +22,21 @@ namespace ObjectWorlds
 
         public static void Main(string[] args)
         {
-            string domainFileName, problemFileName;
-            if (args.Length == 3)
-            {
-                domainFileName = args[1];
-                problemFileName = args[2];
-            }
-            else
-            {
-                domainFileName = "swDomain.pddl";
-                problemFileName = "swServerProblem.pddl";
-            }
+            //string domainFileName, problemFileName;
+            //if (args.Length == 3)
+            //{
+            //    domainFileName = args[1];
+            //    problemFileName = args[2];
+            //}
+            //else
+            //{
+            //    domainFileName = "swDomain.pddl";
+            //    problemFileName = "swServerProblem.pddl";
+            //}
 
-            Test1(domainFileName, problemFileName);
+            //Test1(domainFileName, problemFileName);
+
+            Test2();
             Console.ReadLine();
         }
 
@@ -180,29 +182,40 @@ namespace ObjectWorlds
 
             CUDDNode x0 = CUDD.Var(0);
             CUDDNode x1 = CUDD.Var(1);
+            CUDDNode x2 = CUDD.Var(2);
 
-            CUDDNode xor = CUDD.Function.Xor(x0, x1);
-            CUDD.Ref(xor);
+            CUDDNode effect = CUDD.Function.Implies(x2, x1);
+            CUDDNode frame = CUDD.Function.Implies(CUDD.Function.Not(x2), CUDD.Function.Equal(x0, x1));
+            CUDDNode firstSsa = CUDD.Function.And(effect, frame);
 
-            CUDDNode and1 = CUDD.Function.And(x0, CUDD.Function.Not(x1));
-            CUDD.Ref(and1);
-            CUDDNode and2 = CUDD.Function.And(x0, x1);
-            CUDD.Ref(and2);
-            CUDDNode sum = CUDD.Function.Or(and1, and2);
-            CUDD.Ref(sum);
-            CUDD.Deref(and1);
-            CUDD.Deref(and2);
+            CUDDNode secondSsa = CUDD.Function.Equal(x1, CUDD.Function.Or(x2, x0));
 
-            CUDDNode and = CUDD.Function.And(x0, CUDD.Function.Not(x0));
-            CUDD.Ref(and);
+            CUDD.Print.PrintMinterm(firstSsa);
+            CUDD.Print.PrintMinterm(secondSsa);
 
-            CUDDNode or = CUDD.Function.Or(x0, CUDD.Function.Not(x0));
-            CUDD.Ref(or);
 
-            //CUDDNode node = CUDD.Function.Equal(and, CUDD.ZERO);
-            CUDDNode node = CUDD.Function.Equal(or, CUDD.ZERO);
+            //CUDDNode xor = CUDD.Function.Xor(x0, x1);
+            //CUDD.Ref(xor);
 
-            Console.WriteLine(node.GetValue());
+            //CUDDNode and1 = CUDD.Function.And(x0, CUDD.Function.Not(x1));
+            //CUDD.Ref(and1);
+            //CUDDNode and2 = CUDD.Function.And(x0, x1);
+            //CUDD.Ref(and2);
+            //CUDDNode sum = CUDD.Function.Or(and1, and2);
+            //CUDD.Ref(sum);
+            //CUDD.Deref(and1);
+            //CUDD.Deref(and2);
+
+            //CUDDNode and = CUDD.Function.And(x0, CUDD.Function.Not(x0));
+            //CUDD.Ref(and);
+
+            //CUDDNode or = CUDD.Function.Or(x0, CUDD.Function.Not(x0));
+            //CUDD.Ref(or);
+
+            ////CUDDNode node = CUDD.Function.Equal(and, CUDD.ZERO);
+            //CUDDNode node = CUDD.Function.Equal(or, CUDD.ZERO);
+
+            //Console.WriteLine(node.GetValue());
 
             //CUDDNode xor2 = CUDD.Function.Or()
 
