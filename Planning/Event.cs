@@ -58,8 +58,8 @@ namespace Planning
             result.GenerateVariableList(context.listVariable());
             result.SetConstList(constArray);
             result.BuildAssignment();
-            string eventName = context.eventSymbol().NAME().GetText();
-            result.Name = GetFullName(eventName, result.ConstList);
+            string eventName = context.eventSymbol().GetText();
+            result.Name = GetFullName(eventName, result._constList);
             result.GeneratePrecondition(context.emptyOrPreGD(), gndPredDict);
             result.GenerateEffect(context.emptyOrEffect(), gndPredDict);
             result.GenerateSuccessorStateAxiom(gndPredDict);
@@ -373,10 +373,6 @@ namespace Planning
                 CUDDNode condNode = CUDD.Function.And(currentCondNode, gdNode);
                 if (!condNode.Equals(CUDD.ZERO))
                 {
-                    //Console.WriteLine("  condition context:{0}", context.gd().GetText());
-                    //Console.WriteLine("  condition Node:");
-                    //CUDD.Print.PrintMinterm(condNode);
-
                     var gndLiterals = GetGroundLiteral(context.condEffect(), gndPredDict);
                     var condEffect = new Tuple<CUDDNode, List<Tuple<GroundPredicate, bool>>>(condNode, gndLiterals);
                     result.Add(condEffect);
@@ -449,14 +445,6 @@ namespace Planning
                 var gndLiteral = GetGroundLiteral(termLiteralContext, gndPredDict);
                 result.Add(gndLiteral);
             }
-
-            //if (Name == "leftSucWithNotice(a1,0)")
-            //{
-            //    foreach (var tuple in result)
-            //    {
-            //        Console.WriteLine("   GroundLiteral:{0}, value:{1}", tuple.Item1, tuple.Item2);                    
-            //    }
-            //}
             return result;
         }
 
@@ -464,16 +452,8 @@ namespace Planning
             IReadOnlyDictionary<string, GroundPredicate> gndPredDict)
         {
             string predFullName = GetFullName(context.termAtomForm(), _assignment);
-            //Console.WriteLine("  Context termAtomForm:{0}", context.termAtomForm().GetText());
-            //Console.WriteLine("  Pred name:{0}", predFullName);
-
             GroundPredicate gndPred = gndPredDict[predFullName];
             bool isPositive = context.NOT() == null;
-
-            //if (Name == "leftSucWithNotice(a1,0)")
-            //{
-            //    Console.WriteLine(" GroundLiteral:{0}, value:{1}", gndPred, isPositive);
-            //}
             return new Tuple<GroundPredicate, bool>(gndPred, isPositive);
         }
 
@@ -486,19 +466,7 @@ namespace Planning
             CUDDNode effectNode = GetEffectNode();
             CUDDNode frame = GetFrameNode(gndPredDict);
 
-            if (Name == "leftSucWithNotice(a1,0)")
-            {
-                Console.WriteLine(Name);
-                Console.WriteLine("       CondEffect:");
-                CUDD.Print.PrintMinterm(effectNode);
-
-                //Console.WriteLine("       Frame:");
-                //CUDD.Print.PrintMinterm(frame);
-            }
-
             SuccessorStateAxiom = CUDD.Function.And(effectNode, frame);
-            //Console.WriteLine("       Successor state axiom:");
-            //CUDD.Print.PrintMinterm(SuccessorStateAxiom);
 
             CUDD.Ref(SuccessorStateAxiom);
             CUDD.Deref(effectNode);

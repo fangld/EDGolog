@@ -30,6 +30,9 @@ namespace Planning.Servers
 
         private Dictionary<string, Event> _eventDict;
 
+        private Dictionary<string, Action> _actionDict;
+
+
         private int _currentCuddIndex;
 
         #endregion
@@ -71,6 +74,7 @@ namespace Planning.Servers
             BuildGroundPredicate();
             HandleInit(serverProblemContext.init());
             HandleEventsDefine(domainContext.eventDefine());
+            HandleActionsDefine(domainContext.actionDefine());
             //HandleServerProblem(context);
         }
 
@@ -186,6 +190,72 @@ namespace Planning.Servers
         //    }
         //}
 
+        private void HandlePredDefine2(PlanningParser.PredDefineContext context)
+        {
+            _predDict = new Dictionary<string, Predicate>();
+            foreach (var atomFormSkeleton in context.atomFormSkeleton())
+            {
+                List<List<string>> collection = new List<List<string>>();
+
+                var listVariableContext = atomFormSkeleton.listVariable();
+                do
+                {
+                    int count = listVariableContext.VAR().Count;
+                    if (count != 0)
+                    {
+                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            List<string> constList = Globals.TermHandler.GetConstList(type);
+                            collection.Add(constList);
+                        }
+                    }
+                    listVariableContext = listVariableContext.listVariable();
+                } while (listVariableContext != null);
+
+                ScanMixedRadix(collection, atomFormSkeleton);
+            }
+        }
+
+        private void ScanMixedRadix(IReadOnlyList<List<string>> collection, PlanningParser.AtomFormSkeletonContext context)
+        {
+            int count = collection.Count;
+            string[] scanArray = new string[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+
+            do
+            {
+                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
+
+                GroundPredicate gndPred = new GroundPredicate(pred, scanArray);
+                gndPred.PreviousCuddIndex = _currentCuddIndex;
+                _currentCuddIndex++;
+                gndPred.SuccessiveCuddIndex = _currentCuddIndex;
+                _currentCuddIndex++;
+                _gndPredDict.Add(gndPred.ToString(), gndPred);
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+                if (j == -1)
+                    return;
+                index[j]++;
+            } while (true);
+        }
+
+
+
         private void HandlePredDefine(PlanningParser.PredDefineContext context)
         {
             _predDict = new Dictionary<string, Predicate>();
@@ -223,7 +293,6 @@ namespace Planning.Servers
                 {
                     Tuple<string, string> variable = container.VariableList[i];
                     List<string> constList = Globals.TermHandler.GetConstList(variable.Item2);
-                        //_typeConstantListMap[variable.Item2];
                     collection.Add(constList);
                 }
 
@@ -350,6 +419,72 @@ namespace Planning.Servers
             } while (true);
         }
 
+        private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
+        {
+            _actionDict = new Dictionary<string, Action>();
+            foreach (var actionDefineContext in contexts)
+            {
+                List<List<string>> collection = new List<List<string>>();
+
+                var listVariableContext = actionDefineContext.listVariable();
+                do
+                {
+                    int count = listVariableContext.VAR().Count;
+                    if (count != 0)
+                    {
+                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
+
+                        for (int i = 0; i < count; i++)
+                        {
+                            List<string> constList = Globals.TermHandler.GetConstList(type);
+                            collection.Add(constList);
+                        }
+                    }
+                    listVariableContext = listVariableContext.listVariable();
+                } while (listVariableContext != null);
+
+                ScanMixedRadix(collection, actionDefineContext);
+            }
+        }
+
+        private void ScanMixedRadix(IReadOnlyList<List<string>> collection, PlanningParser.ActionDefineContext context)
+        {
+            int count = collection.Count;
+            string[] scanArray = new string[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+
+            do
+            {
+                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
+
+                Action action = Action.From(context, _eventDict, scanArray);
+                //foreach (var s in scanArray)
+                //{
+                //    Console.WriteLine("  {0}", s);
+                //}
+                //Console.WriteLine(action.Name);
+                _actionDict.Add(action.Name, action);
+                
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+                if (j == -1)
+                    return;
+                index[j]++;
+            } while (true);
+        }
+
         public void ShowInfo()
         {
             Console.WriteLine("Domain name: {0}", DomainName);
@@ -406,7 +541,7 @@ namespace Planning.Servers
             {
                 //"leftFail(a1)",
                 //"rightSucWithNotice(a2,-2)",
-                "leftSucWithNotice(a1,0)",
+                //"leftSucWithNotice(a1,0)",
                 //"leftSucWithoutNotice(a1)",
                 //"leftSucWithoutNotice(a2)",
                 //"rightSucWithoutNotice(a1)",

@@ -11,15 +11,15 @@ namespace Planning
     public class Action : VariableContainer
     {
         #region Fields
+
+        private List<string> _constList;
         
-        private List<Event> _eventSets;
+        private Dictionary<string, List<Event>> _respDict;
 
         #endregion
 
         #region Properties
-
-        public CUDDNode Precondition { get; set; }
-
+        
         public int CurrentCuddIndex { get; set; }
 
         #endregion
@@ -28,23 +28,27 @@ namespace Planning
 
         private Action()
         {
-            
+            _constList = new List<string>();            
         }
 
         #endregion
 
         #region Methods for creating an instance
 
-        public static Action From(int initialCuddIndex, PlanningParser.ActionDefineContext context,
-            IReadOnlyDictionary<string, Predicate> predDict)
+        public static Action From(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray)
         {
             Action result = new Action();
 
-            result.CurrentCuddIndex = initialCuddIndex;
-            result.Name = context.actionSymbol().GetText();
             result.GenerateVariableList(context.listVariable());
-
+            result.SetConstList(constArray);
+            string actionName = context.actionSymbol().GetText();
+            result.Name = GetFullName(actionName, result._constList);
             return result;
+        }
+
+        private void SetConstList(string[] constArray)
+        {
+            _constList.AddRange(constArray);
         }
 
         #endregion

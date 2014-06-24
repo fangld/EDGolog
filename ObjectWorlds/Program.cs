@@ -22,21 +22,21 @@ namespace ObjectWorlds
 
         public static void Main(string[] args)
         {
-            //string domainFileName, problemFileName;
-            //if (args.Length == 3)
-            //{
-            //    domainFileName = args[1];
-            //    problemFileName = args[2];
-            //}
-            //else
-            //{
-            //    domainFileName = "swDomain.pddl";
-            //    problemFileName = "swServerProblem.pddl";
-            //}
+            string domainFileName, problemFileName;
+            if (args.Length == 3)
+            {
+                domainFileName = args[1];
+                problemFileName = args[2];
+            }
+            else
+            {
+                domainFileName = "swDomain.pddl";
+                problemFileName = "swServerProblem.pddl";
+            }
 
-            //Test1(domainFileName, problemFileName);
+            Test1(domainFileName, problemFileName);
 
-            Test2();
+            //Test2();
             Console.ReadLine();
         }
 
