@@ -44,17 +44,23 @@ namespace Planning.Servers
 
             DomainName = domainContext.NAME().GetText();
             ProblemName = serverProblemContext.problemName().GetText();
+            Console.WriteLine("Finishing name!");
             //HandleTypeDefine(domainContext.typeDefine());
             Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
+            Console.WriteLine("Finishing term handler!");
             HandlePredDefine(domainContext.predDefine());
+            Console.WriteLine("Finishing predicate!");
             //Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(),
             //    serverProblemContext.objectDeclaration(), _typeDict);
             //BuildConstantTypeMap(serverProblemContext.objectDeclaration());
             //BuildGroundPredicate();
             HandleInit(serverProblemContext.init());
+            Console.WriteLine("Finishing init object base!");
             HandleEventsDefine(domainContext.eventDefine());
+            Console.WriteLine("Finishing init event define!");
             HandleActionsDefine(domainContext.actionDefine());
+            Console.WriteLine("Finishing init action define!");
             //HandleServerProblem(context);
         }
 
@@ -301,24 +307,28 @@ namespace Planning.Servers
             foreach (var action in _actionDict.Values)
             {
                 Console.WriteLine("  Name: {0}", action.FullName);
+                Console.WriteLine("  Response:");
                 foreach (var response in action.RespDict.Values)
                 {
+                    Console.WriteLine("    Name: {0}", response.FullName);
                     for (int i = 0; i < response.EventList.Count; i++)
                     {
-                        Console.WriteLine("  Plausibility degree: {0}", i]);
+                        Console.WriteLine("    Plausibility degree: {0}", i);
+                        Console.Write("    Event list: ");
+                        foreach (var e in response.EventList[i])
+                        {
+                            Console.Write("{0}  ", e.FullName);
+                        }
+                        Console.WriteLine();
                     }
+                    Console.WriteLine();
+
                 }
-            }
 
-            for (int i = 0; i < eventNameArray.Count; i++)
-            {
-                string eventName = eventNameArray[i];
-                Event e = _eventDict[eventName];
-                Console.WriteLine("  Name: {0}", eventNameArray[i]);
-                Console.WriteLine("  Cudd index: {0}", e.CuddIndex);
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
 
-                Console.WriteLine("  Precondition:");
-                CUDD.Print.PrintMinterm(e.Precondition);
             }
         }
 

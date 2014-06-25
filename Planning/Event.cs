@@ -40,9 +40,14 @@ namespace Planning
             CuddIndex = initialCuddInex;
             initialCuddInex++;
             Name = context.eventSymbol().GetText();
+            Console.WriteLine(FullName);
             GeneratePrecondition(context.emptyOrPreGD(), predDict, assignment);
-            GenerateEffect(context.emptyOrEffect(), predDict, assignment);
-            GenerateSuccessorStateAxiom(predDict);
+            Console.WriteLine("Finishing event define precondition");
+
+            //GenerateEffect(context.emptyOrEffect(), predDict, assignment);
+            Console.WriteLine("Finishing event define effect");
+            //GenerateSuccessorStateAxiom(predDict);
+            Console.WriteLine("Finishing event define SSA");
         }
 
         #endregion
@@ -54,12 +59,14 @@ namespace Planning
         private void GeneratePrecondition(PlanningParser.EmptyOrPreGDContext context, IReadOnlyDictionary<string, Predicate> predDict, Dictionary<string, string> assignment)
         {
             Precondition = CUDD.ONE;
+            CUDD.Ref(Precondition);
 
             if (context != null)
             {
                 PlanningParser.GdContext gdContext = context.gd();
                 if (context.gd() != null)
                 {
+                    CUDD.Deref(Precondition);
                     Precondition = GetCuddNode(gdContext, predDict, assignment);
                 }
             }
@@ -109,6 +116,7 @@ namespace Planning
                         result = firstValue >= secondValue ? CUDD.ONE : CUDD.ZERO;
                     }
                 }
+                CUDD.Ref(result);
             }
 
             return result;
@@ -117,9 +125,6 @@ namespace Planning
         private CUDDNode GetCuddNode(PlanningParser.GdContext context, IReadOnlyDictionary<string, Predicate> predDict, Dictionary<string, string> assignment)
         {
             CUDDNode result;
-
-            //Console.WriteLine("  context is null:{0}", context == null);
-            //Console.WriteLine("  Context:{0}", context.GetText());
             if (context.termAtomForm() != null)
             {
                 result = GetCuddNode(context.termAtomForm(), predDict, assignment);
@@ -211,6 +216,7 @@ namespace Planning
             IReadOnlyList<List<string>> collection, int currentLevel, bool isForall = true)
         {
             CUDDNode result = isForall ? CUDD.ONE : CUDD.ZERO;
+            CUDD.Ref(result);
             if (currentLevel != varNameList.Count)
             {
                 for (int i = 0; i < collection[currentLevel].Count; i++)
@@ -231,6 +237,7 @@ namespace Planning
                         currentLevel + 1, isForall);
 
                     CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
+                    CUDD.Ref(invalidNode);
                     if (!gdNode.Equals(invalidNode))
                     {
                         CUDDNode temp = result;
@@ -243,10 +250,12 @@ namespace Planning
                     }
 
                     CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
+                    CUDD.Ref(terminalNode);
                     if (gdNode.Equals(terminalNode))
                     {
                         CUDD.Deref(result);
                         result = CUDD.ZERO;
+                        CUDD.Ref(result);
                         break;
                     }
                 }
@@ -424,14 +433,14 @@ namespace Planning
 
         private void GenerateSuccessorStateAxiom(IReadOnlyDictionary<string, Predicate> predDict)
         {
-            CUDDNode effectNode = GetEffectNode();
-            CUDDNode frame = GetFrameNode(predDict);
+            //CUDDNode effectNode = GetEffectNode();
+            //CUDDNode frame = GetFrameNode(predDict);
 
-            SuccessorStateAxiom = CUDD.Function.And(effectNode, frame);
+            //SuccessorStateAxiom = CUDD.Function.And(effectNode, frame);
 
-            CUDD.Ref(SuccessorStateAxiom);
-            CUDD.Deref(effectNode);
-            CUDD.Deref(frame);
+            //CUDD.Ref(SuccessorStateAxiom);
+            //CUDD.Deref(effectNode);
+            //CUDD.Deref(frame);
         }
 
         private CUDDNode GetEffectNode()
@@ -444,6 +453,7 @@ namespace Planning
 
                 CUDDNode gndPred = CUDD.Var(firstLiteral.Item1.SuccessiveCuddIndex);
                 CUDDNode literalsNode = firstLiteral.Item2 ? gndPred : CUDD.Function.Not(gndPred);
+                CUDD.Ref(literalsNode);
                 
                 for (int i = 1; i < cEffect.Item2.Count; i++)
                 {
@@ -451,6 +461,7 @@ namespace Planning
                     CUDDNode conjLiterals = literalsNode;
                     gndPred = CUDD.Var(literal.Item1.SuccessiveCuddIndex);
                     CUDDNode literalNode = literal.Item2 ? gndPred : CUDD.Function.Not(gndPred);
+                    CUDD.Ref(literalNode);
                     literalsNode = CUDD.Function.And(conjLiterals, literalNode);
                     CUDD.Ref(literalsNode);
                     CUDD.Deref(conjLiterals);
@@ -497,15 +508,6 @@ namespace Planning
                 CUDDNode frameCondition = CUDD.ONE;
                 foreach (var cEffect in _condEffect)
                 {
-                    //Console.Write("    Literals:");
-                    //for (int i = 0; i < cEffect.Item2.Count; i++)
-                    //{
-                    //    Console.Write("{0}, ", cEffect.Item2[i].Item1);
-                    //}
-                    //Console.WriteLine();
-                    //Console.WriteLine("    Abstract predicate:{0}", abstractPredicate.Key);
-                    //Console.WriteLine(cEffect.Item2.Exists(literal => literal.Item1.Equals(abstractPredicate.Value)));
-
                     if (cEffect.Item2.Exists(literal => literal.Item1.Equals(gndPredPair.Value)))
                     {
                         CUDDNode intermediate = frameCondition;

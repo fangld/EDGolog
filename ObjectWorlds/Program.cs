@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,9 +35,9 @@ namespace ObjectWorlds
                 problemFileName = "swServerProblem.pddl";
             }
 
-            Test1(domainFileName, problemFileName);
+            //Test1(domainFileName, problemFileName);
 
-            //Test2();
+            Test2();
             Console.ReadLine();
         }
 
@@ -180,18 +181,35 @@ namespace ObjectWorlds
             // initialise cudd
             CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
 
-            CUDDNode x0 = CUDD.Var(0);
-            CUDDNode x1 = CUDD.Var(1);
-            CUDDNode x2 = CUDD.Var(2);
+            CUDDNode f = CUDD.ONE;
+            CUDDNode var, tmp;
+            CUDD.Ref(f);
+            int count = 65533;
+            for (int i = count; i >= 0; i--)
+            {
+                //Console.WriteLine(i);
 
-            CUDDNode effect = CUDD.Function.Implies(x2, x1);
-            CUDDNode frame = CUDD.Function.Implies(CUDD.Function.Not(x2), CUDD.Function.Equal(x0, x1));
-            CUDDNode firstSsa = CUDD.Function.And(effect, frame);
+                var = CUDD.Var(i);
+                tmp = CUDD.Function.And(CUDD.Function.Not(var), f);
+                CUDD.Ref(tmp);
+                CUDD.Deref(f);
+                f = tmp;
+            }
 
-            CUDDNode secondSsa = CUDD.Function.Equal(x1, CUDD.Function.Or(x2, x0));
+            //CUDD.Print.PrintMinterm(f);
 
-            CUDD.Print.PrintMinterm(firstSsa);
-            CUDD.Print.PrintMinterm(secondSsa);
+            //CUDDNode x0 = CUDD.Var(0);
+            //CUDDNode x1 = CUDD.Var(1);
+            //CUDDNode x2 = CUDD.Var(2);
+
+            //CUDDNode effect = CUDD.Function.Implies(x2, x1);
+            //CUDDNode frame = CUDD.Function.Implies(CUDD.Function.Not(x2), CUDD.Function.Equal(x0, x1));
+            //CUDDNode firstSsa = CUDD.Function.And(effect, frame);
+
+            //CUDDNode secondSsa = CUDD.Function.Equal(x1, CUDD.Function.Or(x2, x0));
+
+            //CUDD.Print.PrintMinterm(firstSsa);
+            //CUDD.Print.PrintMinterm(secondSsa);
 
 
             //CUDDNode xor = CUDD.Function.Xor(x0, x1);

@@ -12,20 +12,20 @@ namespace Planning
     {
         #region Fields
 
-        private List<List<Event>> _eventList;
+        private List<Event>[] _eventListArray;
 
         #endregion
 
         #region Properties
 
-        public int PlausibleDegree
+        public int MaxPlausibilityDegree
         {
-            get { return _eventList.Count; }
+            get { return _eventListArray.Length; }
         }
 
         public IReadOnlyList<List<Event>> EventList
         {
-            get { return _eventList; }
+            get { return _eventListArray; }
         }
 
         #endregion
@@ -46,32 +46,41 @@ namespace Planning
         public void GenerateEventList(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
             var eventModelContext = context.eventModel();
-            _eventList = new List<List<Event>>();
             if (eventModelContext.LB() == null)
             {
-                HandleGdEvent(eventModelContext.gdEvent(), eventDict, assignment);
+                _eventListArray = new List<Event>[1];
+                var eventList = HandleGdEvent(eventModelContext.gdEvent(), eventDict, assignment);
+                _eventListArray[0] = eventList;
             }
             else
             {
+                _eventListArray = new List<Event>[2];
+                var eventList0 = HandleGdEvent(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment, 0);
+                _eventListArray[0] = eventList0;
+                var eventList1 = HandleGdEvent(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
+                _eventListArray[1] = eventList1;
             }
         }
 
-        public void HandleGdEvent(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
+        public List<Event> HandleGdEvent(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
         {
+            List<Event> result = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
             CUDD.Ref(gdEventNode);
             foreach (var e in eventDict.Values)
             {
                 CUDDNode eventNode = CUDD.Var(e.CuddIndex);
                 CUDDNode impliesNode = CUDD.Function.Implies(eventNode, gdEventNode);
-                CUDD.Ref(gdEventNode);
-                if (gdEventNode.Equals(CUDD.ONE))
+                CUDD.Ref(impliesNode);
+                if (impliesNode.Equals(CUDD.ONE))
                 {
-                    _eventList[plDegree].Add(e);
+                    result.Add(e);
                 }
-                CUDD.Deref(gdEventNode);
+                CUDD.Deref(impliesNode);
             }
             CUDD.Deref(gdEventNode);
+
+            return result;
         }
 
         private CUDDNode GetCuddNode(PlanningParser.TermEventFormContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
@@ -80,9 +89,16 @@ namespace Planning
             if (context.eventSymbol() != null)
             {
                 string eventFullName = GetFullName(context, assignment);
-                Event e = eventDict[eventFullName];
-                int cuddIndex = e.CuddIndex;
-                result = CUDD.Var(cuddIndex);
+                if (eventDict.ContainsKey(eventFullName))
+                {
+                    Event e = eventDict[eventFullName];
+                    int cuddIndex = e.CuddIndex;
+                    result = CUDD.Var(cuddIndex);
+                }
+                else
+                {
+                    result = CUDD.ZERO;
+                }
             }
             else
             {
