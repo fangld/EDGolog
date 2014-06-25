@@ -57,8 +57,9 @@ obsDefine: LB COLON OBS obsSymbol
 
 obsSymbol: NAME;
 
-eventModel : gdEvent+
-           | LB (LB plDeg gdEvent RB)+ RB;
+eventModel : gdEvent
+           | LB (plGdEvent)+ RB;
+plGdEvent : LB plDeg gdEvent RB;
 
 plDeg: INTEGER;
 
@@ -86,19 +87,20 @@ termAtomForm: LB pred term* RB
 			| LB GEQ term term RB;
 termLiteral: termAtomForm | LB NOT termAtomForm RB;
 
-gdEvent: eventFormulaTerm
+gdEvent: termEventForm
        | LB NOT gdEvent RB
 	   | LB AND gdEvent+ RB
 	   | LB OR gdEvent+ RB
+	   | LB IMPLY gdEvent gdEvent RB
 	   | LB EXISTS LB listVariable RB gdEvent RB
 	   | LB FORALL LB listVariable RB gdEvent RB;
-eventFormulaTerm: LB eventSymbol term* RB
-                | LB EQ term term RB
-                | LB NEQ term term RB
-     			| LB LT term term RB 
-				| LB LEQ term term RB
-				| LB GT term term RB
-				| LB GEQ term term RB;
+termEventForm: LB eventSymbol term* RB
+             | LB EQ term term RB
+             | LB NEQ term term RB
+     		 | LB LT term term RB 
+			 | LB LEQ term term RB
+			 | LB GT term term RB
+			 | LB GEQ term term RB;
 
 constTerm: NAME
          | INTEGER

@@ -14,7 +14,7 @@ namespace Planning
         /// <summary>
         /// Store the list of variables
         /// </summary>
-        private List<string> _constList;
+        private string[] _constList;
 
         #endregion
 
@@ -24,13 +24,18 @@ namespace Planning
         /// The name of constant container
         /// </summary>
         public string Name { get; set; }
+        
+        /// <summary>
+        /// The full name of constant container
+        /// </summary>
+        public string FullName { get { return ToString(); } }
 
         /// <summary>
         /// The count of variables
         /// </summary>
         public int Count
         {
-            get { return _constList.Count; }
+            get { return _constList.Length; }
         }
 
         /// <summary>
@@ -45,22 +50,23 @@ namespace Planning
 
         #region Constructors
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        protected ConstContainer()
+        protected ConstContainer(string[] constList)
         {
-            _constList = new List<string>();
+            int count = constList.Length;
+            _constList = new string[count];
+            Array.Copy(constList, _constList, count);
         }
 
         #endregion
 
         #region Methods
 
-        protected void SetConstList(IEnumerable<string> constList)
-        {
-            _constList.AddRange(constList);
-        }
+        //protected void CopyConstArray(string[] constList)
+        //{
+        //    int count = constList.Length;
+        //    _constList = new string[count];
+        //    Array.Copy(constList, _constList, count);
+        //}
 
         //internal void GenerateVariableList(PlanningParser.ListVariableContext context)
         //{
@@ -115,7 +121,6 @@ namespace Planning
             List<string> constList = new List<string>();
             foreach (var termContext in context.term())
             {
-                //Console.WriteLine("Term context:{0}", termContext.GetText());
                 string termString = Globals.TermHandler.GetString(termContext, assignment);
                 constList.Add(termString);
             }
@@ -133,23 +138,16 @@ namespace Planning
             return GetFullName(name, termList);
         }
 
-        public static string GetFullName(PlanningParser.ActionDefineContext context)
+        public static string GetFullName(PlanningParser.TermEventFormContext context, Dictionary<string, string> assignment)
         {
-            string name = context.actionSymbol().GetText();
-            List<string> termList = new List<string>();
-            PlanningParser.ListVariableContext listVariableContext = context.listVariable();
-            do
+            string name = context.eventSymbol().GetText();
+            List<string> constList = new List<string>();
+            foreach (var termContext in context.term())
             {
-                if (listVariableContext.VAR().Count != 0)
-                {
-                    foreach (var varNode in listVariableContext.VAR())
-                    {
-                        termList.Add(varNode.GetText());
-                    }
-                }
-                listVariableContext = listVariableContext.listVariable();
-            } while (listVariableContext != null);
-            return GetFullName(name, termList);
+                string termString = Globals.TermHandler.GetString(termContext, assignment);
+                constList.Add(termString);
+            }
+            return GetFullName(name, constList);
         }
 
         #endregion

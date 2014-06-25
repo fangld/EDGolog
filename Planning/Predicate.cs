@@ -7,22 +7,25 @@ using LanguageRecognition;
 
 namespace Planning
 {
-    public class Predicate : VariableContainer
+    public class Predicate : ConstContainer
     {
-        #region Constructors
+        #region Properties
 
-        private Predicate() { }
+        public int PreviousCuddIndex { get; set; }
+
+        public int SuccessiveCuddIndex { get; set; }
 
         #endregion
 
-        #region Methods
+        #region Constructors
 
-        public static Predicate FromContext(PlanningParser.AtomFormSkeletonContext context)
+        public Predicate(PlanningParser.AtomFormSkeletonContext context, string[] constArray, ref int intialCuddIndex): base(constArray)
         {
-            Predicate result = new Predicate();
-            result.Name = context.pred().GetText();
-            result.GenerateVariableList(context.listVariable());
-            return result;
+            Name = context.pred().GetText();
+            PreviousCuddIndex = intialCuddIndex;
+            intialCuddIndex++;
+            SuccessiveCuddIndex = intialCuddIndex;
+            intialCuddIndex++;
         }
 
         #endregion

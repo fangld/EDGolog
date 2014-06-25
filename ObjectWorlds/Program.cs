@@ -100,19 +100,19 @@ namespace ObjectWorlds
             Console.WriteLine("{0}", domain.TypeList[domain.TypeList.Count - 1]);
             Console.WriteLine(Domain.BarLine);
 
-            Console.WriteLine("Predicates:");
-            foreach (var pred in domain.PredicateDict.Values)
-            {
-                Console.WriteLine("  Name: {0}", pred.Name);
-                Console.WriteLine("  Variable: {0}", pred.Count);
-                for (int i = 0; i < pred.Count; i++)
-                {
-                    Console.WriteLine("    Index: {0}, Name: {1}, PlanningType: {2}", i, pred.VariableList[i].Item1,
-                        pred.VariableList[i].Item2);
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine(Domain.BarLine);
+            //Console.WriteLine("Predicates:");
+            //foreach (var pred in domain.PredicateDict.Values)
+            //{
+            //    Console.WriteLine("  Name: {0}", pred.Name);
+            //    Console.WriteLine("  Variable: {0}", pred.Count);
+            //    for (int i = 0; i < pred.Count; i++)
+            //    {
+            //        Console.WriteLine("    Index: {0}, Name: {1}, PlanningType: {2}", i, pred.VariableList[i].Item1,
+            //            pred.VariableList[i].Item2);
+            //    }
+            //    Console.WriteLine();
+            //}
+            //Console.WriteLine(Domain.BarLine);
 
             //Console.WriteLine("Actions:");
             //foreach (var action in domain.ActionDict.Values)

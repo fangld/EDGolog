@@ -13,20 +13,7 @@ namespace Planning.Servers
     {
         #region Fields
 
-        //private const string Agent1Id = "a1";
-        //private const string Agent2Id = "a2";
-
-        //private ConstTermComputer _computer;
-
-        //private Dictionary<string, PlanningType> _typeDict;
-
         private Dictionary<string, Predicate> _predDict;
-
-        //private Dictionary<string, string> _constantTypeMap;
-
-        //private Dictionary<string, List<string>> _typeConstantListMap;
-
-        private Dictionary<string, GroundPredicate> _gndPredDict;
 
         private Dictionary<string, Event> _eventDict;
 
@@ -43,11 +30,6 @@ namespace Planning.Servers
 
         public string ProblemName { get; set; }
 
-        //protected override int PredicateCuddIndexNumber
-        //{
-        //    get { return 1; }
-        //}
-
         public HashSet<string> TruePredSet { get; set; }
 
         public Domain Domain { get; set; }
@@ -57,11 +39,9 @@ namespace Planning.Servers
         #region Constructors
 
         private ServerProblem(PlanningParser.DomainContext domainContext, PlanningParser.ServerProblemContext serverProblemContext)
-            //: base(domain)
         {
             _currentCuddIndex = 0;
 
-            //ConstructComputer(serverProblemContext.constSetting());
             DomainName = domainContext.NAME().GetText();
             ProblemName = serverProblemContext.problemName().GetText();
             //HandleTypeDefine(domainContext.typeDefine());
@@ -71,7 +51,7 @@ namespace Planning.Servers
             //Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(),
             //    serverProblemContext.objectDeclaration(), _typeDict);
             //BuildConstantTypeMap(serverProblemContext.objectDeclaration());
-            BuildGroundPredicate();
+            //BuildGroundPredicate();
             HandleInit(serverProblemContext.init());
             HandleEventsDefine(domainContext.eventDefine());
             HandleActionsDefine(domainContext.actionDefine());
@@ -88,219 +68,40 @@ namespace Planning.Servers
             return result;
         }
 
-        //private void ConstructComputer(PlanningParser.NumericSettingContext context)
-        //{
-        //    if (context != null)
-        //    {
-        //        Globals.ConstTermComputer = new ConstTermComputer(context);
-        //        //_computer = new ConstTermComputer(context);
-        //    }
-        //}
-
-        //private void HandleDomain(PlanningParser.DomainContext context)
-        //{
-        //    DomainName = context.NAME().GetText();
-        //    HandleTypeDefine(context.typeDefine());
-        //    HandlePredDefine(context.predDefine());
-        //    //HandleActionsDefine(context.actionDefine());
-        //}
-
-        //private void HandleTypeDefine(PlanningParser.TypeDefineContext context)
-        //{
-        //    _typeDict = new Dictionary<string, PlanningType>();
-
-        //    if (context != null)
-        //    {
-        //        _typeDict.Add(PlanningType.ObjectType.Name, PlanningType.ObjectType);
-        //        _typeDict.Add(PlanningType.AgentType.Name, PlanningType.AgentType);
-
-        //        foreach (var typeContext in context.typeDeclaration())
-        //        {
-        //            PlanningType type;
-        //            string name = typeContext.NAME().GetText();
-        //            if (typeContext.LB() == null)
-        //            {
-        //                type = new PlanningType { Name = name };
-        //            }
-        //            else
-        //            {
-        //                int min = Globals.TermHandler.GetValue(typeContext.constTerm(0));
-        //                int max = Globals.TermHandler.GetValue(typeContext.constTerm(1));
-        //                type = new PlanningNumericType {Name = name, Min = min, Max = max};
-        //            }
-
-        //            _typeDict.Add(name, type);
-        //        }
-        //    }
-        //}
-
-        //private void BuildConstantTypeMap(PlanningParser.ObjectDeclarationContext context)
-        //{
-        //    _constantTypeMap = new Dictionary<string, string>();
-        //    _typeConstantListMap = new Dictionary<string, List<string>>();
-
-        //    _constantTypeMap.Add(Agent1Id, PlanningType.AgentType.Name);
-        //    _constantTypeMap.Add(Agent2Id, PlanningType.AgentType.Name);
-        //    _typeConstantListMap.Add(PlanningType.AgentType.Name, new List<string> {Agent1Id, Agent2Id});
-
-
-        //    foreach (var pair in _typeDict)
-        //    {
-        //        if (pair.Value is PlanningNumericType)
-        //        {
-        //            PlanningNumericType type = pair.Value as PlanningNumericType;
-        //            List<string> constantList = new List<string>(type.Max - type.Min + 1);
-        //            for (int i = type.Min; i <= type.Max; i++)
-        //            {
-        //                constantList.Add(i.ToString());
-        //            }
-        //            _typeConstantListMap.Add(type.Name, constantList);
-        //        }
-        //    }
-
-        //    if (context != null)
-        //    {
-        //        var listNameContext = context.listName();
-        //        do
-        //        {
-        //            string type = listNameContext.type() != null
-        //                ? listNameContext.type().GetText()
-        //                : PlanningType.ObjectType.Name;
-
-        //            List<string> constantList;
-
-        //            if (_typeConstantListMap.ContainsKey(type))
-        //            {
-        //                constantList = _typeConstantListMap[type];
-        //            }
-        //            else
-        //            {
-        //                constantList = new List<string>(listNameContext.NAME().Count);
-        //                _typeConstantListMap.Add(type, constantList);
-        //            }
-
-        //            foreach (var nameNode in listNameContext.NAME())
-        //            {
-        //                _constantTypeMap.Add(nameNode.GetText(), type);
-        //                constantList.Add(nameNode.GetText());
-        //            }
-
-        //            listNameContext = listNameContext.listName();
-        //        } while (listNameContext != null);
-        //    }
-        //}
-
-        private void HandlePredDefine2(PlanningParser.PredDefineContext context)
-        {
-            _predDict = new Dictionary<string, Predicate>();
-            foreach (var atomFormSkeleton in context.atomFormSkeleton())
-            {
-                List<List<string>> collection = new List<List<string>>();
-
-                var listVariableContext = atomFormSkeleton.listVariable();
-                do
-                {
-                    int count = listVariableContext.VAR().Count;
-                    if (count != 0)
-                    {
-                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
-
-                        for (int i = 0; i < count; i++)
-                        {
-                            List<string> constList = Globals.TermHandler.GetConstList(type);
-                            collection.Add(constList);
-                        }
-                    }
-                    listVariableContext = listVariableContext.listVariable();
-                } while (listVariableContext != null);
-
-                ScanMixedRadix(collection, atomFormSkeleton);
-            }
-        }
-
-        private void ScanMixedRadix(IReadOnlyList<List<string>> collection, PlanningParser.AtomFormSkeletonContext context)
-        {
-            int count = collection.Count;
-            string[] scanArray = new string[count];
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
-
-            do
-            {
-                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
-
-                GroundPredicate gndPred = new GroundPredicate(pred, scanArray);
-                gndPred.PreviousCuddIndex = _currentCuddIndex;
-                _currentCuddIndex++;
-                gndPred.SuccessiveCuddIndex = _currentCuddIndex;
-                _currentCuddIndex++;
-                _gndPredDict.Add(gndPred.ToString(), gndPred);
-
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
-                    {
-                        index[j] = 0;
-                        j--;
-                        continue;
-                    }
-                    break;
-                }
-                if (j == -1)
-                    return;
-                index[j]++;
-            } while (true);
-        }
-
-
-
         private void HandlePredDefine(PlanningParser.PredDefineContext context)
         {
             _predDict = new Dictionary<string, Predicate>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
             {
-                Predicate pred = Predicate.FromContext(atomFormSkeleton);
-                _predDict.Add(pred.Name, pred);
+                Build(atomFormSkeleton.listVariable(), atomFormSkeleton, AddToPredDict);
             }
         }
 
-        private void BuildGroundPredicate()
+        private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
         {
-            _gndPredDict = new Dictionary<string, GroundPredicate>();
-            BuildGround(_predDict.Values, AddToGroundPredicateDict);
-        }
-
-        private void AddToGroundPredicateDict(string predName, string[] constantList)
-        {
-            Predicate pred = _predDict[predName];
-            GroundPredicate gndPred = new GroundPredicate(pred, constantList);
-            gndPred.PreviousCuddIndex = _currentCuddIndex;
-            _currentCuddIndex++;
-            gndPred.SuccessiveCuddIndex = _currentCuddIndex;
-            _currentCuddIndex++;
-            _gndPredDict.Add(gndPred.ToString(), gndPred);
-        }
-
-        private void BuildGround<T>(IEnumerable<T> containters, Action<string, string[]> action) where T : VariableContainer
-        {
-            foreach (var container in containters)
+            _eventDict = new Dictionary<string, Event>();
+            foreach (var eventDefineContext in contexts)
             {
-                List<List<string>> collection = new List<List<string>>();
-
-                for (int i = 0; i < container.Count; i++)
-                {
-                    Tuple<string, string> variable = container.VariableList[i];
-                    List<string> constList = Globals.TermHandler.GetConstList(variable.Item2);
-                    collection.Add(constList);
-                }
-
-                ScanMixedRadix(container.Name, collection, action);
+                Build(eventDefineContext.listVariable(), eventDefineContext, AddToEventDict);
             }
         }
 
-        private void ScanMixedRadix(string actionName, IReadOnlyList<List<string>> collection, Action<string, string[]> action)
+        private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
+        {
+            _actionDict = new Dictionary<string, Action>();
+            foreach (var actionDefineContext in contexts)
+            {
+                Build(actionDefineContext.listVariable(), actionDefineContext, AddToActionDict);
+            }
+        }
+
+        private void Build<TContext>(PlanningParser.ListVariableContext context, TContext baseContext, Action<TContext, string[]> action)
+        {
+            IReadOnlyList<List<string>> collection = context.GetCollection();
+            ScanMixedRadix(collection, baseContext, action);
+        }
+
+        private void ScanMixedRadix<TContext>(IReadOnlyList<List<string>> collection, TContext context, Action<TContext, string[]> action)
         {
             int count = collection.Count;
             string[] scanArray = new string[count];
@@ -312,7 +113,8 @@ namespace Planning.Servers
             {
                 Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
 
-                action(actionName, scanArray);
+                action(context, scanArray);
+
                 int j = count - 1;
                 while (j != -1)
                 {
@@ -330,14 +132,77 @@ namespace Planning.Servers
             } while (true);
         }
 
-        //private void HandleServerProblem(PlanningParser.ServerProblemContext context)
-        //{
-        //    Name = context.problemName().GetText();
-        //    DomainName = context.domainName().GetText();
-        //    HandleAgentDefine(context.agentDefine());
-        //    HandleObjectDeclaration(context.objectDeclaration());
-        //    HandleInit(context.init());
-        //}
+        private void AddToPredDict(PlanningParser.AtomFormSkeletonContext context, string[] constArray)
+        {
+            Predicate pred = new Predicate(context, constArray, ref _currentCuddIndex);
+            _predDict.Add(pred.FullName, pred);
+        }
+
+        private void Build<TContext>(PlanningParser.ListVariableContext context, TContext baseContext, Action<TContext, string[], Dictionary<string, string>> action)
+        {
+            IReadOnlyList<List<string>> collection = context.GetCollection();
+            IReadOnlyList<string> varNameList = context.GetVarNameList();
+            ScanMixedRadix(varNameList, collection, baseContext, action);
+        }
+
+        private void ScanMixedRadix<TContext>(IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, TContext context, Action<TContext, string[], Dictionary<string, string>> action)
+        {
+            int count = collection.Count;
+            Dictionary<string, string> assignment = new Dictionary<string, string>();
+            string[] scanArray = new string[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+
+            do
+            {
+                for (int i = 0; i < count; i ++)
+                {
+                    scanArray[i] = collection[i][index[i]];
+                    string varName = varNameList[i];
+                    if (assignment.ContainsKey(varName))
+                    {
+                        assignment[varName] = scanArray[i];
+                    }
+                    else
+                    {
+                        assignment.Add(varName, scanArray[i]);
+                    }
+                }
+
+                action(context, scanArray, assignment);
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+                if (j == -1)
+                    return;
+                index[j]++;
+            } while (true);
+        }
+
+        private void AddToEventDict(PlanningParser.EventDefineContext context, string[] constArray, Dictionary<string, string> assignment)
+        {
+            Event e = new Event(context, _predDict, constArray, assignment, ref _currentCuddIndex);
+            if (!e.Precondition.Equals(CUDD.ZERO))
+            {
+                _eventDict.Add(e.FullName, e);
+            }
+        }
+
+        private void AddToActionDict(PlanningParser.ActionDefineContext context, string[] constArray, Dictionary<string, string> assignment)
+        {
+            Action action = new Action(context, _eventDict, constArray, assignment);
+            _actionDict.Add(action.FullName, action);
+        }
 
         private void HandleInit(PlanningParser.InitContext context)
         {
@@ -356,135 +221,6 @@ namespace Planning.Servers
             }
         }
 
-        private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
-        {
-            _eventDict = new Dictionary<string, Event>();
-            foreach (var eventDefineContext in contexts)
-            {
-                List<List<string>> collection = new List<List<string>>();
-
-                var listVariableContext = eventDefineContext.listVariable();
-                do
-                {
-                    int count = listVariableContext.VAR().Count;
-                    if (count != 0)
-                    {
-                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
-
-                        for (int i = 0; i < count; i++)
-                        {
-                            List<string> constList = Globals.TermHandler.GetConstList(type);
-                            collection.Add(constList);
-                        }
-                    }
-                    listVariableContext = listVariableContext.listVariable();
-                } while (listVariableContext != null);
-
-                ScanMixedRadix(collection, eventDefineContext);
-            }
-        }
-
-        private void ScanMixedRadix(IReadOnlyList<List<string>> collection, PlanningParser.EventDefineContext context)
-        {
-            int count = collection.Count;
-            string[] scanArray = new string[count];
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
-
-            do
-            {
-                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
-
-                Event e = Event.From(context, _gndPredDict, scanArray);
-                if (!e.Precondition.Equals(CUDD.ZERO))
-                {
-                    _eventDict.Add(e.Name, e);
-                }
-
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
-                    {
-                        index[j] = 0;
-                        j--;
-                        continue;
-                    }
-                    break;
-                }
-                if (j == -1)
-                    return;
-                index[j]++;
-            } while (true);
-        }
-
-        private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
-        {
-            _actionDict = new Dictionary<string, Action>();
-            foreach (var actionDefineContext in contexts)
-            {
-                List<List<string>> collection = new List<List<string>>();
-
-                var listVariableContext = actionDefineContext.listVariable();
-                do
-                {
-                    int count = listVariableContext.VAR().Count;
-                    if (count != 0)
-                    {
-                        string type = listVariableContext.type() == null ? PlanningType.ObjectType.Name : listVariableContext.type().GetText();
-
-                        for (int i = 0; i < count; i++)
-                        {
-                            List<string> constList = Globals.TermHandler.GetConstList(type);
-                            collection.Add(constList);
-                        }
-                    }
-                    listVariableContext = listVariableContext.listVariable();
-                } while (listVariableContext != null);
-
-                ScanMixedRadix(collection, actionDefineContext);
-            }
-        }
-
-        private void ScanMixedRadix(IReadOnlyList<List<string>> collection, PlanningParser.ActionDefineContext context)
-        {
-            int count = collection.Count;
-            string[] scanArray = new string[count];
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
-
-            do
-            {
-                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
-
-                Action action = Action.From(context, _eventDict, scanArray);
-                //foreach (var s in scanArray)
-                //{
-                //    Console.WriteLine("  {0}", s);
-                //}
-                //Console.WriteLine(action.Name);
-                _actionDict.Add(action.Name, action);
-                
-
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
-                    {
-                        index[j] = 0;
-                        j--;
-                        continue;
-                    }
-                    break;
-                }
-                if (j == -1)
-                    return;
-                index[j]++;
-            } while (true);
-        }
-
         public void ShowInfo()
         {
             Console.WriteLine("Domain name: {0}", DomainName);
@@ -494,36 +230,9 @@ namespace Planning.Servers
             Console.WriteLine(Domain.BarLine);
 
             Globals.TermHandler.ShowInfo();
-            //Console.WriteLine("Types:");
-            //foreach (var type in _typeDict)
-            //{
-            //    Console.WriteLine("  {0}", type.Value);
-            //}
-            //Console.WriteLine(Domain.BarLine);
 
-            //Console.WriteLine("Predicates:");
-            //foreach (var pred in _predDict.Values)
-            //{
-            //    Console.WriteLine("  Name: {0}", pred.Name);
-            //    Console.WriteLine("  Variables: {0}", pred.Count);
-            //    for (int i = 0; i < pred.Count; i++)
-            //    {
-            //        Console.WriteLine("    Index: {0}, Name: {1}, Type: {2}", i, pred.VariableList[i].Item1,
-            //            pred.VariableList[i].Item2);
-            //    }
-            //    Console.WriteLine();
-            //}
-            //Console.WriteLine(Domain.BarLine);
-
-            //Console.WriteLine("Constants:");
-            //foreach (var pair in _constantTypeMap)
-            //{
-            //    Console.WriteLine("  Name: {0}, Type: {1}", pair.Key, pair.Value);
-            //}
-            //Console.WriteLine(Domain.BarLine);
-
-            Console.WriteLine("Ground predicates:");
-            foreach (var pair in _gndPredDict)
+            Console.WriteLine("Predicates:");
+            foreach (var pair in _predDict)
             {
                 Console.WriteLine("  Name: {0}, PreCuddIndex: {1}, SucCuddIndex: {2}", pair.Key,
                     pair.Value.PreviousCuddIndex, pair.Value.SuccessiveCuddIndex);
@@ -553,39 +262,63 @@ namespace Planning.Servers
                 //"learn(a1,1,0)"
             };
 
-            
-
-            Console.WriteLine("Ground events:");
+            Console.WriteLine("Events:");
 
             for (int i = 0; i < eventNameArray.Count; i++)
             {
                 string eventName = eventNameArray[i];
                 Event e = _eventDict[eventName];
                 Console.WriteLine("  Name: {0}", eventNameArray[i]);
+                Console.WriteLine("  Cudd index: {0}", e.CuddIndex);
+
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(e.Precondition);
 
-                Console.WriteLine("  CondEffect:");
-                //Console.WriteLine("  Count:{0}", e.CondEffect.Count);
-                for (int j = 0; j < e.CondEffect.Count; j++)
-                {
-                    Console.WriteLine("    Index: {0}", j);
-                    Console.WriteLine("    Condition:");
-                    CUDD.Print.PrintMinterm(e.CondEffect[j].Item1);
-                    Console.Write("    Literals: ");
+                //Console.WriteLine("  CondEffect:");
+                ////Console.WriteLine("  Count:{0}", e.CondEffect.Count);
+                //for (int j = 0; j < e.CondEffect.Count; j++)
+                //{
+                //    Console.WriteLine("    Index: {0}", j);
+                //    Console.WriteLine("    Condition:");
+                //    CUDD.Print.PrintMinterm(e.CondEffect[j].Item1);
+                //    Console.Write("    Literals: ");
 
-                    foreach (var literal in e.CondEffect[j].Item2)
-                    {
-                        string format = literal.Item2 ? "{0} " : "!{0} ";
-                        Console.Write(format, literal.Item1);
-                    }
+                //    foreach (var literal in e.CondEffect[j].Item2)
+                //    {
+                //        string format = literal.Item2 ? "{0} " : "!{0} ";
+                //        Console.Write(format, literal.Item1);
+                //    }
 
-                    Console.WriteLine();
-                }
+                //    Console.WriteLine();
+                //}
 
                 //Console.WriteLine("  Successor state axiom:");
                 //CUDD.Print.PrintMinterm(e.SuccessorStateAxiom);
+            }
 
+            Console.WriteLine("Actions:");
+
+            foreach (var action in _actionDict.Values)
+            {
+                Console.WriteLine("  Name: {0}", action.FullName);
+                foreach (var response in action.RespDict.Values)
+                {
+                    for (int i = 0; i < response.EventList.Count; i++)
+                    {
+                        Console.WriteLine("  Plausibility degree: {0}", i]);
+                    }
+                }
+            }
+
+            for (int i = 0; i < eventNameArray.Count; i++)
+            {
+                string eventName = eventNameArray[i];
+                Event e = _eventDict[eventName];
+                Console.WriteLine("  Name: {0}", eventNameArray[i]);
+                Console.WriteLine("  Cudd index: {0}", e.CuddIndex);
+
+                Console.WriteLine("  Precondition:");
+                CUDD.Print.PrintMinterm(e.Precondition);
             }
         }
 
