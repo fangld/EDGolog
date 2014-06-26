@@ -35,15 +35,15 @@ namespace ObjectWorlds
                 problemFileName = "swServerProblem.pddl";
             }
 
-            //Test1(domainFileName, problemFileName);
+            Test1(domainFileName, problemFileName);
 
-            Test2();
+            //Test2();
             Console.ReadLine();
         }
 
         static void Test1(string domainFileName, string problemFileName)
         {
-            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+            CUDD.InitialiseCUDD(1024, 256, 262144, 0.1);
 
             // Create a TextReader that reads from a file
             TextReader tr = new StreamReader(domainFileName);
@@ -184,10 +184,14 @@ namespace ObjectWorlds
             CUDDNode f = CUDD.ONE;
             CUDDNode var, tmp;
             CUDD.Ref(f);
-            int count = 65533;
+            int count = 16;
             for (int i = count; i >= 0; i--)
             {
-                //Console.WriteLine(i);
+                if (i%1000 == 0)
+                {
+                    Console.WriteLine(i);
+                    Console.WriteLine("Memory:{0} Kbytes", CUDD.ReadMemoryInUse()/1024);
+                }
 
                 var = CUDD.Var(i);
                 tmp = CUDD.Function.And(CUDD.Function.Not(var), f);

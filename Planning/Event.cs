@@ -44,7 +44,7 @@ namespace Planning
             GeneratePrecondition(context.emptyOrPreGD(), predDict, assignment);
             Console.WriteLine("Finishing event define precondition");
 
-            //GenerateEffect(context.emptyOrEffect(), predDict, assignment);
+            GenerateEffect(context.emptyOrEffect(), predDict, assignment);
             Console.WriteLine("Finishing event define effect");
             //GenerateSuccessorStateAxiom(predDict);
             Console.WriteLine("Finishing event define SSA");
@@ -116,9 +116,9 @@ namespace Planning
                         result = firstValue >= secondValue ? CUDD.ONE : CUDD.ZERO;
                     }
                 }
-                CUDD.Ref(result);
+                
             }
-
+            CUDD.Ref(result);
             return result;
         }
 
@@ -174,29 +174,9 @@ namespace Planning
             }
             else
             {
-                List<string> varNameList = new List<string>();
-
-                List<List<string>> collection = new List<List<string>>();
-
                 var listVariableContext = context.listVariable();
-                do
-                {
-                    if (listVariableContext.VAR().Count != 0)
-                    {
-                        string type = listVariableContext.type() == null
-                            ? PlanningType.ObjectType.Name
-                            : listVariableContext.type().GetText();
-
-                        foreach (var varNode in listVariableContext.VAR())
-                        {
-                            string varName = varNode.GetText();
-                            varNameList.Add(varName);
-                            List<string> constList = Globals.TermHandler.GetConstList(type);
-                            collection.Add(constList);
-                        }
-                    }
-                    listVariableContext = listVariableContext.listVariable();
-                } while (listVariableContext != null);
+                var collection = listVariableContext.GetCollection();
+                var varNameList = listVariableContext.GetVarNameList();
 
                 if (context.FORALL() != null)
                 {
@@ -238,6 +218,7 @@ namespace Planning
 
                     CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
                     CUDD.Ref(invalidNode);
+                    
                     if (!gdNode.Equals(invalidNode))
                     {
                         CUDDNode temp = result;
@@ -248,9 +229,11 @@ namespace Planning
                         CUDD.Deref(temp);
                         CUDD.Deref(gdNode);
                     }
+                    CUDD.Deref(invalidNode);
 
                     CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
                     CUDD.Ref(terminalNode);
+
                     if (gdNode.Equals(terminalNode))
                     {
                         CUDD.Deref(result);
@@ -258,6 +241,8 @@ namespace Planning
                         CUDD.Ref(result);
                         break;
                     }
+                    CUDD.Deref(terminalNode);
+
                 }
             }
             else
@@ -282,7 +267,9 @@ namespace Planning
                 {
                     foreach (var cEffectContext in effectContext.cEffect())
                     {
-                        var condEffect = GetCondEffectList(CUDD.ONE, cEffectContext, predDict, assignment);
+                        CUDDNode initialCuddNode = CUDD.ONE;
+                        CUDD.Ref(initialCuddNode);
+                        var condEffect = GetCondEffectList(initialCuddNode, cEffectContext, predDict, assignment);
                         _condEffect.AddRange(condEffect);
                     }
                 }
@@ -311,37 +298,18 @@ namespace Planning
             List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> result;
             if (context.FORALL() != null)
             {
-                List<string> varNameList = new List<string>();
-
-                List<List<string>> collection = new List<List<string>>();
-
                 var listVariableContext = context.listVariable();
-                do
-                {
-                    if (listVariableContext.VAR().Count != 0)
-                    {
-                        string type = listVariableContext.type() == null
-                            ? PlanningType.ObjectType.Name
-                            : listVariableContext.type().GetText();
-
-                        foreach (var varNode in listVariableContext.VAR())
-                        {
-                            string varName = varNode.GetText();
-                            varNameList.Add(varName);
-                            List<string> constList = Globals.TermHandler.GetConstList(type);
-                            collection.Add(constList);
-                        }
-                    }
-                    listVariableContext = listVariableContext.listVariable();
-                } while (listVariableContext != null);
-                result = ScanMixedRadix(varNameList,
-                    collection, assignment, currentCondNode, context.effect(), predDict);
+                var varNameList = listVariableContext.GetVarNameList();
+                var collection = listVariableContext.GetCollection();
+                result = ScanMixedRadix(varNameList, collection, assignment, currentCondNode, context.effect(), predDict);
             }
             else if (context.WHEN() != null)
             {
                 result = new List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>>();
                 CUDDNode gdNode = GetCuddNode(context.gd(), predDict, assignment);
                 CUDDNode condNode = CUDD.Function.And(currentCondNode, gdNode);
+                CUDD.Ref(condNode);
+                CUDD.Deref(gdNode);
                 if (!condNode.Equals(CUDD.ZERO))
                 {
                     var gndLiterals = GetGroundLiteral(context.condEffect(), predDict, assignment);
@@ -433,19 +401,20 @@ namespace Planning
 
         private void GenerateSuccessorStateAxiom(IReadOnlyDictionary<string, Predicate> predDict)
         {
-            //CUDDNode effectNode = GetEffectNode();
-            //CUDDNode frame = GetFrameNode(predDict);
+            CUDDNode effectNode = GetEffectNode();
+            CUDDNode frameNode = GetFrameNode(predDict);
 
-            //SuccessorStateAxiom = CUDD.Function.And(effectNode, frame);
+            SuccessorStateAxiom = CUDD.Function.And(effectNode, frameNode);
 
-            //CUDD.Ref(SuccessorStateAxiom);
-            //CUDD.Deref(effectNode);
-            //CUDD.Deref(frame);
+            CUDD.Ref(SuccessorStateAxiom);
+            CUDD.Deref(effectNode);
+            CUDD.Deref(frameNode);
         }
 
         private CUDDNode GetEffectNode()
         {
             CUDDNode result = CUDD.ONE;
+            CUDD.Ref(result);
 
             foreach (var cEffect in _condEffect)
             {
