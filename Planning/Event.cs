@@ -43,11 +43,22 @@ namespace Planning
             Console.WriteLine(FullName);
             GeneratePrecondition(context.emptyOrPreGD(), predDict, assignment);
             Console.WriteLine("Finishing event define precondition");
+            Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
+            if (context.emptyOrPreGD() != null)
+            {
+                Console.WriteLine("  Context: {0}", context.emptyOrPreGD().GetText());
+            }
+            string filename = string.Format("{0}.dot", FullName);
+            CUDD.Print.PrintBDDTree(Precondition, filename);
+            //CUDD.Print.PrintMinterm(Precondition);
+            //Console.ReadLine();
 
             GenerateEffect(context.emptyOrEffect(), predDict, assignment);
             Console.WriteLine("Finishing event define effect");
-            //GenerateSuccessorStateAxiom(predDict);
+            GenerateSuccessorStateAxiom(predDict);
             Console.WriteLine("Finishing event define SSA");
+            Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(SuccessorStateAxiom));
+
         }
 
         #endregion
@@ -131,10 +142,19 @@ namespace Planning
             }
             else if (context.AND() != null)
             {
-                result = GetCuddNode(context.gd()[0], predDict, assignment);
-                for (int i = 1; i < context.gd().Count; i++)
+                result = CUDD.ONE;
+                CUDD.Ref(result);
+                //result = GetCuddNode(context.gd()[0], predDict, assignment);
+                for (int i = 0; i < context.gd().Count; i++)
                 {
                     CUDDNode gdNode = GetCuddNode(context.gd()[i], predDict, assignment);
+                    if (gdNode.Equals(CUDD.ZERO))
+                    {
+                        CUDD.Deref(result);
+                        result = CUDD.ZERO;
+                        CUDD.Ref(result);
+                        break;
+                    }
                     CUDDNode andNode = CUDD.Function.And(result, gdNode);
                     CUDD.Ref(andNode);
                     CUDD.Deref(result);
@@ -144,10 +164,19 @@ namespace Planning
             }
             else if (context.OR() != null)
             {
-                result = GetCuddNode(context.gd()[0], predDict, assignment);
-                for (int i = 1; i < context.gd().Count; i++)
+                result = CUDD.ZERO;
+                CUDD.Ref(result);
+                //result = GetCuddNode(context.gd()[0], predDict, assignment);
+                for (int i = 0; i < context.gd().Count; i++)
                 {
                     CUDDNode gdNode = GetCuddNode(context.gd()[i], predDict, assignment);
+                    if (gdNode.Equals(CUDD.ONE))
+                    {
+                        CUDD.Deref(result);
+                        result = CUDD.ONE;
+                        CUDD.Ref(result);
+                        break;
+                    }
                     CUDDNode orNode = CUDD.Function.Or(result, gdNode);
                     CUDD.Ref(orNode);
                     CUDD.Deref(result);
@@ -167,7 +196,18 @@ namespace Planning
                 CUDDNode gdNode0 = GetCuddNode(context.gd()[0], predDict, assignment);
                 CUDDNode gdNode1 = GetCuddNode(context.gd()[1], predDict, assignment);
 
-                result = CUDD.Function.Implies(gdNode0, gdNode1);
+                if (gdNode0.Equals(CUDD.ZERO) || gdNode1.Equals(CUDD.ONE))
+                {
+                    result = CUDD.ONE;
+                }
+                else if (gdNode0.Equals(CUDD.ONE) && gdNode1.Equals(CUDD.ZERO))
+                {
+                    result = CUDD.ZERO;
+                }
+                else
+                {
+                    result = CUDD.Function.Implies(gdNode0, gdNode1);
+                }
                 CUDD.Ref(result);
                 CUDD.Deref(gdNode0);
                 CUDD.Deref(gdNode1);
@@ -242,7 +282,6 @@ namespace Planning
                         break;
                     }
                     CUDD.Deref(terminalNode);
-
                 }
             }
             else
@@ -422,7 +461,7 @@ namespace Planning
 
                 CUDDNode gndPred = CUDD.Var(firstLiteral.Item1.SuccessiveCuddIndex);
                 CUDDNode literalsNode = firstLiteral.Item2 ? gndPred : CUDD.Function.Not(gndPred);
-                CUDD.Ref(literalsNode);
+                //CUDD.Ref(literalsNode);
                 
                 for (int i = 1; i < cEffect.Item2.Count; i++)
                 {
@@ -430,11 +469,11 @@ namespace Planning
                     CUDDNode conjLiterals = literalsNode;
                     gndPred = CUDD.Var(literal.Item1.SuccessiveCuddIndex);
                     CUDDNode literalNode = literal.Item2 ? gndPred : CUDD.Function.Not(gndPred);
-                    CUDD.Ref(literalNode);
+                    //CUDD.Ref(literalNode);
                     literalsNode = CUDD.Function.And(conjLiterals, literalNode);
                     CUDD.Ref(literalsNode);
                     CUDD.Deref(conjLiterals);
-                    CUDD.Deref(literalNode);
+                    //CUDD.Deref(literalNode);
                 }
 
                 CUDDNode cEffectNode = CUDD.Function.Implies(cEffect.Item1, literalsNode);
@@ -471,10 +510,12 @@ namespace Planning
         private CUDDNode GetFrameNode(IReadOnlyDictionary<string, Predicate> predDict)
         {
             CUDDNode result = CUDD.ONE;
+            CUDD.Ref(result);
             //Console.WriteLine("    Previous abstract predicate count:{0}", _preAbstractPredDict.Count);
             foreach (var gndPredPair in predDict)
             {
                 CUDDNode frameCondition = CUDD.ONE;
+                CUDD.Ref(frameCondition);
                 foreach (var cEffect in _condEffect)
                 {
                     if (cEffect.Item2.Exists(literal => literal.Item1.Equals(gndPredPair.Value)))
@@ -493,12 +534,12 @@ namespace Planning
                 CUDDNode sucPredNode = CUDD.Var(gndPredPair.Value.SuccessiveCuddIndex);
 
                 CUDDNode invariant = CUDD.Function.Equal(prePredNode, sucPredNode);
+                CUDD.Ref(invariant);
 
                 //Console.WriteLine("       Frame condition:");
                 //CUDD.Print.PrintMinterm(frameCondition);
                 //Console.WriteLine("       Invariant:");
                 //CUDD.Print.PrintMinterm(invariant);
-                CUDD.Ref(invariant);
                 CUDDNode frame = CUDD.Function.Implies(frameCondition, invariant);
                 CUDD.Ref(frame);
                 CUDD.Deref(frameCondition);

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
 //using ObjectWorlds.Network;
@@ -43,7 +44,7 @@ namespace ObjectWorlds
 
         static void Test1(string domainFileName, string problemFileName)
         {
-            CUDD.InitialiseCUDD(1024, 256, 262144, 0.1);
+            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
 
             // Create a TextReader that reads from a file
             TextReader tr = new StreamReader(domainFileName);
@@ -180,25 +181,85 @@ namespace ObjectWorlds
 
             // initialise cudd
             CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+            Console.WriteLine(CUDD.GetReference(CUDD.ONE));
+            //CUDD.ONE.GetValue();
+            CUDD.Deref(CUDD.ONE);
+            Console.WriteLine(CUDD.GetReference(CUDD.ONE));
+            CUDD.Deref(CUDD.ONE);
+            Console.WriteLine(CUDD.GetReference(CUDD.ONE));
+            CUDD.Deref(CUDD.ONE);
+            Console.WriteLine(CUDD.GetReference(CUDD.ONE));
+            CUDD.Deref(CUDD.ONE);
+            Console.WriteLine(CUDD.GetReference(CUDD.ONE));
+            CUDD.Deref(CUDD.ONE);
+            Console.WriteLine(CUDD.GetReference(CUDD.ONE));
 
-            CUDDNode f = CUDD.ONE;
-            CUDDNode var, tmp;
-            CUDD.Ref(f);
-            int count = 16;
-            for (int i = count; i >= 0; i--)
-            {
-                if (i%1000 == 0)
-                {
-                    Console.WriteLine(i);
-                    Console.WriteLine("Memory:{0} Kbytes", CUDD.ReadMemoryInUse()/1024);
-                }
+            CUDDNode var = CUDD.Var(10);
+            Console.WriteLine(CUDD.GetReference(var));
+            CUDD.Deref(var);
+            Console.WriteLine(CUDD.GetReference(var));
+            CUDD.Deref(var);
+            Console.WriteLine(CUDD.GetReference(var));
+            CUDD.Deref(var);
+            Console.WriteLine(CUDD.GetReference(var));
 
-                var = CUDD.Var(i);
-                tmp = CUDD.Function.And(CUDD.Function.Not(var), f);
-                CUDD.Ref(tmp);
-                CUDD.Deref(f);
-                f = tmp;
-            }
+            CUDDNode var1 = CUDD.Var(11);
+            CUDDNode andNode = CUDD.Function.And(var, var1);
+            Console.WriteLine(CUDD.GetReference(andNode));
+            CUDD.Ref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+            CUDD.Deref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+
+            CUDD.Deref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+
+            CUDD.Deref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+            CUDD.Deref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+            CUDD.Ref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+            CUDD.Ref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode)); CUDD.Ref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode)); CUDD.Ref(andNode);
+            Console.WriteLine(CUDD.GetReference(andNode));
+
+
+
+
+            //CUDDNode f = CUDD.ZERO;
+            //CUDDNode var, tmp;
+            //CUDD.Ref(f);
+            //int count = 1000;
+
+            //CUDD.Var(count);
+            //for (int i = count; i >= 0; i--)
+            ////for (int i = 0; i <= count; i++)
+            //{
+            //    var = CUDD.Var(i);
+            //    //if (i % 6 == 0)
+            //    //{
+            //        tmp = CUDD.Function.Or(var, f);
+            //    //}
+            //    //else
+            //    //{
+            //    //    tmp = CUDD.Function.And(var, f);
+            //    //}
+            //    CUDD.Ref(tmp);
+            //    CUDD.Deref(f);
+
+            //    f = tmp;
+            //    if (i % 1000 == 0)
+            //    {
+            //        Console.WriteLine("Index: {0}", i);
+            //        Console.WriteLine("Memory: {0} Kbytes", CUDD.ReadMemoryInUse() / 1024);
+            //        //Console.WriteLine("Number of nodes: {0}", CUDD.GetNumNodes(f));
+            //        Console.WriteLine();
+            //        CUDD.Debug.DebugCheck();
+            //    }
+
+            //}
 
             //CUDD.Print.PrintMinterm(f);
 

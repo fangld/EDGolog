@@ -154,9 +154,9 @@ namespace PAT.Common.Classes.CUDDLib
                 PlatformInvoke.Cudd_bddPrintInfo(manager, fileName);
             }
 
-            public static int PrintBDDTree(CUDDNode node)
+            public static int PrintBDDTree(CUDDNode node, string filename = "BDDTree.dot")
             {
-                return PlatformInvoke.Cudd_PrintBDDTree(manager, node.Ptr, "BDDTree.dot");
+                return PlatformInvoke.Cudd_PrintBDDTree(manager, node.Ptr, filename);
             }
         }
     }

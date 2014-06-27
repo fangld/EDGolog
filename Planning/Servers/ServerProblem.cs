@@ -19,7 +19,6 @@ namespace Planning.Servers
 
         private Dictionary<string, Action> _actionDict;
 
-
         private int _currentCuddIndex;
 
         #endregion
@@ -49,6 +48,7 @@ namespace Planning.Servers
             Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
             Console.WriteLine("Finishing term handler!");
+            //ComputeMaxCuddIndex(domainContext.predDefine(), domainContext.eventDefine());
             HandlePredDefine(domainContext.predDefine());
             Console.WriteLine("Finishing predicate!");
             //Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(),
@@ -73,6 +73,44 @@ namespace Planning.Servers
             ServerProblem result = new ServerProblem(domainContext, context);
             return result;
         }
+
+        //private void ComputeMaxCuddIndex(PlanningParser.PredDefineContext predDefineContext, IReadOnlyList<PlanningParser.EventDefineContext> eventDefineContexts)
+        //{
+        //    int maxCuddIndex = 0;
+        //    foreach (var atomFormSkeleton in predDefineContext.atomFormSkeleton())
+        //    {
+        //        maxCuddIndex += ComputeNumberOfPermutation(atomFormSkeleton.listVariable());
+        //    }
+        //    foreach (var eventDefineContext in eventDefineContexts)
+        //    {
+        //        maxCuddIndex += ComputeNumberOfPermutation(eventDefineContext.listVariable());
+        //    }
+        //    CUDD.Var(maxCuddIndex);
+        //}
+
+        //private int ComputeNumberOfPermutation(PlanningParser.ListVariableContext context)
+        //{
+        //    int result = 1;
+        //    do
+        //    {
+        //        int count = context.VAR().Count;
+        //        if (count != 0)
+        //        {
+        //            string type = context.type() == null ? PlanningType.ObjectType.Name : context.type().GetText();
+
+        //            for (int i = 0; i < count; i++)
+        //            {
+        //                List<string> constList = Globals.TermHandler.GetConstList(type);
+        //                result *= constList.Count;
+        //            }
+        //        }
+        //        context = context.listVariable();
+        //    } while (context != null);
+
+        //    return result;
+        //}
+
+
 
         private void HandlePredDefine(PlanningParser.PredDefineContext context)
         {
@@ -202,6 +240,10 @@ namespace Planning.Servers
             {
                 _eventDict.Add(e.FullName, e);
             }
+            else
+            {
+                CUDD.Deref(e.Precondition);
+            }
         }
 
         private void AddToActionDict(PlanningParser.ActionDefineContext context, string[] constArray, Dictionary<string, string> assignment)
@@ -279,6 +321,8 @@ namespace Planning.Servers
 
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(e.Precondition);
+                Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.Precondition));
+
 
                 //Console.WriteLine("  CondEffect:");
                 ////Console.WriteLine("  Count:{0}", e.CondEffect.Count);
