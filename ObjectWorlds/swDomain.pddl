@@ -40,7 +40,7 @@
 
 (:event rightSucWithNotice
 :parameters (?i - agent ?d - rightRelLoc)
-:precondition (exists (?x - point ?y - point ?j - agent) 
+:precondition (exists (?x - point ?y - point ?j - agent)
                       (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (= ?x (+ ?y ?d)) (!= ?x maxLoc))
 			  )
 :effect (forall (?x - point)
@@ -78,7 +78,7 @@
 (:event dropSuc
 :parameters (?i - agent)
 :precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i)) (< ?n maxAcorn)))
-:effect (forall (?x - point ?n - numOfAcorn) 
+:effect (forall (?x - point ?n - numOfAcorn)
                 (when (and (loc ?i ?x) (acorn ?x ?n) (!= ?n maxAcorn)) (and (acorn ?x (+ ?n 1)) (not (acorn ?x ?n)) (not (hold ?i)))))
 )
 
@@ -159,7 +159,7 @@
 
 (:response noise
 :parameters (?m - numOfAcorn)
-:events ((0 (learn ?i ?m 0)) 
+:events ((0 (learn ?i ?m 0))
          (1 (exists (?d - noiseSensingAcorn) (and (!= ?d 0) (learn ?i ?m ?d))))
 		)
 )

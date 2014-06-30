@@ -55,8 +55,8 @@ namespace Planning
 
             GenerateEffect(context.emptyOrEffect(), predDict, assignment);
             Console.WriteLine("Finishing event define effect");
-            //GenerateSuccessorStateAxiom(predDict);
-            //Console.WriteLine("Finishing event define SSA");
+            GenerateSuccessorStateAxiom(predDict);
+            Console.WriteLine("Finishing event define SSA");
             //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(SuccessorStateAxiom));
 
         }
@@ -440,8 +440,18 @@ namespace Planning
                 var firstLiteral = cEffect.Item2[0];
 
                 CUDDNode gndPred = CUDD.Var(firstLiteral.Item1.SuccessiveCuddIndex);
-                CUDDNode literalsNode = firstLiteral.Item2 ? gndPred : CUDD.Function.Not(gndPred);
-                //CUDD.Ref(literalsNode);
+                CUDD.Ref(gndPred);
+                CUDDNode literalsNode;
+                if (firstLiteral.Item2)
+                {
+                    literalsNode = gndPred;
+                }
+                else
+                {
+                    literalsNode = CUDD.Function.Not(gndPred);
+                    CUDD.Ref(literalsNode);
+                    CUDD.Deref(gndPred);
+                }
                 
                 for (int i = 1; i < cEffect.Item2.Count; i++)
                 {
@@ -459,24 +469,6 @@ namespace Planning
                 CUDDNode cEffectNode = CUDD.Function.Implies(cEffect.Item1, literalsNode);
                 CUDD.Ref(cEffectNode);
                 CUDD.Deref(literalsNode);
-
-                //if (Name == "leftSucWithNotice(a1,0)")
-                //{
-                //    Console.WriteLine("  Each CondEffect:");
-                //    Console.WriteLine("    Precondition");
-                //    CUDD.Print.PrintMinterm(cEffect.Item1);
-                //    Console.WriteLine("    Effect:");
-                //    //Console.WriteLine("  Count:{0}", e.CondEffect.Count);
-
-                //    foreach (var tuple in cEffect.Item2)
-                //    {
-                //        string format = tuple.Item2 ? "{0} " : "!{0} ";
-                //        Console.Write(format, tuple.Item1);
-                //    }
-
-                //    Console.WriteLine();
-                //    CUDD.Print.PrintMinterm(cEffectNode);
-                //}
 
                 CUDDNode conjCEffectNode = result;
                 result = CUDD.Function.And(conjCEffectNode, cEffectNode);
