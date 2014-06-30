@@ -14,12 +14,12 @@ namespace PAT.Common.Classes.CUDDLib
         /// <summary>
         /// Return zero constant node, remember to call Reference
         /// </summary>
-        public static CUDDNode ZERO;
+        public static CUDDNode ZERO { get { return CUDD.Constant(0); } }
 
         /// <summary>
         /// Return 1 constant node, remember to call Reference
         /// </summary>
-        public static CUDDNode ONE;
+        public static CUDDNode ONE { get { return CUDD.Constant(1); } }
 
         /// <summary>
         /// Return plus infinity constant node, remember to call Reference
@@ -275,8 +275,8 @@ namespace PAT.Common.Classes.CUDDLib
         public static void InitialiseCUDD(int maxMemory, int uniqueSlots, int cacheSlots, double epsilon)
         {
             manager = PlatformInvoke.DD_InitialiseCUDD(maxMemory, uniqueSlots, cacheSlots, epsilon);
-            ZERO = Constant(0);
-            ONE = Constant(1);
+            //ZERO = Constant(0);
+            //ONE = ONE;
             PLUS_INFINITY = PlusInfinity();
             MINUS_INFINITY = MinusInfinity();
             //PlatformInvoke.Cudd_SetStdoutToFile(manager, Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\out.txt");

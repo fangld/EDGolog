@@ -181,49 +181,64 @@ namespace ObjectWorlds
 
             // initialise cudd
             CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+            //CUDDNode x0 = CUDD.Var(0);
+            //Console.WriteLine(CUDD.GetReference(x0));
+            //CUDDNode x1 = CUDD.Var(0);
+            //Console.WriteLine(CUDD.GetReference(x1));
+            //CUDDNode x2 = CUDD.Var(0);
+            //Console.WriteLine(CUDD.GetReference(x2));
+            ////CUDD.Ref(x0);
+            //Console.WriteLine(CUDD.GetReference(x2));
+
             Console.WriteLine(CUDD.GetReference(CUDD.ONE));
             //CUDD.ONE.GetValue();
-            CUDD.Deref(CUDD.ONE);
+            //CUDD.Deref(CUDD.ONE);
             Console.WriteLine(CUDD.GetReference(CUDD.ONE));
-            CUDD.Deref(CUDD.ONE);
+            //CUDD.Deref(CUDD.ONE);
             Console.WriteLine(CUDD.GetReference(CUDD.ONE));
-            CUDD.Deref(CUDD.ONE);
+            //CUDD.Deref(CUDD.ONE);
             Console.WriteLine(CUDD.GetReference(CUDD.ONE));
-            CUDD.Deref(CUDD.ONE);
+            //CUDD.Deref(CUDD.ONE);
             Console.WriteLine(CUDD.GetReference(CUDD.ONE));
-            CUDD.Deref(CUDD.ONE);
+            //CUDD.Deref(CUDD.ONE);
             Console.WriteLine(CUDD.GetReference(CUDD.ONE));
 
-            CUDDNode var = CUDD.Var(10);
-            Console.WriteLine(CUDD.GetReference(var));
-            CUDD.Deref(var);
-            Console.WriteLine(CUDD.GetReference(var));
-            CUDD.Deref(var);
-            Console.WriteLine(CUDD.GetReference(var));
-            CUDD.Deref(var);
-            Console.WriteLine(CUDD.GetReference(var));
+            //CUDDNode x = CUDD.Constant(1);
+            //Console.WriteLine(CUDD.GetReference(x));
+            //CUDD.Deref(CUDD.ONE);
+            //Console.WriteLine(CUDD.GetReference(x));
 
-            CUDDNode var1 = CUDD.Var(11);
-            CUDDNode andNode = CUDD.Function.And(var, var1);
-            Console.WriteLine(CUDD.GetReference(andNode));
-            CUDD.Ref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
-            CUDD.Deref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
 
-            CUDD.Deref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDDNode var = CUDD.Var(10);
+            //Console.WriteLine(CUDD.GetReference(var));
+            //CUDD.Deref(var);
+            //Console.WriteLine(CUDD.GetReference(var));
+            //CUDD.Deref(var);
+            //Console.WriteLine(CUDD.GetReference(var));
+            //CUDD.Deref(var);
+            //Console.WriteLine(CUDD.GetReference(var));
 
-            CUDD.Deref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
-            CUDD.Deref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
-            CUDD.Ref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
-            CUDD.Ref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode)); CUDD.Ref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode)); CUDD.Ref(andNode);
-            Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDDNode var1 = CUDD.Var(11);
+            //CUDDNode andNode = CUDD.Function.And(var, var1);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDD.Ref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDD.Deref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+
+            //CUDD.Deref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+
+            //CUDD.Deref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDD.Deref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDD.Ref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
+            //CUDD.Ref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode)); CUDD.Ref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode)); CUDD.Ref(andNode);
+            //Console.WriteLine(CUDD.GetReference(andNode));
 
 
 

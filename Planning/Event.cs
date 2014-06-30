@@ -55,9 +55,9 @@ namespace Planning
 
             GenerateEffect(context.emptyOrEffect(), predDict, assignment);
             Console.WriteLine("Finishing event define effect");
-            GenerateSuccessorStateAxiom(predDict);
-            Console.WriteLine("Finishing event define SSA");
-            Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(SuccessorStateAxiom));
+            //GenerateSuccessorStateAxiom(predDict);
+            //Console.WriteLine("Finishing event define SSA");
+            //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(SuccessorStateAxiom));
 
         }
 
@@ -70,14 +70,14 @@ namespace Planning
         private void GeneratePrecondition(PlanningParser.EmptyOrPreGDContext context, IReadOnlyDictionary<string, Predicate> predDict, Dictionary<string, string> assignment)
         {
             Precondition = CUDD.ONE;
-            CUDD.Ref(Precondition);
+            //CUDD.Ref(Precondition);
 
             if (context != null)
             {
                 PlanningParser.GdContext gdContext = context.gd();
                 if (context.gd() != null)
                 {
-                    CUDD.Deref(Precondition);
+                    //CUDD.Deref(Precondition);
                     Precondition = GetCuddNode(gdContext, predDict, assignment);
                 }
             }
@@ -129,6 +129,7 @@ namespace Planning
                 }
                 
             }
+
             CUDD.Ref(result);
             return result;
         }
@@ -151,6 +152,7 @@ namespace Planning
                     if (gdNode.Equals(CUDD.ZERO))
                     {
                         CUDD.Deref(result);
+                        CUDD.Deref(gdNode);
                         result = CUDD.ZERO;
                         CUDD.Ref(result);
                         break;
@@ -173,6 +175,7 @@ namespace Planning
                     if (gdNode.Equals(CUDD.ONE))
                     {
                         CUDD.Deref(result);
+                        CUDD.Deref(gdNode);
                         result = CUDD.ONE;
                         CUDD.Ref(result);
                         break;
@@ -195,19 +198,7 @@ namespace Planning
             {
                 CUDDNode gdNode0 = GetCuddNode(context.gd()[0], predDict, assignment);
                 CUDDNode gdNode1 = GetCuddNode(context.gd()[1], predDict, assignment);
-
-                if (gdNode0.Equals(CUDD.ZERO) || gdNode1.Equals(CUDD.ONE))
-                {
-                    result = CUDD.ONE;
-                }
-                else if (gdNode0.Equals(CUDD.ONE) && gdNode1.Equals(CUDD.ZERO))
-                {
-                    result = CUDD.ZERO;
-                }
-                else
-                {
-                    result = CUDD.Function.Implies(gdNode0, gdNode1);
-                }
+                result = CUDD.Function.Implies(gdNode0, gdNode1);
                 CUDD.Ref(result);
                 CUDD.Deref(gdNode0);
                 CUDD.Deref(gdNode1);
@@ -220,7 +211,7 @@ namespace Planning
 
                 if (context.FORALL() != null)
                 {
-                    result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection, 0);
+                    result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection);
                 }
                 else
                 {
@@ -233,9 +224,9 @@ namespace Planning
 
         private CUDDNode ScanVarList(PlanningParser.GdContext context, IReadOnlyDictionary<string, Predicate> predDict,
             Dictionary<string, string> assignment, IReadOnlyList<string> varNameList,
-            IReadOnlyList<List<string>> collection, int currentLevel, bool isForall = true)
+            IReadOnlyList<List<string>> collection, int currentLevel = 0, bool isForall = true)
         {
-            CUDDNode result = isForall ? CUDD.ONE : CUDD.ZERO;
+            CUDDNode result = isForall ? CUDD.ONE: CUDD.ZERO;
             CUDD.Ref(result);
             if (currentLevel != varNameList.Count)
             {
@@ -256,32 +247,21 @@ namespace Planning
                     CUDDNode gdNode = ScanVarList(context, predDict, assignment, varNameList, collection,
                         currentLevel + 1, isForall);
 
-                    CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
-                    CUDD.Ref(invalidNode);
-                    
-                    if (!gdNode.Equals(invalidNode))
-                    {
-                        CUDDNode temp = result;
-
-                        result = isForall ? CUDD.Function.And(temp, gdNode) : CUDD.Function.Or(temp, gdNode);
-
-                        CUDD.Ref(result);
-                        CUDD.Deref(temp);
-                        CUDD.Deref(gdNode);
-                    }
-                    CUDD.Deref(invalidNode);
-
                     CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
-                    CUDD.Ref(terminalNode);
 
                     if (gdNode.Equals(terminalNode))
                     {
                         CUDD.Deref(result);
-                        result = CUDD.ZERO;
+                        result = terminalNode;
                         CUDD.Ref(result);
                         break;
                     }
-                    CUDD.Deref(terminalNode);
+
+                    CUDDNode quantifiedNode = isForall ? CUDD.Function.And(result, gdNode) : CUDD.Function.Or(result, gdNode);
+                    CUDD.Ref(quantifiedNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = quantifiedNode;
                 }
             }
             else
