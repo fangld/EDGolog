@@ -128,6 +128,7 @@ namespace Planning.Servers
             {
                 Build(eventDefineContext.listVariable(), eventDefineContext, AddToEventDict);
             }
+            Console.ReadLine();
         }
 
         private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)

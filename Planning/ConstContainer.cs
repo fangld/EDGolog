@@ -7,7 +7,7 @@ using LanguageRecognition;
 
 namespace Planning
 {
-    public abstract class ConstContainer
+    public abstract class ConstContainer : IEquatable<ConstContainer>
     {
         #region
 
@@ -151,5 +151,10 @@ namespace Planning
         }
 
         #endregion
+
+        public bool Equals(ConstContainer other)
+        {
+            return FullName == other.FullName;
+        }
     }
 }
