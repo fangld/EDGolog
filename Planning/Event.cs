@@ -493,7 +493,7 @@ namespace Planning
                         CUDD.Ref(cEffect.Item1);
                         CUDDNode negCondition = CUDD.Function.Not(cEffect.Item1);
                         CUDD.Ref(negCondition);
-                        //CUDD.Deref(cEffect.Item1); ???
+                        CUDD.Deref(cEffect.Item1); //???
                         CUDDNode tmpNode = CUDD.Function.And(frameCondition, negCondition);
                         CUDD.Ref(tmpNode);
                         CUDD.Deref(frameCondition);

@@ -36,9 +36,9 @@ namespace ObjectWorlds
                 problemFileName = "swServerProblem.pddl";
             }
 
-            //Test1(domainFileName, problemFileName);
+            Test1(domainFileName, problemFileName);
 
-            Test2();
+            //Test2();
             Console.ReadLine();
         }
 
