@@ -31,7 +31,7 @@ namespace Planning
         {
             Name = context.actionSymbol().GetText();
             GenerateResponses(context.responseDefine(),eventDict, assignment);
-
+            //Console.WriteLine("Action Hello!");
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace Planning
 
         private void GenerateResponses(IReadOnlyList<PlanningParser.ResponseDefineContext> context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
-            _respDict = new Dictionary<string, Response>(context.Count);
+            _respDict = new Dictionary<string, Response>();
             foreach (var responseDefineContext in context)
             {
                 HandleResponse(responseDefineContext, eventDict, assignment);

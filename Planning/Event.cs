@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
@@ -15,7 +16,7 @@ namespace Planning
 
         private List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> _condEffect;
 
-        private List<Predicate> _nonEffectPredList;
+        private HashSet<Predicate> _effectPredSet;
 
         #endregion
 
@@ -28,6 +29,11 @@ namespace Planning
         public IReadOnlyList<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> CondEffect
         {
             get { return _condEffect; }
+        }
+
+        public HashSet<Predicate> EffectPredSet
+        {
+            get { return _effectPredSet; }
         }
 
         public CUDDNode SuccessorStateAxiom { get; set; }
@@ -217,14 +223,17 @@ namespace Planning
                 var collection = listVariableContext.GetCollection();
                 var varNameList = listVariableContext.GetVarNameList();
 
-                if (context.FORALL() != null)
-                {
-                    result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection);
-                }
-                else
-                {
-                    result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection, 0, false);
-                }
+                bool isForall = context.FORALL() != null;
+                result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection, 0, isForall);
+
+                //if (context.FORALL() != null)
+                //{
+                //    result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection);
+                //}
+                //else
+                //{
+                //    result = ScanVarList(context.gd(0), predDict, assignment, varNameList, collection, 0, false);
+                //}
             }
 
             return result;
@@ -428,16 +437,14 @@ namespace Planning
 
         private void GeneratePartialSuccessorStateAxiom(IReadOnlyDictionary<string, Predicate> predDict)
         {
-            //CUDDNode effectNode = GetEffectNode();
+            CUDDNode effectNode = GetEffectNode();
             CUDDNode frameNode = GetPartialFrameNode(predDict);
 
-            //ParitalSuccessorStateAxiom = CUDD.Function.And(effectNode, frameNode);
+            ParitalSuccessorStateAxiom = CUDD.Function.And(effectNode, frameNode);
 
-            ParitalSuccessorStateAxiom = frameNode;
-
-            //CUDD.Ref(ParitalSuccessorStateAxiom);
-            //CUDD.Deref(effectNode);
-            //CUDD.Deref(frameNode);
+            CUDD.Ref(ParitalSuccessorStateAxiom);
+            CUDD.Deref(effectNode);
+            CUDD.Deref(frameNode);
         }
 
         private CUDDNode GetEffectNode()
@@ -479,7 +486,7 @@ namespace Planning
 
         private CUDDNode GetPartialFrameNode(IReadOnlyDictionary<string, Predicate> predDict)
         {
-            _nonEffectPredList = new List<Predicate>();
+            _effectPredSet = new HashSet<Predicate>();
             CUDDNode result = CUDD.ONE;
             CUDD.Ref(result);
             foreach (var pred in predDict.Values)
@@ -493,7 +500,7 @@ namespace Planning
                         CUDD.Ref(cEffect.Item1);
                         CUDDNode negCondition = CUDD.Function.Not(cEffect.Item1);
                         CUDD.Ref(negCondition);
-                        CUDD.Deref(cEffect.Item1); //???
+                        //CUDD.Deref(cEffect.Item1); //???
                         CUDDNode tmpNode = CUDD.Function.And(frameCondition, negCondition);
                         CUDD.Ref(tmpNode);
                         CUDD.Deref(frameCondition);
@@ -508,21 +515,16 @@ namespace Planning
                 }
                 else
                 {
-                    _nonEffectPredList.Add(pred);
-                    //CUDDNode prePredNode = CUDD.Var(pred.PreviousCuddIndex);
-                    ////CUDD.Ref(prePredNode);
-                    //CUDDNode sucPredNode = CUDD.Var(pred.SuccessiveCuddIndex);
-                    ////CUDD.Ref(sucPredNode);
-                    //CUDDNode invariantNode = CUDD.Function.Equal(prePredNode, sucPredNode);
-                    //CUDD.Ref(invariantNode);
-                    //CUDD.Deref(prePredNode);
-                    //CUDD.Deref(sucPredNode);
+                    _effectPredSet.Add(pred);
+                    CUDDNode prePredNode = CUDD.Var(pred.PreviousCuddIndex);
+                    CUDDNode sucPredNode = CUDD.Var(pred.SuccessiveCuddIndex);
+                    CUDDNode invariantNode = CUDD.Function.Equal(prePredNode, sucPredNode);
+                    CUDD.Ref(invariantNode);
 
-                    CUDDNode frame = frameCondition;//CUDD.Function.Implies(frameCondition, invariantNode);
-                    //CUDD.Ref(frame);
-                    //CUDD.Deref(frameCondition);
-                    //CUDD.Deref(invariantNode);
-
+                    CUDDNode frame = CUDD.Function.Implies(frameCondition, invariantNode);
+                    CUDD.Ref(frame);
+                    CUDD.Deref(frameCondition);
+                    CUDD.Deref(invariantNode);
                     
                     CUDDNode tmpNode =  CUDD.Function.And(result, frame);
                     CUDD.Ref(tmpNode);

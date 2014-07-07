@@ -52,6 +52,7 @@
     <Compile Include="ConstTermComputer.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Event.cs" />
+    <Compile Include="EventCollection.cs" />
     <Compile Include="ListVariableContextExtension.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="EventSet.cs" />

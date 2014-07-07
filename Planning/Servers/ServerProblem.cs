@@ -356,11 +356,11 @@ namespace Planning.Servers
                 foreach (var response in action.RespDict.Values)
                 {
                     Console.WriteLine("    Name: {0}", response.FullName);
-                    for (int i = 0; i < response.EventList.Count; i++)
+                    for (int i = 0; i < response.EventCollectionList.Count; i++)
                     {
                         Console.WriteLine("    Plausibility degree: {0}", i);
                         Console.Write("    Event list: ");
-                        foreach (var e in response.EventList[i])
+                        foreach (var e in response.EventCollectionList[i])
                         {
                             Console.Write("{0}  ", e.FullName);
                         }

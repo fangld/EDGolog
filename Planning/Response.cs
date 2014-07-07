@@ -12,7 +12,7 @@ namespace Planning
     {
         #region Fields
 
-        private List<Event>[] _eventListArray;
+        private EventCollection[] _eventCollectionArray;
 
         #endregion
 
@@ -20,12 +20,12 @@ namespace Planning
 
         public int MaxPlausibilityDegree
         {
-            get { return _eventListArray.Length; }
+            get { return _eventCollectionArray.Length; }
         }
 
-        public IReadOnlyList<List<Event>> EventList
+        public IReadOnlyList<EventCollection> EventCollectionList
         {
-            get { return _eventListArray; }
+            get { return _eventCollectionArray; }
         }
 
         #endregion
@@ -48,23 +48,20 @@ namespace Planning
             var eventModelContext = context.eventModel();
             if (eventModelContext.LB() == null)
             {
-                _eventListArray = new List<Event>[1];
-                var eventList = HandleGdEvent(eventModelContext.gdEvent(), eventDict, assignment);
-                _eventListArray[0] = eventList;
+                _eventCollectionArray = new EventCollection[1];
+                _eventCollectionArray[0] = HandleGdEvent(eventModelContext.gdEvent(), eventDict, assignment);
             }
             else
             {
-                _eventListArray = new List<Event>[2];
-                var eventList0 = HandleGdEvent(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment, 0);
-                _eventListArray[0] = eventList0;
-                var eventList1 = HandleGdEvent(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
-                _eventListArray[1] = eventList1;
+                _eventCollectionArray = new EventCollection[2];
+                _eventCollectionArray[0] = HandleGdEvent(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment, 0);
+                _eventCollectionArray[1] = HandleGdEvent(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
             }
         }
 
-        public List<Event> HandleGdEvent(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
+        public EventCollection HandleGdEvent(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
         {
-            List<Event> result = new List<Event>();
+            List<Event> eventList = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
             CUDD.Ref(gdEventNode);
             foreach (var e in eventDict.Values)
@@ -74,12 +71,13 @@ namespace Planning
                 CUDD.Ref(impliesNode);
                 if (impliesNode.Equals(CUDD.ONE))
                 {
-                    result.Add(e);
+                    eventList.Add(e);
                 }
                 CUDD.Deref(impliesNode);
             }
             CUDD.Deref(gdEventNode);
 
+            EventCollection result = new EventCollection(eventList);
             return result;
         }
 
@@ -136,6 +134,7 @@ namespace Planning
                 }
             }
 
+            CUDD.Ref(result);
             return result;
         }
 
@@ -151,10 +150,19 @@ namespace Planning
             }
             else if (context.AND() != null)
             {
-                result = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
-                for (int i = 1; i < context.gdEvent().Count; i++)
+                result = CUDD.ONE;
+                CUDD.Ref(result);
+                for (int i = 0; i < context.gdEvent().Count; i++)
                 {
                     CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
+                    if (gdNode.Equals(CUDD.ZERO))
+                    {
+                        CUDD.Deref(result);
+                        CUDD.Deref(gdNode);
+                        result = CUDD.ZERO;
+                        CUDD.Ref(result);
+                        break;
+                    }
                     CUDDNode andNode = CUDD.Function.And(result, gdNode);
                     CUDD.Ref(andNode);
                     CUDD.Deref(result);
@@ -164,10 +172,19 @@ namespace Planning
             }
             else if (context.OR() != null)
             {
-                result = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
-                for (int i = 1; i < context.gdEvent().Count; i++)
+                result = CUDD.ZERO;
+                CUDD.Ref(result);
+                for (int i = 0; i < context.gdEvent().Count; i++)
                 {
                     CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
+                    if (gdNode.Equals(CUDD.ONE))
+                    {
+                        CUDD.Deref(result);
+                        CUDD.Deref(gdNode);
+                        result = CUDD.ONE;
+                        CUDD.Ref(result);
+                        break;
+                    }
                     CUDDNode orNode = CUDD.Function.Or(result, gdNode);
                     CUDD.Ref(orNode);
                     CUDD.Deref(result);
@@ -186,7 +203,6 @@ namespace Planning
             {
                 CUDDNode gdNode0 = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
                 CUDDNode gdNode1 = GetCuddNode(context.gdEvent()[1], eventDict, assignment);
-
                 result = CUDD.Function.Implies(gdNode0, gdNode1);
                 CUDD.Ref(result);
                 CUDD.Deref(gdNode0);
@@ -194,38 +210,21 @@ namespace Planning
             }
             else
             {
-                List<string> varNameList = new List<string>();
-
-                List<List<string>> collection = new List<List<string>>();
-
                 var listVariableContext = context.listVariable();
-                do
-                {
-                    if (listVariableContext.VAR().Count != 0)
-                    {
-                        string type = listVariableContext.type() == null
-                            ? PlanningType.ObjectType.Name
-                            : listVariableContext.type().GetText();
+                var collection = listVariableContext.GetCollection();
+                var varNameList = listVariableContext.GetVarNameList();
 
-                        foreach (var varNode in listVariableContext.VAR())
-                        {
-                            string varName = varNode.GetText();
-                            varNameList.Add(varName);
-                            List<string> constList = Globals.TermHandler.GetConstList(type);
-                            collection.Add(constList);
-                        }
-                    }
-                    listVariableContext = listVariableContext.listVariable();
-                } while (listVariableContext != null);
+                bool isForall = context.FORALL() != null;
+                result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, isForall);
 
-                if (context.FORALL() != null)
-                {
-                    result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0);
-                }
-                else
-                {
-                    result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, false);
-                }
+                //if (context.FORALL() != null)
+                //{
+                //    result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0);
+                //}
+                //else
+                //{
+                //    result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, false);
+                //}
             }
 
             return result;
@@ -255,25 +254,41 @@ namespace Planning
                     CUDDNode gdNode = ScanVarList(context, eventDict, assignment, varNameList, collection,
                         currentLevel + 1, isForall);
 
-                    CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
-                    if (!gdNode.Equals(invalidNode))
-                    {
-                        CUDDNode temp = result;
-
-                        result = isForall ? CUDD.Function.And(temp, gdNode) : CUDD.Function.Or(temp, gdNode);
-
-                        CUDD.Ref(result);
-                        CUDD.Deref(temp);
-                        CUDD.Deref(gdNode);
-                    }
-
                     CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
+
                     if (gdNode.Equals(terminalNode))
                     {
                         CUDD.Deref(result);
-                        result = CUDD.ZERO;
+                        result = terminalNode;
+                        CUDD.Ref(result);
                         break;
                     }
+
+                    CUDDNode quantifiedNode = isForall ? CUDD.Function.And(result, gdNode) : CUDD.Function.Or(result, gdNode);
+                    CUDD.Ref(quantifiedNode);
+                    CUDD.Deref(result);
+                    CUDD.Deref(gdNode);
+                    result = quantifiedNode;
+
+                    //CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
+                    //if (!gdNode.Equals(invalidNode))
+                    //{
+                    //    CUDDNode temp = result;
+
+                    //    result = isForall ? CUDD.Function.And(temp, gdNode) : CUDD.Function.Or(temp, gdNode);
+
+                    //    CUDD.Ref(result);
+                    //    CUDD.Deref(temp);
+                    //    CUDD.Deref(gdNode);
+                    //}
+
+                    //CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
+                    //if (gdNode.Equals(terminalNode))
+                    //{
+                    //    CUDD.Deref(result);
+                    //    result = CUDD.ZERO;
+                    //    break;
+                    //}
                 }
             }
             else
