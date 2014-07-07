@@ -58,8 +58,8 @@ namespace Planning
             {
                 Console.WriteLine("  Context: {0}", context.emptyOrPreGD().GetText());
             }
-            string filename = string.Format("{0}.dot", FullName);
-            CUDD.Print.PrintBDDTree(Precondition, filename);
+            //string filename = string.Format("{0}.dot", FullName);
+            //CUDD.Print.PrintBDDTree(Precondition, filename);
             //CUDD.Print.PrintMinterm(Precondition);
             //Console.ReadLine();
 

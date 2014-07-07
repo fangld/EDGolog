@@ -45,18 +45,36 @@ namespace Planning
 
         public void GenerateEventList(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
+            Console.WriteLine(FullName);
             var eventModelContext = context.eventModel();
             if (eventModelContext.LB() == null)
             {
                 _eventCollectionArray = new EventCollection[1];
                 _eventCollectionArray[0] = HandleGdEvent(eventModelContext.gdEvent(), eventDict, assignment);
+                Console.WriteLine("Finishing event collection 0 precondition");
+                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
+                Console.WriteLine("Finishing event collection 0 partial successor state axiom");
+                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
             }
             else
             {
                 _eventCollectionArray = new EventCollection[2];
-                _eventCollectionArray[0] = HandleGdEvent(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment, 0);
+                _eventCollectionArray[0] = HandleGdEvent(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment);
+
+                Console.WriteLine("Finishing event collection 0 precondition");
+                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
+                Console.WriteLine("Finishing event collection 0 partial successor state axiom");
+                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
+
                 _eventCollectionArray[1] = HandleGdEvent(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
+
+                Console.WriteLine("Finishing event collection 1 precondition");
+                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].Precondition));
+                Console.WriteLine("Finishing event collection 1 partial successor state axiom");
+                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].PartialSuccessorStateAxiom));
+                //Console.ReadLine();
             }
+            Console.WriteLine();
         }
 
         public EventCollection HandleGdEvent(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
@@ -142,8 +160,6 @@ namespace Planning
         {
             CUDDNode result;
 
-            //Console.WriteLine("  context is null:{0}", context == null);
-            //Console.WriteLine("  Context:{0}", context.GetText());
             if (context.termEventForm() != null)
             {
                 result = GetCuddNode(context.termEventForm(), eventDict, assignment);
@@ -216,15 +232,6 @@ namespace Planning
 
                 bool isForall = context.FORALL() != null;
                 result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, isForall);
-
-                //if (context.FORALL() != null)
-                //{
-                //    result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0);
-                //}
-                //else
-                //{
-                //    result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, false);
-                //}
             }
 
             return result;
@@ -269,26 +276,6 @@ namespace Planning
                     CUDD.Deref(result);
                     CUDD.Deref(gdNode);
                     result = quantifiedNode;
-
-                    //CUDDNode invalidNode = isForall ? CUDD.ONE : CUDD.ZERO;
-                    //if (!gdNode.Equals(invalidNode))
-                    //{
-                    //    CUDDNode temp = result;
-
-                    //    result = isForall ? CUDD.Function.And(temp, gdNode) : CUDD.Function.Or(temp, gdNode);
-
-                    //    CUDD.Ref(result);
-                    //    CUDD.Deref(temp);
-                    //    CUDD.Deref(gdNode);
-                    //}
-
-                    //CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
-                    //if (gdNode.Equals(terminalNode))
-                    //{
-                    //    CUDD.Deref(result);
-                    //    result = CUDD.ZERO;
-                    //    break;
-                    //}
                 }
             }
             else

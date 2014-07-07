@@ -182,39 +182,50 @@ namespace ObjectWorlds
             // initialise cudd
             CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
 
-            CUDDNode f, var, tmp;
-            f = CUDD.Constant(1);
-            Console.WriteLine("initial f: {0}", CUDD.GetReference(f));
-            CUDD.Ref(f);
-            Console.WriteLine("after ref f: {0}", CUDD.GetReference(f));
+            CUDDNode x2 = CUDD.Var(2);
+            CUDDNode x1 = CUDD.Var(1);
+            Console.WriteLine(CUDD.GetReference(x1));
+            Console.WriteLine(CUDD.GetReference(x2));
+            CUDDNode andNode = CUDD.Function.And(x1, x2);
+            CUDD.Ref(andNode);
+            Console.WriteLine(CUDD.GetReference(x1));
+            Console.WriteLine(CUDD.GetReference(x2));
+            Console.WriteLine(CUDD.GetReference(andNode));
 
-            for (int i = 3; i >= 0; i--)
-            {
-                Console.WriteLine();
-                Console.WriteLine(i);
-                var = CUDD.Var(i);
-                Console.WriteLine("Before and var({0}): {1}", i, CUDD.GetReference(var));
-                Console.WriteLine();
 
-                tmp = CUDD.Function.And(CUDD.Function.Not(var), f);
-                Console.WriteLine("After and var({0}): {1}", i, CUDD.GetReference(var));
-                Console.WriteLine("After and f: {0}", CUDD.GetReference(f));
-                Console.WriteLine("After and tmp: {0}", CUDD.GetReference(tmp));
-                Console.WriteLine();
+            //CUDDNode f, var, tmp;
+            //f = CUDD.Constant(1);
+            //Console.WriteLine("initial f: {0}", CUDD.GetReference(f));
+            //CUDD.Ref(f);
+            //Console.WriteLine("after ref f: {0}", CUDD.GetReference(f));
 
-                CUDD.Ref(tmp);
-                Console.WriteLine("After ref tmp: {0}", CUDD.GetReference(tmp));
-                Console.WriteLine();
+            //for (int i = 3; i >= 0; i--)
+            //{
+            //    Console.WriteLine();
+            //    Console.WriteLine(i);
+            //    var = CUDD.Var(i);
+            //    Console.WriteLine("Before and var({0}): {1}", i, CUDD.GetReference(var));
+            //    Console.WriteLine();
 
-                CUDD.Deref(f);
-                Console.WriteLine("After deref f: {0}", CUDD.GetReference(f));
-                Console.WriteLine();
+            //    tmp = CUDD.Function.And(CUDD.Function.Not(var), f);
+            //    Console.WriteLine("After and var({0}): {1}", i, CUDD.GetReference(var));
+            //    Console.WriteLine("After and f: {0}", CUDD.GetReference(f));
+            //    Console.WriteLine("After and tmp: {0}", CUDD.GetReference(tmp));
+            //    Console.WriteLine();
 
-                f = tmp;
-                Console.WriteLine("After assignment f: {0}", CUDD.GetReference(f));
-                Console.WriteLine("After assignment tmp: {0}", CUDD.GetReference(tmp));
+            //    CUDD.Ref(tmp);
+            //    Console.WriteLine("After ref tmp: {0}", CUDD.GetReference(tmp));
+            //    Console.WriteLine();
 
-            }
+            //    CUDD.Deref(f);
+            //    Console.WriteLine("After deref f: {0}", CUDD.GetReference(f));
+            //    Console.WriteLine();
+
+            //    f = tmp;
+            //    Console.WriteLine("After assignment f: {0}", CUDD.GetReference(f));
+            //    Console.WriteLine("After assignment tmp: {0}", CUDD.GetReference(tmp));
+
+            //}
 
 
 

@@ -30,8 +30,10 @@ namespace Planning
         public Action(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray, Dictionary<string, string> assignment) : base(constArray)
         {
             Name = context.actionSymbol().GetText();
+            Console.WriteLine(FullName);
             GenerateResponses(context.responseDefine(),eventDict, assignment);
             //Console.WriteLine("Action Hello!");
+            //Console.ReadLine();
         }
 
         #endregion

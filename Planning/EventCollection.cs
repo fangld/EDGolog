@@ -31,6 +31,7 @@ namespace Planning
         public EventCollection(List<Event> eventList)
         {
             _eventList = eventList;
+            Console.WriteLine(eventList.Count);
             GeneratePrecondition();
             GeneratePartialSuccessorStateAxiom();
         }
@@ -91,12 +92,13 @@ namespace Planning
                 CUDDNode andNode = CUDD.Function.And(PartialSuccessorStateAxiom, eventPssa);
                 CUDD.Ref(andNode);
                 CUDD.Deref(PartialSuccessorStateAxiom);
-                Precondition = andNode;
-                //Console.WriteLine("Hello!");
+                PartialSuccessorStateAxiom = andNode;
             }
         }
 
         #endregion
+
+        #region Overriden Methods
 
         public IEnumerator<Event> GetEnumerator()
         {
@@ -107,5 +109,7 @@ namespace Planning
         {
             return _eventList.GetEnumerator();
         }
+
+        #endregion
     }
 }

@@ -52,15 +52,16 @@ actionSymbol: NAME;
 obsDefine: LB COLON OBS obsSymbol
               (COLON PARM LB listVariable RB)?
               (COLON PRE emptyOrPreGD)?
-			  COLON EVTS eventModel
+			  COLON EVTMDL eventModel
            RB;
 
 obsSymbol: NAME;
 
 eventModel : gdEvent
            | LB (plGdEvent)+ RB;
-plGdEvent : LB plDeg gdEvent RB;
-
+plGdEvent : LB COLON PLDEGREE plDeg
+               COLON EVTS gdEvent 
+			RB;
 plDeg: INTEGER;
 
 
@@ -187,6 +188,8 @@ PRED: 'predicates';
 ACT: 'action';
 EVT: 'event';
 EVTS: 'events';
+PLDEGREE: 'pldegree';
+EVTMDL: 'eventmodel';
 PARM: 'parameters';
 PRE: 'precondition';
 RESP: 'response';

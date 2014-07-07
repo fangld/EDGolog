@@ -128,7 +128,7 @@ namespace Planning.Servers
             {
                 Build(eventDefineContext.listVariable(), eventDefineContext, AddToEventDict);
             }
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
@@ -138,6 +138,7 @@ namespace Planning.Servers
             {
                 Build(actionDefineContext.listVariable(), actionDefineContext, AddToActionDict);
             }
+            Console.ReadLine();
         }
 
         private void Build<TContext>(PlanningParser.ListVariableContext context, TContext baseContext, Action<TContext, string[]> action)

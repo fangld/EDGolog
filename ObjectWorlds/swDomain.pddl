@@ -177,80 +177,91 @@
 
 
 (:observation otherLeftSuc
-:parameters (?d - leftRelLoc)
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (= ?x (+ ?y ?d))))
-:events (leftSucWithNotice other ?d)
+:parameters (?i - agent ?j - agent ?d - leftRelLoc)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x (+ ?y ?d))))
+:events (leftSucWithNotice ?j ?d)
 )
 
 (:observation otherRightSuc
-:parameters (?d - rightRelLoc)
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (= ?x (+ ?y ?d))))
-:events (rightSucWithNotice other ?d)
+:parameters (?i - agent ?j - agent ?d - rightRelLoc)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x (+ ?y ?d))))
+:events (rightSucWithNotice ?j ?d)
 )
 
 (:observation otherLeftFail
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x ?y))))
-:events (leftFail other)
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x ?y))))
+:events (leftFail ?j)
 )
 
 (:observation otherRightFail
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
-:events (rightFail other)
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
+:events (rightFail ?j)
 )
 
 (:observation otherPickSuc
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (= ?x ?y)))
-:events (pickSuc other)
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+:events (pickSuc ?j)
 )
 
 (:observation otherDropSuc
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (= ?x ?y)))
-:events (dropSuc other)
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+:events (dropSuc ?j)
 )
 
 (:observation otherPickFail
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (= ?x ?y)))
-:events (pickFail other)
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+:events (pickFail ?j)
 )
 
 (:observation otherDropFail
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (= ?x ?y)))
-:events (dropFail other)
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+:events (dropFail ?j)
 )
 
 (:observation otherPickSucOrFail
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
-:events ((0 (pickSuc other)) 
-         (1 (pickFail other))
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
+:events ((0 (pickSuc ?j)) 
+         (1 (pickFail ?j))
 		)
 )
 
 (:observation otherDropSucOrFail
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
-:events ((0 (dropSuc other)) 
-         (1 (dropFail other)))
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
+:events ((0 (dropSuc ?j))
+         (1 (dropFail ?j)))
 		)
 )
 
 (:observation otherSmell
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
-:events (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn other ?m ?d))
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
+:events (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn ?j ?m ?d))
 )
 
-(:observation noticeEmtpy
-:precondition (exists (?x - point ?y - point) (and (loc other ?x) (loc self ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
-:events (nil other)
+(:observation otherEmpty
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
+:events (nil ?j)
 )
 
 (:observation noinfo
-:precondition (exists (?x - point ?y - point) 
-                      (and (loc other ?x) (loc self ?y) (!= xi (+ xj 1)) (!= xi (- xj 1)) (!= xi xj))
+:parameters (?i - agent ?j - agent)
+:precondition (exists (?x - point ?y - point)
+                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (!= xi (+ xj 1)) (!= xi (- xj 1)) (!= xi xj))
 					  )
 :events 
-((0 (nil other))
-(1 (or (leftSucWithoutNotice other) (rightSucWithoutNotice other)
-	   (leftFail other) (rightFail other) (pickSuc other) (dropSuc other) (pickFail other) (dropFail other)
-	   (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn other ?m ?d))
+((0 (nil ?j))
+(1 (or (leftSucWithoutNotice ?j) (rightSucWithoutNotice ?j)
+	   (leftFail ?j) (rightFail ?j) (pickSuc ?j) (dropSuc ?j) (pickFail ?j) (dropFail ?j)
+	   (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn ?j ?m ?d))
 	   ))
 	   )
 )
