@@ -81,6 +81,7 @@ namespace ObjectWorlds
             var serverProblemContext = parser.serverProblem();// begin parsing at init rule
             //Console.WriteLine(serverProblemContext.ToStringTree(parser));
             tr.Close();
+            //Console.ReadLine();
             ServerProblem problem = ServerProblem.CreateInstance(domainContext, serverProblemContext);
             problem.ShowInfo();
 
@@ -182,16 +183,26 @@ namespace ObjectWorlds
             // initialise cudd
             CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
 
-            CUDDNode x2 = CUDD.Var(2);
-            CUDDNode x1 = CUDD.Var(1);
-            Console.WriteLine(CUDD.GetReference(x1));
-            Console.WriteLine(CUDD.GetReference(x2));
-            CUDDNode andNode = CUDD.Function.And(x1, x2);
-            CUDD.Ref(andNode);
-            Console.WriteLine(CUDD.GetReference(x1));
-            Console.WriteLine(CUDD.GetReference(x2));
-            Console.WriteLine(CUDD.GetReference(andNode));
+            CUDDNode firstOne = CUDD.Constant(1);
+            Console.WriteLine("initial one: {0}", CUDD.GetReference(firstOne));
 
+            CUDDNode firstZero = CUDD.Constant(0);
+            Console.WriteLine("initial zero: {0}", CUDD.GetReference(firstZero));
+
+            CUDDNode x0 = CUDD.Var(0);
+            CUDDNode x1 = CUDD.Var(1);
+            Console.WriteLine("var({0}): {1}", 0, CUDD.GetReference(x0));
+            Console.WriteLine("var({0}): {1}", 1, CUDD.GetReference(x1));
+            CUDDNode andNode = CUDD.Function.And(x0, x1);
+
+            //CUDD.Ref(andNode);
+            Console.WriteLine("var({0}): {1}", 0, CUDD.GetReference(x0));
+            Console.WriteLine("var({0}): {1}", 1, CUDD.GetReference(x1));
+            Console.WriteLine("and node: {0}", CUDD.GetReference(andNode));
+            //Console.WriteLine(CUDD.GetReference(andNode));
+
+            //CUDDNode one = CUDD.Constant(1);
+            //Console.WriteLine("initial one: {0}", CUDD.GetReference(one));
 
             //CUDDNode f, var, tmp;
             //f = CUDD.Constant(1);

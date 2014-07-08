@@ -32,8 +32,6 @@ namespace Planning
             Name = context.actionSymbol().GetText();
             Console.WriteLine(FullName);
             GenerateResponses(context.responseDefine(),eventDict, assignment);
-            //Console.WriteLine("Action Hello!");
-            //Console.ReadLine();
         }
 
         #endregion
@@ -51,7 +49,7 @@ namespace Planning
 
         private void HandleResponse(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
-            if (context.PARM() != null)
+            if (context.PARAMETER() != null)
             {
                 var listVariableContext = context.listVariable();
 

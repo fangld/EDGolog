@@ -21,7 +21,7 @@ namespace Planning
 
         public Predicate(PlanningParser.AtomFormSkeletonContext context, string[] constArray, ref int intialCuddIndex): base(constArray)
         {
-            Name = context.pred().GetText();
+            Name = context.predicate().GetText();
             PreviousCuddIndex = intialCuddIndex;
             intialCuddIndex++;
             SuccessiveCuddIndex = intialCuddIndex;

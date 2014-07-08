@@ -5,62 +5,62 @@ grammar Planning;
  */
 
 // Domain description
-domain: LB DEF LB DOM NAME RB
+domain: LB DEFINE LB DOMAIN NAME RB
            numericDefine?
 		   typeDefine?
-		   predDefine?
+		   predicationDefine?
 		   eventDefine*
 		   actionDefine*
-		   obsDefine*
+		   observationDefine*
 		RB;
 
 numericDefine: LB COLON NUMS numericSymbol+ RB;
 numericSymbol: NAME;
 typeDefine: LB COLON TYPE typeDeclaration+ RB;
 
-predDefine: LB COLON PRED atomFormSkeleton+ RB;
-atomFormSkeleton: LB pred listVariable RB;
-pred: NAME;
+predicationDefine: LB COLON PREDICATE atomFormSkeleton+ RB;
+atomFormSkeleton: LB predicate listVariable RB;
+predicate: NAME;
 
 typeDeclaration: NAME | LB NAME constTerm constTerm RB;
 
-type: OBJ | AGT | NAME;
+type: OBJECT | AGENT | NAME;
 //interval: LSB constTerm constTerm RSB;
 
 
-eventDefine: LB COLON EVT eventSymbol
-                (COLON PARM LB listVariable RB)?
-                (COLON PRE emptyOrPreGD)?
-                (COLON EFF emptyOrEffect)?
+eventDefine: LB COLON EVENT eventSymbol
+                (COLON PARAMETER LB listVariable RB)?
+                (COLON PRECONDITION emptyOrPreGD)?
+                (COLON EFFECT emptyOrEffect)?
 			 RB;
 eventSymbol: NAME;
 
 
-responseDefine: LB COLON RESP responseSymbol
-                   (COLON PARM LB listVariable RB)?
-                   COLON EVTS eventModel
+responseDefine: LB COLON RESPONSE responseSymbol
+                   (COLON PARAMETER LB listVariable RB)?
+                   COLON EVENTMODEL eventModel
                 RB;
 responseSymbol: NAME;
 
-actionDefine: LB COLON ACT actionSymbol
-                 (COLON PARM LB listVariable RB)?
+actionDefine: LB COLON ACTION actionSymbol
+                 (COLON PARAMETER LB listVariable RB)?
 		         responseDefine+
 		      RB;
 actionSymbol: NAME;
 
 
-obsDefine: LB COLON OBS obsSymbol
-              (COLON PARM LB listVariable RB)?
-              (COLON PRE emptyOrPreGD)?
-			  COLON EVTMDL eventModel
+observationDefine: LB COLON OBSERVATION observationSymbol
+              (COLON PARAMETER LB listVariable RB)?
+              (COLON PRECONDITION emptyOrPreGD)?
+			  COLON EVENTMODEL eventModel
            RB;
 
-obsSymbol: NAME;
+observationSymbol: NAME;
 
 eventModel : gdEvent
            | LB (plGdEvent)+ RB;
 plGdEvent : LB COLON PLDEGREE plDeg
-               COLON EVTS gdEvent 
+               COLON EVENTS gdEvent 
 			RB;
 plDeg: INTEGER;
 
@@ -79,7 +79,7 @@ gd: termAtomForm
   | LB EXISTS LB listVariable RB gd RB
   | LB FORALL LB listVariable RB gd RB;
 
-termAtomForm: LB pred term* RB
+termAtomForm: LB predicate term* RB
             | LB EQ term term RB
             | LB NEQ term term RB
 			| LB LT term term RB
@@ -125,16 +125,16 @@ condEffect: LB AND termLiteral+ RB
           | termLiteral;
 		  
 // Server problem description
-serverProblem: LB DEF LB PROM problemName RB
-		              LB COLON DOM domainName RB
-		              numericSetting?
-		              objectDeclaration?
-		              init
+serverProblem: LB DEFINE LB PROBLEM problemName RB
+		                 LB COLON DOMAIN domainName RB
+		                 numericSetting?
+		                 objectDeclaration?
+		                 init
 		       RB;
 
 problemName: NAME;
 domainName: NAME;
-agentDefine: LB COLON AGENTS NAME+ RB;
+agentDefine: LB COLON AGENT NAME+ RB;
 objectDeclaration: LB COLON OBJS listName RB;
 numericSetting: LB COLON NUMS (LB numericSymbol INTEGER RB)+
               RB;
@@ -150,7 +150,7 @@ constTermGd: constTermAtomForm
            | LB EXISTS LB listVariable RB gd RB
            | LB FORALL LB listVariable RB gd RB;
 
-constTermAtomForm: LB pred constTerm* RB
+constTermAtomForm: LB predicate constTerm* RB
                  | LB EQ constTerm constTerm RB
 				 | LB LT constTerm constTerm RB
 				 | LB LEQ constTerm constTerm RB
@@ -159,14 +159,14 @@ constTermAtomForm: LB pred constTerm* RB
 constTermLiteral: constTermAtomForm | LB NOT constTermAtomForm RB;
 
 // Client problem description
-clientProblem: LB DEF LB PROM problemName RB
-                      LB COLON DOM domainName RB
-			          agentDefine
-			          LB COLON AGENTID agentId RB
-			          objectDeclaration?
-			          numericSetting?
-			          initKnowledge?
-			          initBelief?
+clientProblem: LB DEFINE LB PROBLEM problemName RB
+                         LB COLON DOMAIN domainName RB
+	     		         agentDefine
+			             LB COLON AGENTID agentId RB
+			             objectDeclaration?
+			             numericSetting?
+			             initKnowledge?
+			             initBelief?
 			   RB;
 
 initKnowledge: LB COLON INITKNOWLEDGE constTermGd RB;
@@ -178,28 +178,28 @@ agentId: NAME;
  */
 
 // Keywords
-DOM: 'domain';
-PROM: 'problem';
-DEF: 'define';
+DOMAIN: 'domain';
+PROBLEM: 'problem';
+DEFINE: 'define';
 AGENTID: 'agentid';
 CONST: 'constants';
 TYPE: 'types';
-PRED: 'predicates';
-ACT: 'action';
-EVT: 'event';
-EVTS: 'events';
+PREDICATE: 'predicates';
+ACTION: 'action';
+EVENT: 'event';
+EVENTS: 'events';
 PLDEGREE: 'pldegree';
-EVTMDL: 'eventmodel';
-PARM: 'parameters';
-PRE: 'precondition';
-RESP: 'response';
-OBS: 'observation';
+EVENTMODEL: 'eventmodel';
+PARAMETER: 'parameters';
+PRECONDITION: 'precondition';
+RESPONSE: 'response';
+OBSERVATION: 'observation';
 MIN: 'min';
 MAX: 'max';
 NUMS: 'numbers';
-EFF: 'effect';
-OBJ: 'object';
-AGT: 'agent';
+EFFECT: 'effect';
+OBJECT: 'object';
+AGENT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';

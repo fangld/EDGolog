@@ -14,12 +14,18 @@ namespace PAT.Common.Classes.CUDDLib
         /// <summary>
         /// Return zero constant node, remember to call Reference
         /// </summary>
-        public static CUDDNode ZERO { get { return CUDD.Constant(0); } }
+        public static CUDDNode ZERO
+        {
+            get { return CUDD.Constant(0); }
+        }
 
         /// <summary>
         /// Return 1 constant node, remember to call Reference
         /// </summary>
-        public static CUDDNode ONE { get { return CUDD.Constant(1); } }
+        public static CUDDNode ONE
+        {
+            get { return CUDD.Constant(1); }
+        }
 
         /// <summary>
         /// Return plus infinity constant node, remember to call Reference
@@ -307,7 +313,7 @@ namespace PAT.Common.Classes.CUDDLib
         /// </summary>
         public static void CloseDownCUDD()
         {
-            Deref(ZERO, ONE, PLUS_INFINITY, MINUS_INFINITY);
+            //Deref(ZERO, ONE, PLUS_INFINITY, MINUS_INFINITY);
 
             //Use in debug mode, to check whether any wrong in calculating reference number
             //CUDD.Debug.Debugs();

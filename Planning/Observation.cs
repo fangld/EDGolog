@@ -31,7 +31,20 @@ namespace Planning
 
         #region Constructors
 
-        public Observation(PlanningParser.ObsDefineContext context, string[] constArray) : base(constArray)
+        public Observation(PlanningParser.ObservationDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray, Dictionary<string, string> assignment)
+            : base(constArray)
+        {
+            Name = context.observationSymbol().GetText();
+            Console.WriteLine(FullName);
+            HandleEventModel(context.eventModel(), eventDict, assignment);
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void HandleEventModel(PlanningParser.EventModelContext context,
+            IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
 
         }

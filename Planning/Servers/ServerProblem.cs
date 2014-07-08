@@ -19,6 +19,9 @@ namespace Planning.Servers
 
         private Dictionary<string, Action> _actionDict;
 
+        private Dictionary<string, Observation> _obervationDict;
+
+
         private int _currentCuddIndex;
 
         #endregion
@@ -49,7 +52,7 @@ namespace Planning.Servers
                 serverProblemContext.objectDeclaration());
             Console.WriteLine("Finishing term handler!");
             //ComputeMaxCuddIndex(domainContext.predDefine(), domainContext.eventDefine());
-            HandlePredDefine(domainContext.predDefine());
+            HandlePredDefine(domainContext.predicationDefine());
             Console.WriteLine("Finishing predicate!");
             //Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(),
             //    serverProblemContext.objectDeclaration(), _typeDict);
@@ -61,6 +64,9 @@ namespace Planning.Servers
             Console.WriteLine("Finishing init event define!");
             HandleActionsDefine(domainContext.actionDefine());
             Console.WriteLine("Finishing init action define!");
+            HandleObservationsDefine(domainContext.observationDefine());
+            Console.WriteLine("Finishing init observation define!");
+
             //HandleServerProblem(context);
         }
 
@@ -112,7 +118,7 @@ namespace Planning.Servers
 
 
 
-        private void HandlePredDefine(PlanningParser.PredDefineContext context)
+        private void HandlePredDefine(PlanningParser.PredicationDefineContext context)
         {
             _predDict = new Dictionary<string, Predicate>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
@@ -137,6 +143,16 @@ namespace Planning.Servers
             foreach (var actionDefineContext in contexts)
             {
                 Build(actionDefineContext.listVariable(), actionDefineContext, AddToActionDict);
+            }
+            Console.ReadLine();
+        }
+
+        private void HandleObservationsDefine(IReadOnlyList<PlanningParser.ObservationDefineContext> contexts)
+        {
+            _obervationDict = new Dictionary<string, Observation>();
+            foreach (var obsDefineContext in contexts)
+            {
+                Build(obsDefineContext.listVariable(), obsDefineContext, AddToObservationDict);
             }
             Console.ReadLine();
         }
@@ -254,6 +270,12 @@ namespace Planning.Servers
             _actionDict.Add(action.FullName, action);
         }
 
+        private void AddToObservationDict(PlanningParser.ObservationDefineContext context, string[] constArray, Dictionary<string, string> assignment)
+        {
+            Observation observation = new Observation(context, _eventDict, constArray, assignment);
+            _obervationDict.Add(observation.FullName, observation);
+        }
+
         private void HandleInit(PlanningParser.InitContext context)
         {
             TruePredSet = new HashSet<string>();
@@ -265,7 +287,7 @@ namespace Planning.Servers
                 {
                     termList.Add(constTermContext.GetText());
                 }
-                string gndPredName = VariableContainer.GetFullName(atomForm.pred().GetText(), termList);
+                string gndPredName = VariableContainer.GetFullName(atomForm.predicate().GetText(), termList);
 
                 TruePredSet.Add(gndPredName);
             }

@@ -100,7 +100,7 @@ namespace Planning
         private CUDDNode GetCuddNode(PlanningParser.TermAtomFormContext context, IReadOnlyDictionary<string, Predicate> predDict, Dictionary<string, string> assignment)
         {
             CUDDNode result;
-            if (context.pred() != null)
+            if (context.predicate() != null)
             {
                 string predFullName = GetFullName(context, assignment);
                 Predicate pred = predDict[predFullName];

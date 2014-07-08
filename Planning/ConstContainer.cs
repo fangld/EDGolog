@@ -117,7 +117,7 @@ namespace Planning
 
         public static string GetFullName(PlanningParser.TermAtomFormContext context, Dictionary<string, string> assignment)
         {
-            string name = context.pred().GetText();
+            string name = context.predicate().GetText();
             List<string> constList = new List<string>();
             foreach (var termContext in context.term())
             {
@@ -129,7 +129,7 @@ namespace Planning
 
         public static string GetFullName(PlanningParser.ConstTermAtomFormContext context)
         {
-            string name = context.pred().GetText();
+            string name = context.predicate().GetText();
             List<string> termList = new List<string>();
             foreach (var constTermContext in context.constTerm())
             {
