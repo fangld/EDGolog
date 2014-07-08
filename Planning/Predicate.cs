@@ -19,13 +19,11 @@ namespace Planning
 
         #region Constructors
 
-        public Predicate(PlanningParser.AtomFormSkeletonContext context, string[] constArray, ref int intialCuddIndex): base(constArray)
+        public Predicate(PlanningParser.AtomFormSkeletonContext context, string[] constArray, int intialCuddIndex): base(constArray)
         {
             Name = context.predicate().GetText();
             PreviousCuddIndex = intialCuddIndex;
-            intialCuddIndex++;
-            SuccessiveCuddIndex = intialCuddIndex;
-            intialCuddIndex++;
+            SuccessiveCuddIndex = PreviousCuddIndex + 1;
         }
 
         #endregion

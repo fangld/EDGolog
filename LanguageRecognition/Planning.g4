@@ -8,7 +8,7 @@ grammar Planning;
 domain: LB DEFINE LB DOMAIN NAME RB
            numericDefine?
 		   typeDefine?
-		   predicationDefine?
+		   predicateDefine?
 		   eventDefine*
 		   actionDefine*
 		   observationDefine*
@@ -18,7 +18,7 @@ numericDefine: LB COLON NUMS numericSymbol+ RB;
 numericSymbol: NAME;
 typeDefine: LB COLON TYPE typeDeclaration+ RB;
 
-predicationDefine: LB COLON PREDICATE atomFormSkeleton+ RB;
+predicateDefine: LB COLON PREDICATE atomFormSkeleton+ RB;
 atomFormSkeleton: LB predicate listVariable RB;
 predicate: NAME;
 

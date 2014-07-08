@@ -50,7 +50,7 @@ public partial class PlanningParser : Parser {
 	};
 	public const int
 		RULE_domain = 0, RULE_numericDefine = 1, RULE_numericSymbol = 2, RULE_typeDefine = 3, 
-		RULE_predicationDefine = 4, RULE_atomFormSkeleton = 5, RULE_predicate = 6, 
+		RULE_predicateDefine = 4, RULE_atomFormSkeleton = 5, RULE_predicate = 6, 
 		RULE_typeDeclaration = 7, RULE_type = 8, RULE_eventDefine = 9, RULE_eventSymbol = 10, 
 		RULE_responseDefine = 11, RULE_responseSymbol = 12, RULE_actionDefine = 13, 
 		RULE_actionSymbol = 14, RULE_observationDefine = 15, RULE_observationSymbol = 16, 
@@ -64,7 +64,7 @@ public partial class PlanningParser : Parser {
 		RULE_constTermLiteral = 43, RULE_clientProblem = 44, RULE_initKnowledge = 45, 
 		RULE_initBelief = 46, RULE_agentId = 47;
 	public static readonly string[] ruleNames = {
-		"domain", "numericDefine", "numericSymbol", "typeDefine", "predicationDefine", 
+		"domain", "numericDefine", "numericSymbol", "typeDefine", "predicateDefine", 
 		"atomFormSkeleton", "predicate", "typeDeclaration", "type", "eventDefine", 
 		"eventSymbol", "responseDefine", "responseSymbol", "actionDefine", "actionSymbol", 
 		"observationDefine", "observationSymbol", "eventModel", "plGdEvent", "plDeg", 
@@ -112,15 +112,15 @@ public partial class PlanningParser : Parser {
 			return GetToken(PlanningParser.LB, i);
 		}
 		public IReadOnlyList<ITerminalNode> RB() { return GetTokens(PlanningParser.RB); }
-		public PredicationDefineContext predicationDefine() {
-			return GetRuleContext<PredicationDefineContext>(0);
-		}
 		public ITerminalNode NAME() { return GetToken(PlanningParser.NAME, 0); }
 		public IReadOnlyList<EventDefineContext> eventDefine() {
 			return GetRuleContexts<EventDefineContext>();
 		}
 		public TypeDefineContext typeDefine() {
 			return GetRuleContext<TypeDefineContext>(0);
+		}
+		public PredicateDefineContext predicateDefine() {
+			return GetRuleContext<PredicateDefineContext>(0);
 		}
 		public ActionDefineContext actionDefine(int i) {
 			return GetRuleContext<ActionDefineContext>(i);
@@ -170,7 +170,7 @@ public partial class PlanningParser : Parser {
 			switch ( Interpreter.AdaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				{
-				State = 108; predicationDefine();
+				State = 108; predicateDefine();
 				}
 				break;
 			}
@@ -373,7 +373,7 @@ public partial class PlanningParser : Parser {
 		return _localctx;
 	}
 
-	public partial class PredicationDefineContext : ParserRuleContext {
+	public partial class PredicateDefineContext : ParserRuleContext {
 		public ITerminalNode PREDICATE() { return GetToken(PlanningParser.PREDICATE, 0); }
 		public ITerminalNode LB() { return GetToken(PlanningParser.LB, 0); }
 		public AtomFormSkeletonContext atomFormSkeleton(int i) {
@@ -384,17 +384,17 @@ public partial class PlanningParser : Parser {
 			return GetRuleContexts<AtomFormSkeletonContext>();
 		}
 		public ITerminalNode COLON() { return GetToken(PlanningParser.COLON, 0); }
-		public PredicationDefineContext(ParserRuleContext parent, int invokingState)
+		public PredicateDefineContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int GetRuleIndex() { return RULE_predicationDefine; }
+		public override int GetRuleIndex() { return RULE_predicateDefine; }
 	}
 
 	[RuleVersion(0)]
-	public PredicationDefineContext predicationDefine() {
-		PredicationDefineContext _localctx = new PredicationDefineContext(_ctx, State);
-		EnterRule(_localctx, 8, RULE_predicationDefine);
+	public PredicateDefineContext predicateDefine() {
+		PredicateDefineContext _localctx = new PredicateDefineContext(_ctx, State);
+		EnterRule(_localctx, 8, RULE_predicateDefine);
 		int _la;
 		try {
 			EnterOuterAlt(_localctx, 1);

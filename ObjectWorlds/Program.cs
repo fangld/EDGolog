@@ -83,7 +83,7 @@ namespace ObjectWorlds
             tr.Close();
             //Console.ReadLine();
             ServerProblem problem = ServerProblem.CreateInstance(domainContext, serverProblemContext);
-            problem.ShowInfo();
+            //problem.ShowInfo();
 
             //Server server = new Server(port, listenBacklog, problem);
             //server.Run();

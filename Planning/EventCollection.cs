@@ -14,7 +14,7 @@ namespace Planning
 
         private List<Event> _eventList;
 
-        private HashSet<Predicate> _effectPredSet;
+        private HashSet<Predicate> _affectedPredicateSet;
 
         #endregion
 
@@ -58,13 +58,13 @@ namespace Planning
 
         private void GeneratePartialSuccessorStateAxiom()
         {
-            _effectPredSet = new HashSet<Predicate>();
+            _affectedPredicateSet = new HashSet<Predicate>();
             PartialSuccessorStateAxiom = CUDD.ONE;
             CUDD.Ref(PartialSuccessorStateAxiom);
 
             foreach (var e in _eventList)
             {
-                _effectPredSet.UnionWith(e.EffectPredSet);
+                _affectedPredicateSet.UnionWith(e.AffectedPredicateSet);
             }
 
             foreach (var e in _eventList)
@@ -72,9 +72,9 @@ namespace Planning
                 CUDDNode eventPssa = e.ParitalSuccessorStateAxiom;
                 CUDD.Ref(eventPssa);
 
-                foreach (var pred in _effectPredSet)
+                foreach (var pred in _affectedPredicateSet)
                 {
-                    if (!e.EffectPredSet.Contains(pred))
+                    if (!e.AffectedPredicateSet.Contains(pred))
                     {
                         CUDDNode prePredNode = CUDD.Var(pred.PreviousCuddIndex);
                         CUDDNode sucPredNode = CUDD.Var(pred.SuccessiveCuddIndex);

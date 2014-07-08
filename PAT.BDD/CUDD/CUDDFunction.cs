@@ -7,7 +7,7 @@ namespace PAT.Common.Classes.CUDDLib
         /// <summary>
         /// Suport functions in BDD and ADD including logic and arithmetic functions
         /// </summary>
-        public class Function
+        public static class Function
         {
             /// <summary>
             /// Return the complement of node

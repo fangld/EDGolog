@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
 
 namespace Planning
 {
@@ -16,6 +17,8 @@ namespace Planning
         #endregion
 
         #region Properties
+
+        public CUDDNode Precondition;
 
         public int MaxPlausibilityDegree
         {
