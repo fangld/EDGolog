@@ -12,15 +12,15 @@ namespace Planning
     {
         #region Fields
         
-        private Dictionary<string, Response> _respDict;
+        private Dictionary<string, Response> _responseDict;
 
         #endregion
 
         #region Properties
 
-        public IReadOnlyDictionary<string, Response> RespDict
+        public IReadOnlyDictionary<string, Response> ResponseDict
         {
-            get { return _respDict; }
+            get { return _responseDict; }
         }
 
         #endregion
@@ -40,7 +40,7 @@ namespace Planning
 
         private void GenerateResponses(IReadOnlyList<PlanningParser.ResponseDefineContext> context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
-            _respDict = new Dictionary<string, Response>();
+            _responseDict = new Dictionary<string, Response>();
             foreach (var responseDefineContext in context)
             {
                 HandleResponse(responseDefineContext, eventDict, assignment);
@@ -54,18 +54,17 @@ namespace Planning
                 var listVariableContext = context.listVariable();
 
                 IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
-                IReadOnlyList<string> varNameList = listVariableContext.GetVarNameList();
-                ScanMixedRadix(varNameList, collection, assignment, context, eventDict);
+                IReadOnlyList<string> variableNameList = listVariableContext.GetVariableNameList();
+                ScanMixedRadix(variableNameList, collection, assignment, context, eventDict);
             }
             else
             {
-                string[] emptyConstArray = new string[0];
-                Response response = new Response(context, eventDict, emptyConstArray, assignment);
-                _respDict.Add(response.FullName, response);
+                Response response = new Response(context, eventDict, Globals.EmptyConstArray, assignment);
+                _responseDict.Add(response.FullName, response);
             }
         }
 
-        private void ScanMixedRadix(IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection,
+        private void ScanMixedRadix(IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection,
             Dictionary<string, string> assignment, PlanningParser.ResponseDefineContext context,
             IReadOnlyDictionary<string, Event> eventDict)
         {
@@ -80,7 +79,7 @@ namespace Planning
                 for (int i = 0; i < count; i ++)
                 {
                     scanArray[i] = collection[i][index[i]];
-                    string varName = varNameList[i];
+                    string varName = variableNameList[i];
                     if (assignment.ContainsKey(varName))
                     {
                         assignment[varName] = scanArray[i];
@@ -92,7 +91,7 @@ namespace Planning
                 }
 
                 Response response = new Response(context, eventDict, scanArray, assignment);
-                _respDict.Add(response.FullName, response);
+                _responseDict.Add(response.FullName, response);
 
                 int j = count - 1;
                 while (j != -1)

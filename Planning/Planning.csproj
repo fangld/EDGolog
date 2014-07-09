@@ -53,6 +53,7 @@
     <Compile Include="Domain.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventCollection.cs" />
+    <Compile Include="GdContextExtension.cs" />
     <Compile Include="ListVariableContextExtension.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="Response.cs" />

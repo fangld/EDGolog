@@ -32,7 +32,7 @@ namespace Planning
             return result;
         }
 
-        public static IReadOnlyList<string> GetVarNameList(this PlanningParser.ListVariableContext context)
+        public static IReadOnlyList<string> GetVariableNameList(this PlanningParser.ListVariableContext context)
         {
             List<string> result = new List<string>();
 

@@ -46,7 +46,6 @@ namespace Planning.Servers
             DomainName = domainContext.NAME().GetText();
             ProblemName = serverProblemContext.problemName().GetText();
             Console.WriteLine("Finishing name!");
-            //HandleTypeDefine(domainContext.typeDefine());
             Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
             Console.WriteLine("Finishing term handler!");
@@ -56,11 +55,11 @@ namespace Planning.Servers
             HandleInit(serverProblemContext.init());
             Console.WriteLine("Finishing init object base!");
             HandleEventsDefine(domainContext.eventDefine());
-            Console.WriteLine("Finishing init event define!");
-            //HandleActionsDefine(domainContext.actionDefine());
-            //Console.WriteLine("Finishing init action define!");
-            //HandleObservationsDefine(domainContext.observationDefine());
-            //Console.WriteLine("Finishing init observation define!");
+            Console.WriteLine("Finishing event define!");
+            HandleActionsDefine(domainContext.actionDefine());
+            Console.WriteLine("Finishing action define!");
+            HandleObservationsDefine(domainContext.observationDefine());
+            Console.WriteLine("Finishing observation define!");
 
             //HandleServerProblem(context);
         }
@@ -111,7 +110,7 @@ namespace Planning.Servers
         //    return result;
         //}
 
-        #region Methods for generating predicate dictionary
+        #region Methods for generating the dictionary of predicates
 
         private void HandlePredicateDefine(PlanningParser.PredicateDefineContext context)
         {
@@ -168,7 +167,7 @@ namespace Planning.Servers
 
         #endregion
 
-        #region Methods for generating event/action/observation dictionary
+        #region Methods for generating the dictionary of events/actions/observations
 
         private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
         {
@@ -200,11 +199,13 @@ namespace Planning.Servers
         private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[], Dictionary<string, string>> action)
         {
             IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
-            IReadOnlyList<string> varNameList = listVariableContext.GetVarNameList();
+            IReadOnlyList<string> varNameList = listVariableContext.GetVariableNameList();
             ScanMixedRadix(varNameList, collection, context, action);
         }
 
-        private void ScanMixedRadix<TContext>(IReadOnlyList<string> varNameList, IReadOnlyList<List<string>> collection, TContext context, Action<TContext, string[], Dictionary<string, string>> action)
+        private void ScanMixedRadix<TContext>(IReadOnlyList<string> variableNameList,
+            IReadOnlyList<List<string>> collection, TContext context,
+            Action<TContext, string[], Dictionary<string, string>> action)
         {
             int count = collection.Count;
             Dictionary<string, string> assignment = new Dictionary<string, string>();
@@ -218,14 +219,14 @@ namespace Planning.Servers
                 for (int i = 0; i < count; i ++)
                 {
                     scanArray[i] = collection[i][index[i]];
-                    string varName = varNameList[i];
-                    if (assignment.ContainsKey(varName))
+                    string variableName = variableNameList[i];
+                    if (assignment.ContainsKey(variableName))
                     {
-                        assignment[varName] = scanArray[i];
+                        assignment[variableName] = scanArray[i];
                     }
                     else
                     {
-                        assignment.Add(varName, scanArray[i]);
+                        assignment.Add(variableName, scanArray[i]);
                     }
                 }
 
@@ -294,9 +295,9 @@ namespace Planning.Servers
                 {
                     termList.Add(constTermContext.GetText());
                 }
-                string gndPredName = VariableContainer.GetFullName(atomForm.predicate().GetText(), termList);
+                string predicateFullname = ConstContainer.GetFullName(atomForm.predicate().GetText(), termList);
 
-                TruePredSet.Add(gndPredName);
+                TruePredSet.Add(predicateFullname);
             }
         }
 
@@ -383,7 +384,7 @@ namespace Planning.Servers
             {
                 Console.WriteLine("  Name: {0}", action.FullName);
                 Console.WriteLine("  Response:");
-                foreach (var response in action.RespDict.Values)
+                foreach (var response in action.ResponseDict.Values)
                 {
                     Console.WriteLine("    Name: {0}", response.FullName);
                     for (int i = 0; i < response.EventCollectionList.Count; i++)
@@ -397,7 +398,6 @@ namespace Planning.Servers
                         Console.WriteLine();
                     }
                     Console.WriteLine();
-
                 }
 
                 Console.WriteLine();

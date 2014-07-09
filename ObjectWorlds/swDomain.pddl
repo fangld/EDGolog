@@ -254,7 +254,7 @@
 :eventmodel (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn ?j ?m ?d))
 )
 
-(:observation otherEmpty
+(:observation otherNil
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (nil ?j)

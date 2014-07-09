@@ -12,6 +12,7 @@ namespace Planning
 
         public static TermHandler TermHandler;
 
+        public static string[] EmptyConstArray = new string[0];
 
     }
 }

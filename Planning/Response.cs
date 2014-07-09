@@ -50,7 +50,7 @@ namespace Planning
             if (eventModelContext.LB() == null)
             {
                 _eventCollectionArray = new EventCollection[1];
-                _eventCollectionArray[0] = HandleGdEvent(eventModelContext.gdEvent(), eventDict, assignment);
+                _eventCollectionArray[0] = GenerateEventCollection(eventModelContext.gdEvent(), eventDict, assignment);
                 Console.WriteLine("Finishing event collection 0 precondition");
                 Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
                 Console.WriteLine("Finishing event collection 0 partial successor state axiom");
@@ -59,14 +59,14 @@ namespace Planning
             else
             {
                 _eventCollectionArray = new EventCollection[2];
-                _eventCollectionArray[0] = HandleGdEvent(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment);
+                _eventCollectionArray[0] = GenerateEventCollection(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment);
 
                 Console.WriteLine("Finishing event collection 0 precondition");
                 Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
                 Console.WriteLine("Finishing event collection 0 partial successor state axiom");
                 Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
 
-                _eventCollectionArray[1] = HandleGdEvent(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
+                _eventCollectionArray[1] = GenerateEventCollection(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
 
                 Console.WriteLine("Finishing event collection 1 precondition");
                 Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].Precondition));
@@ -77,7 +77,7 @@ namespace Planning
             Console.WriteLine();
         }
 
-        public EventCollection HandleGdEvent(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
+        private EventCollection GenerateEventCollection(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
         {
             List<Event> eventList = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
@@ -86,14 +86,12 @@ namespace Planning
             {
                 CUDDNode eventNode = CUDD.Var(e.CuddIndex);
                 CUDDNode impliesNode = CUDD.Function.Implies(eventNode, gdEventNode);
-                CUDD.Ref(impliesNode);
                 if (impliesNode.Equals(CUDD.ONE))
                 {
                     eventList.Add(e);
                 }
                 CUDD.Deref(impliesNode);
             }
-            CUDD.Deref(gdEventNode);
 
             EventCollection result = new EventCollection(eventList);
             return result;
@@ -114,6 +112,7 @@ namespace Planning
                 else
                 {
                     result = CUDD.ZERO;
+                    CUDD.Ref(result);
                 }
             }
             else
@@ -150,9 +149,9 @@ namespace Planning
                         result = firstValue >= secondValue ? CUDD.ONE : CUDD.ZERO;
                     }
                 }
+                CUDD.Ref(result);
             }
 
-            CUDD.Ref(result);
             return result;
         }
 
@@ -174,15 +173,10 @@ namespace Planning
                     if (gdNode.Equals(CUDD.ZERO))
                     {
                         CUDD.Deref(result);
-                        CUDD.Deref(gdNode);
                         result = CUDD.ZERO;
-                        CUDD.Ref(result);
                         break;
                     }
                     CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                    CUDD.Ref(andNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
                     result = andNode;
                 }
             }
@@ -196,15 +190,10 @@ namespace Planning
                     if (gdNode.Equals(CUDD.ONE))
                     {
                         CUDD.Deref(result);
-                        CUDD.Deref(gdNode);
                         result = CUDD.ONE;
-                        CUDD.Ref(result);
                         break;
                     }
                     CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                    CUDD.Ref(orNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
                     result = orNode;
                 }
             }
@@ -212,70 +201,70 @@ namespace Planning
             {
                 CUDDNode gdNode = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
                 result = CUDD.Function.Not(gdNode);
-                CUDD.Ref(result);
-                CUDD.Deref(gdNode);
             }
             else if (context.IMPLY() != null)
             {
                 CUDDNode gdNode0 = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
                 CUDDNode gdNode1 = GetCuddNode(context.gdEvent()[1], eventDict, assignment);
                 result = CUDD.Function.Implies(gdNode0, gdNode1);
-                CUDD.Ref(result);
-                CUDD.Deref(gdNode0);
-                CUDD.Deref(gdNode1);
             }
             else
             {
                 var listVariableContext = context.listVariable();
                 var collection = listVariableContext.GetCollection();
-                var varNameList = listVariableContext.GetVarNameList();
+                var varNameList = listVariableContext.GetVariableNameList();
 
                 bool isForall = context.FORALL() != null;
-                result = ScanVarList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, isForall);
+                result = ScanVariableList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, isForall);
             }
 
             return result;
         }
 
-        private CUDDNode ScanVarList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict,
-            Dictionary<string, string> assignment, IReadOnlyList<string> varNameList,
+        private CUDDNode ScanVariableList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict,
+            Dictionary<string, string> assignment, IReadOnlyList<string> variableNameList,
             IReadOnlyList<List<string>> collection, int currentLevel, bool isForall = true)
         {
-            CUDDNode result = isForall ? CUDD.ONE : CUDD.ZERO;
-            if (currentLevel != varNameList.Count)
+            CUDDNode result;// = isForall ? CUDD.ONE : CUDD.ZERO;
+            if (currentLevel != variableNameList.Count)
             {
-                for (int i = 0; i < collection[currentLevel].Count; i++)
+                string variableName = variableNameList[currentLevel];
+                result = isForall ? CUDD.ONE : CUDD.ZERO;
+                CUDDNode equalNode = isForall ? CUDD.ZERO : CUDD.ONE;
+                CUDD.Ref(result);
+                Func<CUDDNode, CUDDNode, CUDDNode> boolFunc;
+                if (isForall)
                 {
-                    string value = collection[currentLevel][i];
-                    string varName = varNameList[currentLevel];
+                    boolFunc = CUDD.Function.And;
+                }
+                else
+                {
+                    boolFunc = CUDD.Function.Or;
+                }
 
-                    if (!assignment.ContainsKey(varName))
+                foreach (string value in collection[currentLevel])
+                {
+                    if (assignment.ContainsKey(variableName))
                     {
-                        assignment.Add(varName, value);
+                        assignment[variableName] = value;
                     }
                     else
                     {
-                        assignment[varName] = value;
+                        assignment.Add(variableName, value);
                     }
 
-                    CUDDNode gdNode = ScanVarList(context, eventDict, assignment, varNameList, collection,
-                        currentLevel + 1, isForall);
+                    CUDDNode gdNode = ScanVariableList(context, eventDict, assignment, variableNameList, collection,
+                        currentLevel + 1);
 
-                    CUDDNode terminalNode = isForall ? CUDD.ZERO : CUDD.ONE;
-
-                    if (gdNode.Equals(terminalNode))
+                    if (gdNode.Equals(equalNode))
                     {
                         CUDD.Deref(result);
-                        result = terminalNode;
-                        CUDD.Ref(result);
+                        result = equalNode;
                         break;
                     }
 
-                    CUDDNode quantifiedNode = isForall ? CUDD.Function.And(result, gdNode) : CUDD.Function.Or(result, gdNode);
-                    CUDD.Ref(quantifiedNode);
-                    CUDD.Deref(result);
-                    CUDD.Deref(gdNode);
-                    result = quantifiedNode;
+                    CUDDNode boolNode = boolFunc(result, gdNode);
+                    result = boolNode;
                 }
             }
             else
