@@ -158,7 +158,7 @@ namespace Planning.ContextExtensions
             Dictionary<string, string> assignment, IReadOnlyList<string> variableNameList,
             IReadOnlyList<List<string>> collection, int currentLevel, bool isForall = true)
         {
-            CUDDNode result;// = isForall ? CUDD.ONE : CUDD.ZERO;
+            CUDDNode result;
             if (currentLevel != variableNameList.Count)
             {
                 string variableName = variableNameList[currentLevel];

@@ -22,7 +22,6 @@ namespace Planning.ContextExtensions
                 {
                     CUDD.Deref(result);
                     result = gdContext.GetCuddNode(predicateDict, assignment);
-                        //GetCuddNode(gdContext, predicateDict, assignment);
                 }
             }
 

@@ -60,8 +60,6 @@ namespace Planning.Servers
             Console.WriteLine("Finishing action define!");
             HandleObservationsDefine(domainContext.observationDefine());
             Console.WriteLine("Finishing observation define!");
-
-            //HandleServerProblem(context);
         }
 
         #endregion
@@ -73,42 +71,6 @@ namespace Planning.Servers
             ServerProblem result = new ServerProblem(domainContext, context);
             return result;
         }
-
-        //private void ComputeMaxCuddIndex(PlanningParser.PredDefineContext predDefineContext, IReadOnlyList<PlanningParser.EventDefineContext> eventDefineContexts)
-        //{
-        //    int maxCuddIndex = 0;
-        //    foreach (var atomFormSkeleton in predDefineContext.atomFormSkeleton())
-        //    {
-        //        maxCuddIndex += ComputeNumberOfPermutation(atomFormSkeleton.listVariable());
-        //    }
-        //    foreach (var eventDefineContext in eventDefineContexts)
-        //    {
-        //        maxCuddIndex += ComputeNumberOfPermutation(eventDefineContext.listVariable());
-        //    }
-        //    CUDD.Var(maxCuddIndex);
-        //}
-
-        //private int ComputeNumberOfPermutation(PlanningParser.ListVariableContext context)
-        //{
-        //    int result = 1;
-        //    do
-        //    {
-        //        int count = context.VAR().Count;
-        //        if (count != 0)
-        //        {
-        //            string type = context.type() == null ? PlanningType.ObjectType.Name : context.type().GetText();
-
-        //            for (int i = 0; i < count; i++)
-        //            {
-        //                List<string> constList = Globals.TermInterpreter.GetConstList(type);
-        //                result *= constList.Count;
-        //            }
-        //        }
-        //        context = context.listVariable();
-        //    } while (context != null);
-
-        //    return result;
-        //}
 
         #region Methods for generating the dictionary of predicates
 
@@ -354,7 +316,6 @@ namespace Planning.Servers
                 Console.WriteLine("  Precondition:");
                 CUDD.Print.PrintMinterm(e.Precondition);
                 Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.Precondition));
-
 
                 //Console.WriteLine("  CondEffect:");
                 ////Console.WriteLine("  Count:{0}", e.CondEffect.Count);
