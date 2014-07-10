@@ -10,12 +10,12 @@ namespace Planning
 {
     public abstract class ConstContainer : IEquatable<ConstContainer>
     {
-        #region
+        #region Fields
 
         /// <summary>
-        /// Store the list of variables
+        /// Store the array of variables
         /// </summary>
-        private string[] _constList;
+        private string[] _constArray;
 
         #endregion
 
@@ -36,15 +36,15 @@ namespace Planning
         /// </summary>
         public int Count
         {
-            get { return _constList.Length; }
+            get { return _constArray.Length; }
         }
 
         /// <summary>
         /// Return the list of variables
         /// </summary>
-        public IReadOnlyList<string> ConstList
+        public IReadOnlyCollection<string> ConstArray
         {
-            get { return _constList; }
+            get { return _constArray; }
         }
 
         #endregion
@@ -54,59 +54,34 @@ namespace Planning
         protected ConstContainer(string[] constList)
         {
             int count = constList.Length;
-            _constList = new string[count];
-            Array.Copy(constList, _constList, count);
+            _constArray = new string[count];
+            Array.Copy(constList, _constArray, count);
         }
 
         #endregion
 
         #region Methods
 
-        //protected void CopyConstArray(string[] constList)
-        //{
-        //    int count = constList.Length;
-        //    _constList = new string[count];
-        //    Array.Copy(constList, _constList, count);
-        //}
-
-        //internal void GenerateVariableList(PlanningParser.ListVariableContext context)
-        //{
-        //    do
-        //    {
-        //        if (context.VAR().Count != 0)
-        //        {
-        //            string type = context.type() == null ? PlanningType.ObjectType.Name : context.type().GetText();
-
-        //            foreach (var varNode in context.VAR())
-        //            {
-        //                var tuple = new Tuple<string, string>(varNode.GetText(), type);
-        //                _constList.Add(tuple);
-        //            }
-        //        }
-        //        context = context.listVariable();
-        //    } while (context != null);
-        //}
-
         public override string ToString()
         {
-            string result = GetFullName(Name, _constList);
+            string result = GetFullName(Name, _constArray);
             return result;
         }
 
-        public static string GetFullName(string name, IReadOnlyList<string> constList)
+        public static string GetFullName(string name, string[] constArray)
         {
             StringBuilder sb = new StringBuilder();
 
-            if (constList.Count != 0)
+            if (constArray.Length != 0)
             {
                 sb.AppendFormat("{0}(", name);
 
-                for (int i = 0; i < constList.Count - 1; i++)
+                for (int i = 0; i < constArray.Length - 1; i++)
                 {
-                    sb.AppendFormat("{0},", constList[i]);
+                    sb.AppendFormat("{0},", constArray[i]);
                 }
 
-                sb.AppendFormat("{0})", constList[constList.Count - 1]);
+                sb.AppendFormat("{0})", constArray[constArray.Length - 1]);
             }
             else
             {
@@ -119,36 +94,33 @@ namespace Planning
         public static string GetFullName(PlanningParser.TermAtomFormContext context, StringDictionary assignment)
         {
             string name = context.predicate().GetText();
-            List<string> constList = new List<string>();
-            foreach (var termContext in context.term())
-            {
-                string termString = Globals.TermInterpreter.GetString(termContext, assignment);
-                constList.Add(termString);
-            }
-            return GetFullName(name, constList);
+            var termContextList = context.term();
+            return GetFullName(name, termContextList, assignment);
         }
 
         public static string GetFullName(PlanningParser.ConstTermAtomFormContext context)
         {
             string name = context.predicate().GetText();
-            List<string> termList = new List<string>();
-            foreach (var constTermContext in context.constTerm())
-            {
-                termList.Add(constTermContext.GetText());
-            }
-            return GetFullName(name, termList);
+            var constTermContext = context.constTerm();
+            int count = constTermContext.Count;
+            string[] termArray = new string[count];
+            Parallel.For(0, count, i => termArray[i] = constTermContext[i].GetText());
+            return GetFullName(name, termArray);
         }
 
         public static string GetFullName(PlanningParser.TermEventFormContext context, StringDictionary assignment)
         {
             string name = context.eventSymbol().GetText();
-            List<string> constList = new List<string>();
-            foreach (var termContext in context.term())
-            {
-                string termString = Globals.TermInterpreter.GetString(termContext, assignment);
-                constList.Add(termString);
-            }
-            return GetFullName(name, constList);
+            var termContextList = context.term();
+            return GetFullName(name, termContextList, assignment);
+        }
+
+        public static string GetFullName(string name, IReadOnlyList<PlanningParser.TermContext> termContextList, StringDictionary assignment)
+        {
+            int count = termContextList.Count;
+            string[] constArray = new string[count];
+            Parallel.For(0, count, i => constArray[i] = Globals.TermInterpreter.GetString(termContextList[i], assignment));
+            return GetFullName(name, constArray);
         }
 
         #endregion

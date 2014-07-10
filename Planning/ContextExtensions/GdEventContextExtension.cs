@@ -99,48 +99,85 @@ namespace Planning.ContextExtensions
             }
             else if (context.AND() != null)
             {
-                result = CUDD.ONE;
-                CUDD.Ref(result);
-                for (int i = 0; i < context.gdEvent().Count; i++)
+                var gdEventContextList = context.gdEvent();
+                result = GetCuddNode(gdEventContextList[0], eventDict, assignment);
+
+                if (!result.Equals(CUDD.ZERO))
                 {
-                    CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
-                    if (gdNode.Equals(CUDD.ZERO))
+                    for (int i = 1; i < gdEventContextList.Count; i++)
                     {
-                        CUDD.Deref(result);
-                        result = CUDD.ZERO;
-                        break;
+                        CUDDNode gdNode = GetCuddNode(gdEventContextList[i], eventDict, assignment);
+                        if (gdNode.Equals(CUDD.ZERO))
+                        {
+                            CUDD.Deref(result);
+                            result = CUDD.ZERO;
+                            break;
+                        }
+                        result = CUDD.Function.And(result, gdNode);
                     }
-                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                    result = andNode;
                 }
+
+                //result = CUDD.ONE;
+                //CUDD.Ref(result);
+                //for (int i = 0; i < context.gdEvent().Count; i++)
+                //{
+                //    CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
+                //    if (gdNode.Equals(CUDD.ZERO))
+                //    {
+                //        CUDD.Deref(result);
+                //        result = CUDD.ZERO;
+                //        break;
+                //    }
+                //    CUDDNode andNode = CUDD.Function.And(result, gdNode);
+                //    result = andNode;
+                //}
             }
             else if (context.OR() != null)
             {
-                result = CUDD.ZERO;
-                CUDD.Ref(result);
-                for (int i = 0; i < context.gdEvent().Count; i++)
+                var gdEventContextList = context.gdEvent();
+                result = GetCuddNode(gdEventContextList[0], eventDict, assignment);
+
+                if (!result.Equals(CUDD.ONE))
                 {
-                    CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
-                    if (gdNode.Equals(CUDD.ONE))
+                    for (int i = 1; i < gdEventContextList.Count; i++)
                     {
-                        CUDD.Deref(result);
-                        result = CUDD.ONE;
-                        break;
+                        CUDDNode gdNode = GetCuddNode(gdEventContextList[i], eventDict, assignment);
+                        if (gdNode.Equals(CUDD.ONE))
+                        {
+                            CUDD.Deref(result);
+                            result = CUDD.ZERO;
+                            break;
+                        }
+                        result = CUDD.Function.Or(result, gdNode);
                     }
-                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                    result = orNode;
                 }
+
+                //result = CUDD.ZERO;
+                //CUDD.Ref(result);
+                //for (int i = 0; i < context.gdEvent().Count; i++)
+                //{
+                //    CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
+                //    if (gdNode.Equals(CUDD.ONE))
+                //    {
+                //        CUDD.Deref(result);
+                //        result = CUDD.ONE;
+                //        break;
+                //    }
+                //    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
+                //    result = orNode;
+                //}
             }
             else if (context.NOT() != null)
             {
-                CUDDNode gdNode = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
-                result = CUDD.Function.Not(gdNode);
+                CUDDNode gdEventNode = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
+                result = CUDD.Function.Not(gdEventNode);
             }
             else if (context.IMPLY() != null)
             {
-                CUDDNode gdNode0 = GetCuddNode(context.gdEvent()[0], eventDict, assignment);
-                CUDDNode gdNode1 = GetCuddNode(context.gdEvent()[1], eventDict, assignment);
-                result = CUDD.Function.Implies(gdNode0, gdNode1);
+                var gdEventContextList = context.gdEvent();
+                CUDDNode gdEventNode0 = GetCuddNode(gdEventContextList[0], eventDict, assignment);
+                CUDDNode gdEventNode1 = GetCuddNode(gdEventContextList[1], eventDict, assignment);
+                result = CUDD.Function.Implies(gdEventNode0, gdEventNode1);
             }
             else
             {
@@ -155,7 +192,9 @@ namespace Planning.ContextExtensions
             return result;
         }
 
-        private static CUDDNode ScanVariableList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection, StringDictionary assignment, int currentLevel, bool isForall = true)
+        private static CUDDNode ScanVariableList(PlanningParser.GdEventContext context,
+            IReadOnlyDictionary<string, Event> eventDict, IReadOnlyList<string> variableNameList,
+            IReadOnlyList<IList<string>> collection, StringDictionary assignment, int currentLevel, bool isForall = true)
         {
             CUDDNode result;
             if (currentLevel != variableNameList.Count)
@@ -188,8 +227,8 @@ namespace Planning.ContextExtensions
                         break;
                     }
 
-                    CUDDNode boolNode = boolFunc(result, gdNode);
-                    result = boolNode;
+                    //CUDDNode boolNode = boolFunc(result, gdNode);
+                    result = boolFunc(result, gdNode);
                 }
             }
             else

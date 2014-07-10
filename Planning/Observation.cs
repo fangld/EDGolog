@@ -59,42 +59,5 @@ namespace Planning
         }
 
         #endregion
-
-        //#region Methods
-
-        //private void HandleEventModel(PlanningParser.EventModelContext context,
-        //    IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
-        //{
-        //    Console.WriteLine(FullName);
-        //    if (context.LB() == null)
-        //    {
-        //        _eventCollectionArray = new EventCollection[1];
-        //        _eventCollectionArray[0] = context.gdEvent().ToEventCollection(eventDict, assignment);
-        //        Console.WriteLine("Finishing event collection 0 precondition");
-        //        Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
-        //        Console.WriteLine("Finishing event collection 0 partial successor state axiom");
-        //        Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
-        //    }
-        //    else
-        //    {
-        //        _eventCollectionArray = new EventCollection[2];
-        //        _eventCollectionArray[0] = context.plGdEvent(0).gdEvent().ToEventCollection(eventDict, assignment);
-
-        //        Console.WriteLine("Finishing event collection 0 precondition");
-        //        Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
-        //        Console.WriteLine("Finishing event collection 0 partial successor state axiom");
-        //        Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
-
-        //        _eventCollectionArray[1] = context.plGdEvent(1).gdEvent().ToEventCollection(eventDict, assignment);
-
-        //        Console.WriteLine("Finishing event collection 1 precondition");
-        //        Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].Precondition));
-        //        Console.WriteLine("Finishing event collection 1 partial successor state axiom");
-        //        Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].PartialSuccessorStateAxiom));
-        //    }
-        //    Console.WriteLine();
-        //}
-
-        //#endregion
     }
 }

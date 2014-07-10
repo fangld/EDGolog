@@ -24,37 +24,58 @@ namespace Planning.ContextExtensions
             }
             else if (context.AND() != null)
             {
-                result = CUDD.ONE;
-                CUDD.Ref(result);
-                for (int i = 0; i < context.gd().Count; i++)
+                var gdContextList = context.gd();
+                result = GetCuddNode(gdContextList[0], predicateDict, assignment);
+
+                if (!result.Equals(CUDD.ZERO))
                 {
-                    CUDDNode gdNode = GetCuddNode(context.gd()[i], predicateDict, assignment);
-                    if (gdNode.Equals(CUDD.ZERO))
+                    for (int i = 1; i < gdContextList.Count; i++)
                     {
-                        CUDD.Deref(result);
-                        result = CUDD.ZERO;
-                        break;
+                        CUDDNode gdNode = GetCuddNode(gdContextList[i], predicateDict, assignment);
+                        if (gdNode.Equals(CUDD.ZERO))
+                        {
+                            CUDD.Deref(result);
+                            result = CUDD.ZERO;
+                            break;
+                        }
+                        result = CUDD.Function.And(result, gdNode); 
                     }
-                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                    result = andNode;
                 }
             }
             else if (context.OR() != null)
             {
-                result = CUDD.ZERO;
-                CUDD.Ref(result);
-                for (int i = 0; i < context.gd().Count; i++)
+                var gdContextList = context.gd();
+                result = GetCuddNode(gdContextList[0], predicateDict, assignment);
+
+                if (!result.Equals(CUDD.ONE))
                 {
-                    CUDDNode gdNode = GetCuddNode(context.gd()[i], predicateDict, assignment);
-                    if (gdNode.Equals(CUDD.ONE))
+                    for (int i = 1; i < gdContextList.Count; i++)
                     {
-                        CUDD.Deref(result);
-                        result = CUDD.ONE;
-                        break;
+                        CUDDNode gdNode = GetCuddNode(gdContextList[i], predicateDict, assignment);
+                        if (gdNode.Equals(CUDD.ONE))
+                        {
+                            CUDD.Deref(result);
+                            result = CUDD.ZERO;
+                            break;
+                        }
+                        result = CUDD.Function.Or(result, gdNode);
                     }
-                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                    result = orNode;
                 }
+
+                //result = CUDD.ZERO;
+                //CUDD.Ref(result);
+                //for (int i = 0; i < context.gd().Count; i++)
+                //{
+                //    CUDDNode gdNode = GetCuddNode(context.gd()[i], predicateDict, assignment);
+                //    if (gdNode.Equals(CUDD.ONE))
+                //    {
+                //        CUDD.Deref(result);
+                //        result = CUDD.ONE;
+                //        break;
+                //    }
+                //    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
+                //    result = orNode;
+                //}
             }
             else if (context.NOT() != null)
             {
@@ -63,8 +84,9 @@ namespace Planning.ContextExtensions
             }
             else if (context.IMPLY() != null)
             {
-                CUDDNode gdNode0 = GetCuddNode(context.gd()[0], predicateDict, assignment);
-                CUDDNode gdNode1 = GetCuddNode(context.gd()[1], predicateDict, assignment);
+                var gdContextList = context.gd();
+                CUDDNode gdNode0 = GetCuddNode(gdContextList[0], predicateDict, assignment);
+                CUDDNode gdNode1 = GetCuddNode(gdContextList[1], predicateDict, assignment);
                 result = CUDD.Function.Implies(gdNode0, gdNode1);
             }
             else
@@ -90,8 +112,9 @@ namespace Planning.ContextExtensions
             if (context.predicate() != null)
             {
                 string predicateFullName = ConstContainer.GetFullName(context, assignment);
-                Predicate pred = predicateDict[predicateFullName];
-                int cuddIndex = pred.PreviousCuddIndex;
+                //Console.WriteLine(predicateFullName);
+                Predicate predicate = predicateDict[predicateFullName];
+                int cuddIndex = predicate.PreviousCuddIndex;
                 result = CUDD.Var(cuddIndex);
             }
             else
@@ -135,7 +158,7 @@ namespace Planning.ContextExtensions
 
         private static CUDDNode ScanVariableList(PlanningParser.GdContext context,
             IReadOnlyDictionary<string, Predicate> predicateDict, IReadOnlyList<string> variableNameList,
-            IReadOnlyList<List<string>> collection, StringDictionary assignment, int currentLevel = 0,
+            IReadOnlyList<IList<string>> collection, StringDictionary assignment, int currentLevel = 0,
             bool isForall = true)
         {
             CUDDNode result;
@@ -174,8 +197,8 @@ namespace Planning.ContextExtensions
                         break;
                     }
 
-                    CUDDNode boolNode = boolFunc(result, gdNode);
-                    result = boolNode;
+                    //CUDDNode boolNode = boolFunc(result, gdNode);
+                    result = boolFunc(result, gdNode);
                 }
             }
             else

@@ -8,11 +8,8 @@ namespace Planning
 {
     public static class Globals
     {
-        //public static ConstTermComputer ConstTermComputer;
-
         public static TermInterpreter TermInterpreter;
 
         public static string[] EmptyConstArray = new string[0];
-
     }
 }

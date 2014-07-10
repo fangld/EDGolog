@@ -42,6 +42,14 @@ namespace Planning
             _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
         }
 
+        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
+            : base(Globals.EmptyConstArray)
+        {
+            Name = context.responseSymbol().GetText();
+            Console.WriteLine(FullName);
+            _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
+        }
+
         #endregion
 
         //#region Methods

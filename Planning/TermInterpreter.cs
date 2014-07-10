@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -15,19 +16,13 @@ namespace Planning
         private const string Agent1Id = "a1";
         private const string Agent2Id = "a2";
 
-        private Dictionary<string, PlanningType> _typeDict;
+        private IDictionary<string, PlanningType> _typeDict;
 
-        private Dictionary<string, int> _numericConstValues;
+        private IDictionary<string, int> _numericConstValueDict;
 
-        private Dictionary<string, string> _constTypeMap;
+        private StringDictionary _constTypeDict;
 
-        private Dictionary<string, List<string>> _typeConstListMap;
-
-        #endregion
-
-        #region Properties
-
-        public static Dictionary<string, string> EmtpyAssignment;
+        private IDictionary<string, IList<string>> _typeConstListDict;
 
         #endregion
 
@@ -41,10 +36,10 @@ namespace Planning
             BuildConstTypeMap(objDecContext);
         }
 
-        static TermInterpreter()
-        {
-            EmtpyAssignment = new Dictionary<string, string>();
-        }
+        //static TermInterpreter()
+        //{
+        //    EmtpyAssignment = new Dictionary<string, string>();
+        //}
 
         #endregion
 
@@ -53,12 +48,12 @@ namespace Planning
         private void BuildNumericConst(PlanningParser.NumericSettingContext context)
         {
             int count = context.INTEGER().Count;
-            _numericConstValues = new Dictionary<string, int>(count);
+            _numericConstValueDict = new Dictionary<string, int>(count);
             for (int i = 0; i < count; i++)
             {
                 string constName = context.numericSymbol(i).GetText();
                 int value = int.Parse(context.INTEGER(i).GetText());
-                _numericConstValues.Add(constName, value);
+                _numericConstValueDict.Add(constName, value);
             }
         }
 
@@ -93,24 +88,24 @@ namespace Planning
 
         private void BuildConstTypeMap(PlanningParser.ObjectDeclarationContext context)
         {
-            _constTypeMap = new Dictionary<string, string>();
-            _typeConstListMap = new Dictionary<string, List<string>>();
+            _constTypeDict = new StringDictionary();
+            _typeConstListDict = new Dictionary<string, IList<string>>();
 
-            _constTypeMap.Add(Agent1Id, PlanningType.AgentType.Name);
-            _constTypeMap.Add(Agent2Id, PlanningType.AgentType.Name);
-            _typeConstListMap.Add(PlanningType.AgentType.Name, new List<string> { Agent1Id, Agent2Id });
+            _constTypeDict.Add(Agent1Id, PlanningType.AgentType.Name);
+            _constTypeDict.Add(Agent2Id, PlanningType.AgentType.Name);
+            _typeConstListDict.Add(PlanningType.AgentType.Name, new List<string> {Agent1Id, Agent2Id});
             
             foreach (var pair in _typeDict)
             {
                 if (pair.Value is PlanningNumericType)
                 {
                     PlanningNumericType type = pair.Value as PlanningNumericType;
-                    List<string> constantList = new List<string>(type.Max - type.Min + 1);
+                    List<string> constList = new List<string>(type.Max - type.Min + 1);
                     for (int i = type.Min; i <= type.Max; i++)
                     {
-                        constantList.Add(i.ToString());
+                        constList.Add(i.ToString());
                     }
-                    _typeConstListMap.Add(type.Name, constantList);
+                    _typeConstListDict.Add(type.Name, constList);
                 }
             }
 
@@ -123,22 +118,22 @@ namespace Planning
                         ? listNameContext.type().GetText()
                         : PlanningType.ObjectType.Name;
 
-                    List<string> constantList;
+                    IList<string> constList;
 
-                    if (_typeConstListMap.ContainsKey(type))
+                    if (_typeConstListDict.ContainsKey(type))
                     {
-                        constantList = _typeConstListMap[type];
+                        constList = _typeConstListDict[type];
                     }
                     else
                     {
-                        constantList = new List<string>(listNameContext.NAME().Count);
-                        _typeConstListMap.Add(type, constantList);
+                        constList = new List<string>(listNameContext.NAME().Count);
+                        _typeConstListDict.Add(type, constList);
                     }
 
                     foreach (var nameNode in listNameContext.NAME())
                     {
-                        _constTypeMap.Add(nameNode.GetText(), type);
-                        constantList.Add(nameNode.GetText());
+                        _constTypeDict.Add(nameNode.GetText(), type);
+                        constList.Add(nameNode.GetText());
                     }
 
                     listNameContext = listNameContext.listName();
@@ -152,7 +147,7 @@ namespace Planning
             if (context.NAME() != null)
             {
                 string constName = context.NAME().GetText();
-                result = _numericConstValues[constName];
+                result = _numericConstValueDict[constName];
             }
 
             else if (context.INTEGER() != null)
@@ -187,25 +182,11 @@ namespace Planning
             if (context.NAME() != null)
             {
                 string name = context.NAME().GetText();
-                result = _constTypeMap.ContainsKey(name) ? name : _numericConstValues[name].ToString();
-                //if (_constTypeMap.ContainsKey(name))
-                //{
-                //    result = name;
-                //}
-                //else
-                //{
-                //    //Console.WriteLine("   name:{0}", name);
-                //    result = _numericConstValues[name].ToString();
-                //}
+                result = _constTypeDict.ContainsKey(name) ? name : _numericConstValueDict[name].ToString();
             }
             else if (context.VAR() != null)
             {
                 string variableName = context.VAR().GetText();
-                //Console.WriteLine("TermInterpreter: variableName: {0}", variableName);
-                //foreach (var pair in assignment)
-                //{
-                //    Console.WriteLine("  Var name{0}, value:{1}", pair.Key, pair.Value);
-                //}
                 result = assignment[variableName];
             }
             else if (context.INTEGER() != null)
@@ -215,8 +196,7 @@ namespace Planning
             else if (context.MINUS() != null && context.term().Count == 1)
             {
                 string termString = GetString(context.term(0), assignment);
-                int value = int.Parse(termString);
-                result = (-value).ToString();
+                result = string.Format("-{0}", termString);
             }
             else if (context.MINUS() != null && context.term().Count == 2)
             {
@@ -242,10 +222,9 @@ namespace Planning
             return result;
         }
 
-        public List<string> GetConstList(string type)
+        public IList<string> GetConstList(string type)
         {
-            //Console.WriteLine("Type: {0}", type);
-            return _typeConstListMap[type];
+            return _typeConstListDict[type];
         }
 
         public void ShowInfo()
@@ -258,14 +237,14 @@ namespace Planning
             Console.WriteLine(Domain.BarLine);
 
             Console.WriteLine("Numeric constants:");
-            foreach (var pair in _numericConstValues)
+            foreach (var pair in _numericConstValueDict)
             {
                 Console.WriteLine("  Name: {0}, Value: {1}", pair.Key, pair.Value);
             }
             Console.WriteLine(Domain.BarLine);
 
             Console.WriteLine("Object constants:");
-            foreach (var pair in _constTypeMap)
+            foreach (DictionaryEntry pair in _constTypeDict)
             {
                 Console.WriteLine("  Name: {0}, Type: {1}", pair.Key, pair.Value);
             }

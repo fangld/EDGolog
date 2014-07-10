@@ -9,9 +9,9 @@ namespace Planning.ContextExtensions
 {
     public static class ListVariableContextExtension
     {
-        public static IReadOnlyList<List<string>> GetCollection(this PlanningParser.ListVariableContext context)
+        public static IReadOnlyList<IList<string>> GetCollection(this PlanningParser.ListVariableContext context)
         {
-            List<List<string>> result = new List<List<string>>();
+            List<IList<string>> result = new List<IList<string>>();
 
             do
             {
@@ -22,7 +22,7 @@ namespace Planning.ContextExtensions
 
                     for (int i = 0; i < count; i++)
                     {
-                        List<string> constList = Globals.TermInterpreter.GetConstList(type);
+                        var constList = Globals.TermInterpreter.GetConstList(type);
                         result.Add(constList);
                     }
                 }

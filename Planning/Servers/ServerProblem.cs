@@ -87,11 +87,11 @@ namespace Planning.Servers
 
         private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[]> action)
         {
-            IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
+            IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
             ScanMixedRadix(context, collection, action);
         }
 
-        private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<List<string>> collection,
+        private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<IList<string>> collection,
             Action<TContext, string[]> action)
         {
             int count = collection.Count;
@@ -170,12 +170,12 @@ namespace Planning.Servers
 
         private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[], StringDictionary> action)
         {
-            IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
+            IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
             IReadOnlyList<string> varNameList = listVariableContext.GetVariableNameList();
             ScanMixedRadix(context, collection, varNameList, action);
         }
 
-        private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<List<string>> collection,
+        private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<IList<string>> collection,
             IReadOnlyList<string> variableNameList, Action<TContext, string[], StringDictionary> action)
         {
             int count = collection.Count;
@@ -260,8 +260,7 @@ namespace Planning.Servers
                 CUDD.Deref(observation.Precondition);
             }
 
-            Console.ReadLine();
-
+            //Console.ReadLine();
         }
 
         #endregion
@@ -272,12 +271,11 @@ namespace Planning.Servers
             foreach (var atomForm in context.constTermAtomForm())
             {
                 var constTermContexts = atomForm.constTerm();
-                List<string> termList = new List<string>();
-                foreach (var constTermContext in constTermContexts)
-                {
-                    termList.Add(constTermContext.GetText());
-                }
-                string predicateFullname = ConstContainer.GetFullName(atomForm.predicate().GetText(), termList);
+                int count = constTermContexts.Count;
+                string[] termArray = new string[count];
+                Parallel.For(0, count, i => termArray[i] = constTermContexts[i].GetText());
+
+                string predicateFullname = ConstContainer.GetFullName(atomForm.predicate().GetText(), termArray);
 
                 TruePredSet.Add(predicateFullname);
             }

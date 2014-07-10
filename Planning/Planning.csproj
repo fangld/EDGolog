@@ -49,7 +49,6 @@
     <Compile Include="Clients\ClientProblem.cs" />
     <Compile Include="Clients\MentalAttitude.cs" />
     <Compile Include="ConstContainer.cs" />
-    <Compile Include="ConstTermComputer.cs" />
     <Compile Include="ContextExtensions\EmptyOrPreGDContextExtension.cs" />
     <Compile Include="ContextExtensions\EventModelContextExtension.cs" />
     <Compile Include="Domain.cs" />

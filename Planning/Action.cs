@@ -33,7 +33,7 @@ namespace Planning
             : base(constArray)
         {
             Name = context.actionSymbol().GetText();
-            Console.WriteLine(FullName);
+            //Console.WriteLine(FullName);
             GenerateResponses(context.responseDefine(),eventDict, assignment);
         }
 
@@ -56,20 +56,18 @@ namespace Planning
             {
                 var listVariableContext = context.listVariable();
 
-                IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
+                IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
                 IReadOnlyList<string> variableNameList = listVariableContext.GetVariableNameList();
-                ScanMixedRadix(variableNameList, collection, assignment, context, eventDict);
+                ScanMixedRadix(context, variableNameList, collection, eventDict, assignment);
             }
             else
             {
-                Response response = new Response(context, eventDict, Globals.EmptyConstArray, assignment);
+                Response response = new Response(context, eventDict, assignment);
                 _responseDict.Add(response.FullName, response);
             }
         }
 
-        private void ScanMixedRadix(IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection,
-            StringDictionary assignment, PlanningParser.ResponseDefineContext context,
-            IReadOnlyDictionary<string, Event> eventDict)
+        private void ScanMixedRadix(PlanningParser.ResponseDefineContext context, IReadOnlyList<string> variableNameList, IReadOnlyList<IList<string>> collection, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             int count = collection.Count;
             string[] scanArray = new string[count];
