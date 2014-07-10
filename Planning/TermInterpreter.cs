@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -180,21 +181,22 @@ namespace Planning
             return result;
         }
 
-        public string GetString(PlanningParser.TermContext context, Dictionary<string, string> assignment)
+        public string GetString(PlanningParser.TermContext context, StringDictionary assignment)
         {
             string result;
             if (context.NAME() != null)
             {
                 string name = context.NAME().GetText();
-                if (_constTypeMap.ContainsKey(name))
-                {
-                    result = name;
-                }
-                else
-                {
-                    Console.WriteLine("   name:{0}", name);
-                    result = _numericConstValues[name].ToString();
-                }
+                result = _constTypeMap.ContainsKey(name) ? name : _numericConstValues[name].ToString();
+                //if (_constTypeMap.ContainsKey(name))
+                //{
+                //    result = name;
+                //}
+                //else
+                //{
+                //    //Console.WriteLine("   name:{0}", name);
+                //    result = _numericConstValues[name].ToString();
+                //}
             }
             else if (context.VAR() != null)
             {

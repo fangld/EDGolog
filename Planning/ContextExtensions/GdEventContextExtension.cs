@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Planning.ContextExtensions
 {
     public static class GdEventContextExtension
     {
-        public static EventCollection ToEventCollection(this PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        public static EventCollection ToEventCollection(this PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             List<Event> eventList = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
@@ -30,7 +31,7 @@ namespace Planning.ContextExtensions
             return result;
         }
 
-        private static CUDDNode GetCuddNode(PlanningParser.TermEventFormContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        private static CUDDNode GetCuddNode(PlanningParser.TermEventFormContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             CUDDNode result;
             if (context.eventSymbol() != null)
@@ -88,7 +89,7 @@ namespace Planning.ContextExtensions
             return result;
         }
 
-        private static CUDDNode GetCuddNode(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        private static CUDDNode GetCuddNode(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             CUDDNode result;
 
@@ -148,15 +149,13 @@ namespace Planning.ContextExtensions
                 var varNameList = listVariableContext.GetVariableNameList();
 
                 bool isForall = context.FORALL() != null;
-                result = ScanVariableList(context.gdEvent(0), eventDict, assignment, varNameList, collection, 0, isForall);
+                result = ScanVariableList(context.gdEvent(0), eventDict, varNameList, collection, assignment, 0, isForall);
             }
 
             return result;
         }
 
-        private static CUDDNode ScanVariableList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict,
-            Dictionary<string, string> assignment, IReadOnlyList<string> variableNameList,
-            IReadOnlyList<List<string>> collection, int currentLevel, bool isForall = true)
+        private static CUDDNode ScanVariableList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection, StringDictionary assignment, int currentLevel, bool isForall = true)
         {
             CUDDNode result;
             if (currentLevel != variableNameList.Count)
@@ -177,17 +176,10 @@ namespace Planning.ContextExtensions
 
                 foreach (string value in collection[currentLevel])
                 {
-                    if (assignment.ContainsKey(variableName))
-                    {
-                        assignment[variableName] = value;
-                    }
-                    else
-                    {
-                        assignment.Add(variableName, value);
-                    }
+                    assignment[variableName] = value;
 
-                    CUDDNode gdNode = ScanVariableList(context, eventDict, assignment, variableNameList, collection,
-                        currentLevel + 1);
+                    CUDDNode gdNode = ScanVariableList(context, eventDict, variableNameList, collection,
+                        assignment, currentLevel + 1, isForall);
 
                     if (gdNode.Equals(equalNode))
                     {

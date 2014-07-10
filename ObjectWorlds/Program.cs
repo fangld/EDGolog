@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,8 @@ namespace ObjectWorlds
             Test1(domainFileName, problemFileName);
 
             //Test2();
+
+            //Test3();
             Console.ReadLine();
         }
 
@@ -438,6 +441,114 @@ namespace ObjectWorlds
             //    CUDD.Deref(testSum[i]);
             //    CUDD.Deref(testSum[i]);
             //}
+        }
+
+        private static void Test3()
+        {
+            //List<char> x = new List<char>(new[] {'a', 'b', 'c', 'd'});
+            List<char> y = new List<char>(new[] {'1', '2', '3', '4'});
+            List<List<char>> collection = new List<List<char>>(new[] {y, y, y, y});
+            List<char[]> enumeration1 = new List<char[]>();
+            List<char[]> enumeration2 = new List<char[]>();
+
+            ScanMixedRadix(collection, chars =>
+            {
+                char[] array = new char[chars.Length];
+                chars.CopyTo(array, 0);
+                enumeration1.Add(array);
+            });
+
+            ScanMixedRadix2(collection, chars =>
+            {
+                char[] array = new char[chars.Length];
+                chars.CopyTo(array, 0);
+                enumeration2.Add(array);
+            });
+
+            bool isEqual = true;
+            for (int i = 0; i < enumeration1.Count; i ++)
+            {
+                for (int j = 0; j < enumeration1[i].Length; j++)
+                {
+                    if (enumeration1[i][j] != enumeration2[i][j])
+                    {
+                        isEqual = false;
+                        Console.WriteLine("1: {0}, 2: {1}", enumeration1[i], enumeration2[i]);
+                        Console.WriteLine("false!");
+                        break;
+                    }
+                }
+            }
+            Console.WriteLine(isEqual);
+        }
+
+        static void ScanMixedRadix<T>(IReadOnlyList<List<T>> collection, Action<T[]> action)
+        {
+            int count = collection.Count;
+            T[] scanArray = new T[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+
+            do
+            {
+                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
+
+                action(scanArray);
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+
+                if (j == -1)
+                    return;
+                index[j]++;
+            } while (true);
+        }
+
+        static void ScanMixedRadix2<T>(IReadOnlyList<List<T>> collection, Action<T[]> action)
+        {
+            int count = collection.Count;
+            T[] scanArray = new T[count];
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i =>
+            {
+                maxIndex[i] = collection[i].Count;
+                scanArray[i] = collection[i][index[i]];
+            });
+
+            do
+            {
+                action(scanArray);
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+
+                if (j == -1)
+                    return;
+
+                index[j]++;
+                Parallel.For(j, count, i => scanArray[i] = collection[i][index[i]]);
+
+            } while (true);
         }
     }
 }

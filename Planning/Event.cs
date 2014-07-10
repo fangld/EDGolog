@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Security;
@@ -43,59 +44,66 @@ namespace Planning
 
         #region Constructors
 
-        public Event(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, Predicate> predicateDict,string[] constArray, Dictionary<string, string> assignment, int initialCuddInex) : base(constArray)
+        public Event(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, Predicate> predicateDict, string[] constArray, StringDictionary assignment, int initialCuddInex)
+            : base(constArray)
         {
             CuddIndex = initialCuddInex;
             Name = context.eventSymbol().GetText();
-            Console.WriteLine(FullName);
+            //Console.WriteLine(FullName);
             Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
-            Console.WriteLine("Finishing event define precondition");
-            Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
-            if (context.emptyOrPreGD() != null)
+            //Console.WriteLine("Finishing event define precondition");
+            //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
+
+            if (!Precondition.Equals(CUDD.ZERO))
             {
-                Console.WriteLine("  Context: {0}", context.emptyOrPreGD().GetText());
+                //Console.ReadLine();
+                GenerateEffect(context.emptyOrEffect(), predicateDict, assignment);
+                //Console.WriteLine("Finishing event effect");
+
+                GeneratePartialSuccessorStateAxiom(predicateDict);
+                //Console.WriteLine("Finishing event parital successor state axiom");
+                //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(ParitalSuccessorStateAxiom));
             }
+            //if (context.emptyOrPreGD() != null)
+            //{
+            //    Console.WriteLine("  Context: {0}", context.emptyOrPreGD().GetText());
+            //}
             //string filename = string.Format("{0}.dot", FullName);
             //CUDD.Print.PrintBDDTree(Precondition, filename);
             //CUDD.Print.PrintMinterm(Precondition);
             //Console.ReadLine();
 
-            GenerateEffect(context.emptyOrEffect(), predicateDict, assignment);
-            Console.WriteLine("Finishing event effect");
 
-            GeneratePartialSuccessorStateAxiom(predicateDict);
-            Console.WriteLine("Finishing event parital successor state axiom");
-            Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(ParitalSuccessorStateAxiom));
         }
 
         #endregion
 
         #region Methods
 
-        #region Methods for generating precondition
+        //#region Methods for generating precondition
 
-        private void GeneratePrecondition(PlanningParser.EmptyOrPreGDContext context, IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
-        {
-            Precondition = CUDD.ONE;
-            CUDD.Ref(Precondition);
+        //private void GeneratePrecondition(PlanningParser.EmptyOrPreGDContext context, IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+        //{
+        //    Precondition = CUDD.ONE;
+        //    CUDD.Ref(Precondition);
 
-            if (context != null)
-            {
-                PlanningParser.GdContext gdContext = context.gd();
-                if (gdContext != null)
-                {
-                    CUDD.Deref(Precondition);
-                    Precondition = gdContext.GetCuddNode(predicateDict, assignment);
-                }
-            }
-        }
+        //    if (context != null)
+        //    {
+        //        PlanningParser.GdContext gdContext = context.gd();
+        //        if (gdContext != null)
+        //        {
+        //            CUDD.Deref(Precondition);
+        //            Precondition = gdContext.GetCuddNode(predicateDict, assignment);
+        //        }
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
         #region Methods for generating effect
 
         private void GenerateEffect(PlanningParser.EmptyOrEffectContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             _condEffect = new List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>>();
             if (context != null)
@@ -116,7 +124,7 @@ namespace Planning
 
         private List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> GetCondEffectList(
             PlanningParser.EffectContext context, CUDDNode currentConditionNode,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             var result = new List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>>();
 
@@ -131,7 +139,7 @@ namespace Planning
 
         private List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> GetCondEffectList(
             PlanningParser.CEffectContext context, CUDDNode currentConditionNode,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> result;
             if (context.FORALL() != null)
@@ -171,7 +179,7 @@ namespace Planning
 
         private List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>> ScanMixedRadix(
             IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection,
-            Dictionary<string, string> assignment, CUDDNode currentConditionNode, PlanningParser.EffectContext context,
+            StringDictionary assignment, CUDDNode currentConditionNode, PlanningParser.EffectContext context,
             IReadOnlyDictionary<string, Predicate> predicateDict)
         {
             var result = new List<Tuple<CUDDNode, List<Tuple<Predicate, bool>>>>();
@@ -217,7 +225,7 @@ namespace Planning
         }
 
         private List<Tuple<Predicate, bool>> GetLiteralList(PlanningParser.CondEffectContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             List<Tuple<Predicate, bool>> result = new List<Tuple<Predicate, bool>>(context.termLiteral().Count);
             //return context.termLiteral().Select(termLiteralContext => GetLiteral(termLiteralContext, predicateDict, assignment));
@@ -230,7 +238,7 @@ namespace Planning
         }
 
         private Tuple<Predicate, bool> GetLiteral(PlanningParser.TermLiteralContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             string predicateFullName = GetFullName(context.termAtomForm(), assignment);
             Predicate predicate = predicateDict[predicateFullName];

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
 namespace Planning
 {
@@ -27,7 +29,8 @@ namespace Planning
 
         #region Constructors
 
-        public Action(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray, Dictionary<string, string> assignment) : base(constArray)
+        public Action(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray, StringDictionary assignment)
+            : base(constArray)
         {
             Name = context.actionSymbol().GetText();
             Console.WriteLine(FullName);
@@ -38,7 +41,7 @@ namespace Planning
 
         #region Methods
 
-        private void GenerateResponses(IReadOnlyList<PlanningParser.ResponseDefineContext> context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        private void GenerateResponses(IReadOnlyList<PlanningParser.ResponseDefineContext> context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             _responseDict = new Dictionary<string, Response>();
             foreach (var responseDefineContext in context)
@@ -47,7 +50,7 @@ namespace Planning
             }
         }
 
-        private void HandleResponse(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        private void HandleResponse(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             if (context.PARAMETER() != null)
             {
@@ -65,7 +68,7 @@ namespace Planning
         }
 
         private void ScanMixedRadix(IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection,
-            Dictionary<string, string> assignment, PlanningParser.ResponseDefineContext context,
+            StringDictionary assignment, PlanningParser.ResponseDefineContext context,
             IReadOnlyDictionary<string, Event> eventDict)
         {
             int count = collection.Count;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -115,7 +116,7 @@ namespace Planning
             return sb.ToString();
         }
 
-        public static string GetFullName(PlanningParser.TermAtomFormContext context, Dictionary<string, string> assignment)
+        public static string GetFullName(PlanningParser.TermAtomFormContext context, StringDictionary assignment)
         {
             string name = context.predicate().GetText();
             List<string> constList = new List<string>();
@@ -138,7 +139,7 @@ namespace Planning
             return GetFullName(name, termList);
         }
 
-        public static string GetFullName(PlanningParser.TermEventFormContext context, Dictionary<string, string> assignment)
+        public static string GetFullName(PlanningParser.TermEventFormContext context, StringDictionary assignment)
         {
             string name = context.eventSymbol().GetText();
             List<string> constList = new List<string>();

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
 namespace Planning.Servers
 {
@@ -48,8 +50,8 @@ namespace Planning.Servers
             Console.WriteLine("Finishing name!");
             Globals.TermInterpreter = new TermInterpreter(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
-            Console.WriteLine("Finishing term handler!");
-            //ComputeMaxCuddIndex(domainContext.predDefine(), domainContext.eventDefine());
+            Console.WriteLine("Finishing term interpreter!");
+
             HandlePredicateDefine(domainContext.predicateDefine());
             Console.WriteLine("Finishing predicate!");
             HandleInit(serverProblemContext.init());
@@ -86,21 +88,24 @@ namespace Planning.Servers
         private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[]> action)
         {
             IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
-            ScanMixedRadix(collection, context, action);
+            ScanMixedRadix(context, collection, action);
         }
 
-        private void ScanMixedRadix<TContext>(IReadOnlyList<List<string>> collection, TContext context, Action<TContext, string[]> action)
+        private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<List<string>> collection,
+            Action<TContext, string[]> action)
         {
             int count = collection.Count;
             string[] scanArray = new string[count];
             int[] index = new int[count];
             int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+            Parallel.For(0, count, i =>
+            {
+                maxIndex[i] = collection[i].Count;
+                scanArray[i] = collection[i][index[i]];
+            });
 
             do
             {
-                Parallel.For(0, count, i => scanArray[i] = collection[i][index[i]]);
-
                 action(context, scanArray);
 
                 int j = count - 1;
@@ -114,9 +119,12 @@ namespace Planning.Servers
                     }
                     break;
                 }
+
                 if (j == -1)
                     return;
+
                 index[j]++;
+                Parallel.For(j, count, i => scanArray[i] = collection[i][index[i]]);
             } while (true);
         }
 
@@ -125,6 +133,8 @@ namespace Planning.Servers
             Predicate predicate = new Predicate(context, constArray, _currentCuddIndex);
             _currentCuddIndex = predicate.SuccessiveCuddIndex;
             _predicateDict.Add(predicate.FullName, predicate);
+            //Console.WriteLine(predicate.FullName);
+            //Console.ReadLine();
         }
 
         #endregion
@@ -158,40 +168,31 @@ namespace Planning.Servers
             }
         }
 
-        private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[], Dictionary<string, string>> action)
+        private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[], StringDictionary> action)
         {
             IReadOnlyList<List<string>> collection = listVariableContext.GetCollection();
             IReadOnlyList<string> varNameList = listVariableContext.GetVariableNameList();
-            ScanMixedRadix(varNameList, collection, context, action);
+            ScanMixedRadix(context, collection, varNameList, action);
         }
 
-        private void ScanMixedRadix<TContext>(IReadOnlyList<string> variableNameList,
-            IReadOnlyList<List<string>> collection, TContext context,
-            Action<TContext, string[], Dictionary<string, string>> action)
+        private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<List<string>> collection,
+            IReadOnlyList<string> variableNameList, Action<TContext, string[], StringDictionary> action)
         {
             int count = collection.Count;
-            Dictionary<string, string> assignment = new Dictionary<string, string>();
+            StringDictionary assignment = new StringDictionary();
             string[] scanArray = new string[count];
             int[] index = new int[count];
             int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
+            for (int i = 0; i < count; i++)
+            {
+                maxIndex[i] = collection[i].Count;
+                string value = collection[i][index[i]];
+                scanArray[i] = value;
+                assignment.Add(variableNameList[i], value);
+            }
 
             do
             {
-                for (int i = 0; i < count; i ++)
-                {
-                    scanArray[i] = collection[i][index[i]];
-                    string variableName = variableNameList[i];
-                    if (assignment.ContainsKey(variableName))
-                    {
-                        assignment[variableName] = scanArray[i];
-                    }
-                    else
-                    {
-                        assignment.Add(variableName, scanArray[i]);
-                    }
-                }
-
                 action(context, scanArray, assignment);
 
                 int j = count - 1;
@@ -207,41 +208,60 @@ namespace Planning.Servers
                 }
                 if (j == -1)
                     return;
+
                 index[j]++;
+                for (int i = j; i < count; i++)
+                {
+                    string value = collection[i][index[i]];
+                    scanArray[i] = value;
+                    assignment[variableNameList[i]] = value;
+                }
             } while (true);
         }
 
-        private void AddToEventDict(PlanningParser.EventDefineContext context, string[] constArray, Dictionary<string, string> assignment)
+        private void AddToEventDict(PlanningParser.EventDefineContext context, string[] constArray, StringDictionary assignment)
         {
             Event e = new Event(context, _predicateDict, constArray, assignment, _currentCuddIndex);
             _currentCuddIndex = e.CuddIndex + 1;
+            //Console.WriteLine(e.FullName);
+
             if (!e.Precondition.Equals(CUDD.ZERO))
             {
+                //Console.WriteLine(e.FullName);
                 _eventDict.Add(e.FullName, e);
             }
             else
             {
                 CUDD.Deref(e.Precondition);
             }
+
+            //Console.ReadLine();
+
         }
 
-        private void AddToActionDict(PlanningParser.ActionDefineContext context, string[] constArray, Dictionary<string, string> assignment)
+        private void AddToActionDict(PlanningParser.ActionDefineContext context, string[] constArray, StringDictionary assignment)
         {
             Action action = new Action(context, _eventDict, constArray, assignment);
             _actionDict.Add(action.FullName, action);
         }
 
-        private void AddToObservationDict(PlanningParser.ObservationDefineContext context, string[] constArray, Dictionary<string, string> assignment)
+        private void AddToObservationDict(PlanningParser.ObservationDefineContext context, string[] constArray, StringDictionary assignment)
         {
             Observation observation = new Observation(context, _predicateDict, _eventDict, constArray, assignment);
+            Console.WriteLine(observation.FullName);
+
             if (!observation.Precondition.Equals(CUDD.ZERO))
             {
+                Console.WriteLine(observation.FullName);
                 _obervationDict.Add(observation.FullName, observation);
             }
             else
             {
                 CUDD.Deref(observation.Precondition);
             }
+
+            Console.ReadLine();
+
         }
 
         #endregion

@@ -51,12 +51,13 @@
     <Compile Include="ConstContainer.cs" />
     <Compile Include="ConstTermComputer.cs" />
     <Compile Include="ContextExtensions\EmptyOrPreGDContextExtension.cs" />
+    <Compile Include="ContextExtensions\EventModelContextExtension.cs" />
     <Compile Include="Domain.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventCollection.cs" />
     <Compile Include="ContextExtensions\GdContextExtension.cs" />
     <Compile Include="ContextExtensions\GdEventContextExtension.cs" />
-    <Compile Include="ListVariableContextExtension.cs" />
+    <Compile Include="ContextExtensions\ListVariableContextExtension.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Formulas\BinaryFormula.cs" />

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 
-namespace Planning
+namespace Planning.ContextExtensions
 {
     public static class ListVariableContextExtension
     {

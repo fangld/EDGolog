@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace Planning.ContextExtensions
         #region Methods
 
         public static CUDDNode GetCuddNode(this PlanningParser.GdContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             CUDDNode result;
             if (context.termAtomForm() != null)
@@ -72,14 +74,17 @@ namespace Planning.ContextExtensions
                 var varNameList = listVariableContext.GetVariableNameList();
 
                 bool isForall = context.FORALL() != null;
-                result = ScanVariableList(context.gd(0), predicateDict, assignment, varNameList, collection, 0, isForall);
+                //Console.WriteLine(" isForal: {0}", isForall);
+                //Console.WriteLine(" context: {0}", context.GetText());
+
+                result = ScanVariableList(context.gd(0), predicateDict, varNameList, collection, assignment, 0, isForall);
             }
 
             return result;
         }
 
         private static CUDDNode GetCuddNode(this PlanningParser.TermAtomFormContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment)
+            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             CUDDNode result;
             if (context.predicate() != null)
@@ -109,7 +114,6 @@ namespace Planning.ContextExtensions
                     {
                         result = firstValue < secondValue ? CUDD.ONE : CUDD.ZERO;
                     }
-
                     else if (context.LEQ() != null)
                     {
                         result = firstValue <= secondValue ? CUDD.ONE : CUDD.ZERO;
@@ -130,8 +134,8 @@ namespace Planning.ContextExtensions
         }
 
         private static CUDDNode ScanVariableList(PlanningParser.GdContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, Dictionary<string, string> assignment,
-            IReadOnlyList<string> variableNameList, IReadOnlyList<List<string>> collection, int currentLevel = 0,
+            IReadOnlyDictionary<string, Predicate> predicateDict, IReadOnlyList<string> variableNameList,
+            IReadOnlyList<List<string>> collection, StringDictionary assignment, int currentLevel = 0,
             bool isForall = true)
         {
             CUDDNode result;
@@ -139,8 +143,9 @@ namespace Planning.ContextExtensions
             {
                 string variableName = variableNameList[currentLevel];
                 result = isForall ? CUDD.ONE : CUDD.ZERO;
-                CUDDNode equalNode = isForall ? CUDD.ZERO : CUDD.ONE;
                 CUDD.Ref(result);
+
+                CUDDNode equalNode = isForall ? CUDD.ZERO : CUDD.ONE;
                 Func<CUDDNode, CUDDNode, CUDDNode> boolFunc;
                 if (isForall)
                 {
@@ -153,20 +158,17 @@ namespace Planning.ContextExtensions
 
                 foreach (string value in collection[currentLevel])
                 {
-                    if (assignment.ContainsKey(variableName))
-                    {
-                        assignment[variableName] = value;
-                    }
-                    else
-                    {
-                        assignment.Add(variableName, value);
-                    }
+                    //Console.WriteLine("  Foreach Key: {0}, value: {1}", variableName, value);
+                    assignment[variableName] = value;
 
-                    CUDDNode gdNode = ScanVariableList(context, predicateDict, assignment, variableNameList, collection,
-                        currentLevel + 1);
+                    CUDDNode gdNode = ScanVariableList(context, predicateDict, variableNameList, collection, assignment,
+                        currentLevel + 1, isForall);
 
                     if (gdNode.Equals(equalNode))
                     {
+                        //Console.WriteLine("  isForall: {0}", isForall);
+                        //CUDD.Print.PrintMinterm(equalNode);
+
                         CUDD.Deref(result);
                         result = equalNode;
                         break;
@@ -180,6 +182,15 @@ namespace Planning.ContextExtensions
             {
                 result = GetCuddNode(context, predicateDict, assignment);
             }
+
+            //foreach (DictionaryEntry pair in assignment)
+            //{
+            //    Console.WriteLine("  Key: {0}, Value: {1}", pair.Key, pair.Value);
+            //}
+
+            //Console.WriteLine("  Context: {0}", context.GetText());
+            //CUDD.Print.PrintMinterm(result);
+            //Console.ReadLine();
 
             return result;
         }
