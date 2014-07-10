@@ -22,7 +22,7 @@ namespace Planning
 
                     for (int i = 0; i < count; i++)
                     {
-                        List<string> constList = Globals.TermHandler.GetConstList(type);
+                        List<string> constList = Globals.TermInterpreter.GetConstList(type);
                         result.Add(constList);
                     }
                 }

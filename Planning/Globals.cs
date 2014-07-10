@@ -10,7 +10,7 @@ namespace Planning
     {
         //public static ConstTermComputer ConstTermComputer;
 
-        public static TermHandler TermHandler;
+        public static TermInterpreter TermInterpreter;
 
         public static string[] EmptyConstArray = new string[0];
 

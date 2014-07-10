@@ -118,7 +118,7 @@ namespace Planning
             foreach (var termContext in context.term())
             {
                 //Console.WriteLine("Term context:{0}", termContext.GetText());
-                string termString = Globals.TermHandler.GetString(termContext, assignment);
+                string termString = Globals.TermInterpreter.GetString(termContext, assignment);
                 constList.Add(termString);
             }
             return GetFullName(name, constList);

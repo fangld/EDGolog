@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
 namespace Planning
 {
@@ -47,7 +48,8 @@ namespace Planning
             CuddIndex = initialCuddInex;
             Name = context.eventSymbol().GetText();
             Console.WriteLine(FullName);
-            GeneratePrecondition(context.emptyOrPreGD(), predicateDict, assignment);
+            Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
+            //ToPrecondition(context.emptyOrPreGD(), predicateDict, assignment);
             Console.WriteLine("Finishing event define precondition");
             Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
             if (context.emptyOrPreGD() != null)
@@ -81,7 +83,7 @@ namespace Planning
             if (context != null)
             {
                 PlanningParser.GdContext gdContext = context.gd();
-                if (context.gd() != null)
+                if (gdContext != null)
                 {
                     CUDD.Deref(Precondition);
                     Precondition = gdContext.GetCuddNode(predicateDict, assignment);
@@ -103,8 +105,8 @@ namespace Planning
         //    }
         //    else
         //    {
-        //        string firstTermString = Globals.TermHandler.GetString(context.term(0), assignment);
-        //        string secondTermString = Globals.TermHandler.GetString(context.term(1), assignment);
+        //        string firstTermString = Globals.TermInterpreter.GetString(context.term(0), assignment);
+        //        string secondTermString = Globals.TermInterpreter.GetString(context.term(1), assignment);
         //        if (context.EQ() != null)
         //        {
         //            result = firstTermString == secondTermString ? CUDD.ONE : CUDD.ZERO;

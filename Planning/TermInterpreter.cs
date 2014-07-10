@@ -7,7 +7,7 @@ using LanguageRecognition;
 
 namespace Planning
 {
-    public class TermHandler
+    public class TermInterpreter
     {
         #region Fields
 
@@ -32,7 +32,7 @@ namespace Planning
 
         #region Constructors
 
-        public TermHandler(PlanningParser.NumericSettingContext numericSettingContext, PlanningParser.TypeDefineContext typeDefineContext,
+        public TermInterpreter(PlanningParser.NumericSettingContext numericSettingContext, PlanningParser.TypeDefineContext typeDefineContext,
             PlanningParser.ObjectDeclarationContext objDecContext)
         {
             BuildNumericConst(numericSettingContext);
@@ -40,7 +40,7 @@ namespace Planning
             BuildConstTypeMap(objDecContext);
         }
 
-        static TermHandler()
+        static TermInterpreter()
         {
             EmtpyAssignment = new Dictionary<string, string>();
         }
@@ -192,14 +192,14 @@ namespace Planning
                 }
                 else
                 {
-                    //Console.WriteLine("   name:{0}", name);
+                    Console.WriteLine("   name:{0}", name);
                     result = _numericConstValues[name].ToString();
                 }
             }
             else if (context.VAR() != null)
             {
                 string variableName = context.VAR().GetText();
-                //Console.WriteLine("TermHandler: variableName: {0}", variableName);
+                //Console.WriteLine("TermInterpreter: variableName: {0}", variableName);
                 //foreach (var pair in assignment)
                 //{
                 //    Console.WriteLine("  Var name{0}, value:{1}", pair.Key, pair.Value);

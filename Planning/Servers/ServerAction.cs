@@ -19,7 +19,7 @@
 //            Name = context.actionSymbol().GetText();
 //            GenerateVariableList(context.listVariable());
 //            GenerateAbstractPredicates(context.actionDefBody(), predDict);
-//            GeneratePrecondition(context, predDict);
+//            ToPrecondition(context, predDict);
 //            GenerateEffect(context, predDict);
 //        }
 

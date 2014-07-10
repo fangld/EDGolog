@@ -121,7 +121,7 @@ namespace Planning
             List<string> constList = new List<string>();
             foreach (var termContext in context.term())
             {
-                string termString = Globals.TermHandler.GetString(termContext, assignment);
+                string termString = Globals.TermInterpreter.GetString(termContext, assignment);
                 constList.Add(termString);
             }
             return GetFullName(name, constList);
@@ -144,7 +144,7 @@ namespace Planning
             List<string> constList = new List<string>();
             foreach (var termContext in context.term())
             {
-                string termString = Globals.TermHandler.GetString(termContext, assignment);
+                string termString = Globals.TermInterpreter.GetString(termContext, assignment);
                 constList.Add(termString);
             }
             return GetFullName(name, constList);

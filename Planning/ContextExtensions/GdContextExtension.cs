@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
+namespace Planning.ContextExtensions
 {
     public static class GdContextExtension
     {
@@ -91,8 +91,8 @@ namespace Planning
             }
             else
             {
-                string firstTermString = Globals.TermHandler.GetString(context.term(0), assignment);
-                string secondTermString = Globals.TermHandler.GetString(context.term(1), assignment);
+                string firstTermString = Globals.TermInterpreter.GetString(context.term(0), assignment);
+                string secondTermString = Globals.TermInterpreter.GetString(context.term(1), assignment);
                 if (context.EQ() != null)
                 {
                     result = firstTermString == secondTermString ? CUDD.ONE : CUDD.ZERO;

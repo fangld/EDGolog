@@ -263,7 +263,7 @@
 (:observation noinfo
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point)
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (!= xi (+ xj 1)) (!= xi (- xj 1)) (!= xi xj))
+                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (!= ?x (+ ?y 1)) (!= ?x (- ?y 1)) (!= ?x ?y))
 					  )
 :eventmodel (
 	        (:pldegree 0

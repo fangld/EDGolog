@@ -46,7 +46,7 @@ namespace Planning.Servers
             DomainName = domainContext.NAME().GetText();
             ProblemName = serverProblemContext.problemName().GetText();
             Console.WriteLine("Finishing name!");
-            Globals.TermHandler = new TermHandler(serverProblemContext.numericSetting(), domainContext.typeDefine(),
+            Globals.TermInterpreter = new TermInterpreter(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
             Console.WriteLine("Finishing term handler!");
             //ComputeMaxCuddIndex(domainContext.predDefine(), domainContext.eventDefine());
@@ -100,7 +100,7 @@ namespace Planning.Servers
 
         //            for (int i = 0; i < count; i++)
         //            {
-        //                List<string> constList = Globals.TermHandler.GetConstList(type);
+        //                List<string> constList = Globals.TermInterpreter.GetConstList(type);
         //                result *= constList.Count;
         //            }
         //        }
@@ -271,7 +271,7 @@ namespace Planning.Servers
 
         private void AddToObservationDict(PlanningParser.ObservationDefineContext context, string[] constArray, Dictionary<string, string> assignment)
         {
-            Observation observation = new Observation(context, _eventDict, constArray, assignment);
+            Observation observation = new Observation(context, _predicateDict, _eventDict, constArray, assignment);
             if (!observation.Precondition.Equals(CUDD.ZERO))
             {
                 _obervationDict.Add(observation.FullName, observation);
@@ -309,7 +309,7 @@ namespace Planning.Servers
             Console.WriteLine("Problem Name: {0}", ProblemName);
             Console.WriteLine(Domain.BarLine);
 
-            Globals.TermHandler.ShowInfo();
+            Globals.TermInterpreter.ShowInfo();
 
             Console.WriteLine("Predicates:");
             foreach (var pair in _predicateDict)

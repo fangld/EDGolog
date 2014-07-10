@@ -6,78 +6,11 @@ using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 
-namespace Planning
+namespace Planning.ContextExtensions
 {
-    public class Response : ConstContainer
+    public static class GdEventContextExtension
     {
-        #region Fields
-
-        private EventCollection[] _eventCollectionArray;
-
-        #endregion
-
-        #region Properties
-
-        public int MaxPlausibilityDegree
-        {
-            get { return _eventCollectionArray.Length; }
-        }
-
-        public IReadOnlyList<EventCollection> EventCollectionList
-        {
-            get { return _eventCollectionArray; }
-        }
-
-        #endregion
-
-        #region Constructors
-
-        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray, Dictionary<string, string> assignment)
-            : base(constArray)
-        {
-            Name = context.responseSymbol().GetText();
-            GenerateEventList(context, eventDict, assignment);
-        }
-
-        #endregion
-
-        #region Methods
-
-        public void GenerateEventList(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
-        {
-            Console.WriteLine(FullName);
-            var eventModelContext = context.eventModel();
-            if (eventModelContext.LB() == null)
-            {
-                _eventCollectionArray = new EventCollection[1];
-                _eventCollectionArray[0] = GenerateEventCollection(eventModelContext.gdEvent(), eventDict, assignment);
-                Console.WriteLine("Finishing event collection 0 precondition");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
-                Console.WriteLine("Finishing event collection 0 partial successor state axiom");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
-            }
-            else
-            {
-                _eventCollectionArray = new EventCollection[2];
-                _eventCollectionArray[0] = GenerateEventCollection(eventModelContext.plGdEvent(0).gdEvent(), eventDict, assignment);
-
-                Console.WriteLine("Finishing event collection 0 precondition");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].Precondition));
-                Console.WriteLine("Finishing event collection 0 partial successor state axiom");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[0].PartialSuccessorStateAxiom));
-
-                _eventCollectionArray[1] = GenerateEventCollection(eventModelContext.plGdEvent(1).gdEvent(), eventDict, assignment, 1);
-
-                Console.WriteLine("Finishing event collection 1 precondition");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].Precondition));
-                Console.WriteLine("Finishing event collection 1 partial successor state axiom");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(_eventCollectionArray[1].PartialSuccessorStateAxiom));
-                //Console.ReadLine();
-            }
-            Console.WriteLine();
-        }
-
-        private EventCollection GenerateEventCollection(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment, int plDegree = 0)
+        public static EventCollection ToEventCollection(this PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
             List<Event> eventList = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
@@ -97,12 +30,12 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode GetCuddNode(PlanningParser.TermEventFormContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        private static CUDDNode GetCuddNode(PlanningParser.TermEventFormContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
             CUDDNode result;
             if (context.eventSymbol() != null)
             {
-                string eventFullName = GetFullName(context, assignment);
+                string eventFullName = ConstContainer.GetFullName(context, assignment);
                 if (eventDict.ContainsKey(eventFullName))
                 {
                     Event e = eventDict[eventFullName];
@@ -155,7 +88,7 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode GetCuddNode(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
+        private static CUDDNode GetCuddNode(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, Dictionary<string, string> assignment)
         {
             CUDDNode result;
 
@@ -221,7 +154,7 @@ namespace Planning
             return result;
         }
 
-        private CUDDNode ScanVariableList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict,
+        private static CUDDNode ScanVariableList(PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict,
             Dictionary<string, string> assignment, IReadOnlyList<string> variableNameList,
             IReadOnlyList<List<string>> collection, int currentLevel, bool isForall = true)
         {
@@ -273,7 +206,5 @@ namespace Planning
             }
             return result;
         }
-
-        #endregion
     }
 }
