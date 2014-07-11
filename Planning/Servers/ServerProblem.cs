@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection.Emit;
@@ -85,10 +86,56 @@ namespace Planning.Servers
             }
         }
 
+        private void Build2<TContext>(PlanningParser.ListVariableContext listVariableContext, MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext> enumerator)
+        {
+            IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
+            MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext> enumerator = new EventEnumerator(context, collection, _predicateDict, _currentCuddIndex);
+
+            ScanMixedRadix(context, collection, action);
+        }
+
         private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[]> action)
         {
             IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
+            MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext> enumerator  = new EventEnumerator(context, collection, _predicateDict, _currentCuddIndex);
+
             ScanMixedRadix(context, collection, action);
+        }
+
+        private void IterativeScanMixedRadix(IMixedRadixEnumerator enumerator)
+        {
+            int count = enumerator.CollectionCount;
+            int[] index = new int[count];
+            int[] maxIndex = new int[count];
+            Parallel.For(0, count, i => maxIndex[i] = enumerator.Collection[i].Count);
+            
+            enumerator.Initial(index);
+
+            do
+            {
+                enumerator.Action();
+
+                int j = count - 1;
+                while (j != -1)
+                {
+                    if (index[j] == maxIndex[j] - 1)
+                    {
+                        index[j] = 0;
+                        j--;
+                        continue;
+                    }
+                    break;
+                }
+
+                if (j == -1)
+                    return;
+
+                index[j]++;
+
+                enumerator.MoveNext(j, index);
+                //Parallel.For(j, count, i => scanArray[i] = collection[i][index[i]]);
+            } while (true);
+
         }
 
         private void ScanMixedRadix<TContext>(TContext context, IReadOnlyList<IList<string>> collection,

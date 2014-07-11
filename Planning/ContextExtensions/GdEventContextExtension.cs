@@ -116,21 +116,6 @@ namespace Planning.ContextExtensions
                         result = CUDD.Function.And(result, gdNode);
                     }
                 }
-
-                //result = CUDD.ONE;
-                //CUDD.Ref(result);
-                //for (int i = 0; i < context.gdEvent().Count; i++)
-                //{
-                //    CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
-                //    if (gdNode.Equals(CUDD.ZERO))
-                //    {
-                //        CUDD.Deref(result);
-                //        result = CUDD.ZERO;
-                //        break;
-                //    }
-                //    CUDDNode andNode = CUDD.Function.And(result, gdNode);
-                //    result = andNode;
-                //}
             }
             else if (context.OR() != null)
             {
@@ -151,21 +136,6 @@ namespace Planning.ContextExtensions
                         result = CUDD.Function.Or(result, gdNode);
                     }
                 }
-
-                //result = CUDD.ZERO;
-                //CUDD.Ref(result);
-                //for (int i = 0; i < context.gdEvent().Count; i++)
-                //{
-                //    CUDDNode gdNode = GetCuddNode(context.gdEvent()[i], eventDict, assignment);
-                //    if (gdNode.Equals(CUDD.ONE))
-                //    {
-                //        CUDD.Deref(result);
-                //        result = CUDD.ONE;
-                //        break;
-                //    }
-                //    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                //    result = orNode;
-                //}
             }
             else if (context.NOT() != null)
             {
@@ -186,13 +156,13 @@ namespace Planning.ContextExtensions
                 var varNameList = listVariableContext.GetVariableNameList();
 
                 bool isForall = context.FORALL() != null;
-                result = ScanVariableList(context.gdEvent(0), eventDict, varNameList, collection, assignment, 0, isForall);
+                result = RecursiveScanMixedRaio(context.gdEvent(0), eventDict, varNameList, collection, assignment, 0, isForall);
             }
 
             return result;
         }
 
-        private static CUDDNode ScanVariableList(PlanningParser.GdEventContext context,
+        private static CUDDNode RecursiveScanMixedRaio(PlanningParser.GdEventContext context,
             IReadOnlyDictionary<string, Event> eventDict, IReadOnlyList<string> variableNameList,
             IReadOnlyList<IList<string>> collection, StringDictionary assignment, int currentLevel, bool isForall = true)
         {
@@ -217,7 +187,7 @@ namespace Planning.ContextExtensions
                 {
                     assignment[variableName] = value;
 
-                    CUDDNode gdNode = ScanVariableList(context, eventDict, variableNameList, collection,
+                    CUDDNode gdNode = RecursiveScanMixedRaio(context, eventDict, variableNameList, collection,
                         assignment, currentLevel + 1, isForall);
 
                     if (gdNode.Equals(equalNode))
@@ -227,7 +197,6 @@ namespace Planning.ContextExtensions
                         break;
                     }
 
-                    //CUDDNode boolNode = boolFunc(result, gdNode);
                     result = boolFunc(result, gdNode);
                 }
             }

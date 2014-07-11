@@ -57,6 +57,9 @@
     <Compile Include="ContextExtensions\GdContextExtension.cs" />
     <Compile Include="ContextExtensions\GdEventContextExtension.cs" />
     <Compile Include="ContextExtensions\ListVariableContextExtension.cs" />
+    <Compile Include="EventEnumerator.cs" />
+    <Compile Include="IMixedRadixEnumerator.cs" />
+    <Compile Include="MixedRadixEnumerator.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Formulas\BinaryFormula.cs" />

@@ -61,21 +61,6 @@ namespace Planning.ContextExtensions
                         result = CUDD.Function.Or(result, gdNode);
                     }
                 }
-
-                //result = CUDD.ZERO;
-                //CUDD.Ref(result);
-                //for (int i = 0; i < context.gd().Count; i++)
-                //{
-                //    CUDDNode gdNode = GetCuddNode(context.gd()[i], predicateDict, assignment);
-                //    if (gdNode.Equals(CUDD.ONE))
-                //    {
-                //        CUDD.Deref(result);
-                //        result = CUDD.ONE;
-                //        break;
-                //    }
-                //    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-                //    result = orNode;
-                //}
             }
             else if (context.NOT() != null)
             {
@@ -94,12 +79,8 @@ namespace Planning.ContextExtensions
                 var listVariableContext = context.listVariable();
                 var collection = listVariableContext.GetCollection();
                 var varNameList = listVariableContext.GetVariableNameList();
-
                 bool isForall = context.FORALL() != null;
-                //Console.WriteLine(" isForal: {0}", isForall);
-                //Console.WriteLine(" context: {0}", context.GetText());
-
-                result = ScanVariableList(context.gd(0), predicateDict, varNameList, collection, assignment, 0, isForall);
+                result = RecursiveScanMixedRaio(context.gd(0), predicateDict, varNameList, collection, assignment, 0, isForall);
             }
 
             return result;
@@ -112,7 +93,6 @@ namespace Planning.ContextExtensions
             if (context.predicate() != null)
             {
                 string predicateFullName = ConstContainer.GetFullName(context, assignment);
-                //Console.WriteLine(predicateFullName);
                 Predicate predicate = predicateDict[predicateFullName];
                 int cuddIndex = predicate.PreviousCuddIndex;
                 result = CUDD.Var(cuddIndex);
@@ -156,7 +136,7 @@ namespace Planning.ContextExtensions
             return result;
         }
 
-        private static CUDDNode ScanVariableList(PlanningParser.GdContext context,
+        private static CUDDNode RecursiveScanMixedRaio(PlanningParser.GdContext context,
             IReadOnlyDictionary<string, Predicate> predicateDict, IReadOnlyList<string> variableNameList,
             IReadOnlyList<IList<string>> collection, StringDictionary assignment, int currentLevel = 0,
             bool isForall = true)
@@ -181,23 +161,19 @@ namespace Planning.ContextExtensions
 
                 foreach (string value in collection[currentLevel])
                 {
-                    //Console.WriteLine("  Foreach Key: {0}, value: {1}", variableName, value);
                     assignment[variableName] = value;
 
-                    CUDDNode gdNode = ScanVariableList(context, predicateDict, variableNameList, collection, assignment,
+                    CUDDNode gdNode = RecursiveScanMixedRaio(context, predicateDict, variableNameList, collection,
+                        assignment,
                         currentLevel + 1, isForall);
 
                     if (gdNode.Equals(equalNode))
                     {
-                        //Console.WriteLine("  isForall: {0}", isForall);
-                        //CUDD.Print.PrintMinterm(equalNode);
-
                         CUDD.Deref(result);
                         result = equalNode;
                         break;
                     }
 
-                    //CUDDNode boolNode = boolFunc(result, gdNode);
                     result = boolFunc(result, gdNode);
                 }
             }
@@ -205,15 +181,6 @@ namespace Planning.ContextExtensions
             {
                 result = GetCuddNode(context, predicateDict, assignment);
             }
-
-            //foreach (DictionaryEntry pair in assignment)
-            //{
-            //    Console.WriteLine("  Key: {0}, Value: {1}", pair.Key, pair.Value);
-            //}
-
-            //Console.WriteLine("  Context: {0}", context.GetText());
-            //CUDD.Print.PrintMinterm(result);
-            //Console.ReadLine();
 
             return result;
         }

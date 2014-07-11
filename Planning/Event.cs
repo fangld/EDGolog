@@ -123,7 +123,7 @@ namespace Planning
                 var listVariableContext = context.listVariable();
                 var varNameList = listVariableContext.GetVariableNameList();
                 var collection = listVariableContext.GetCollection();
-                result = ScanMixedRadix(context.effect(),
+                result = IterativeScanMixedRadix(context.effect(),
                     currentConditionNode, predicateDict, varNameList, collection, assignment);
             }
             else if (context.WHEN() != null)
@@ -153,7 +153,7 @@ namespace Planning
             return result;
         }
 
-        private List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> ScanMixedRadix(PlanningParser.EffectContext context,
+        private List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> IterativeScanMixedRadix(PlanningParser.EffectContext context,
             CUDDNode currentConditionNode, IReadOnlyDictionary<string, Predicate> predicateDict,
             IReadOnlyList<string> variableNameList, IReadOnlyList<IList<string>> collection, StringDictionary assignment)
         {
@@ -240,7 +240,6 @@ namespace Planning
                 for (int i = 1; i < cEffect.Item2.Length; i++)
                 {
                     var literal = cEffect.Item2[i];
-                    //CUDDNode intermediateNode = literalsNode;
                     predicate = CUDD.Var(literal.Item1.SuccessiveCuddIndex);
                     CUDDNode literalNode = literal.Item2 ? predicate : CUDD.Function.Not(predicate);
                     literalsNode = CUDD.Function.And(literalsNode, literalNode);
@@ -249,7 +248,6 @@ namespace Planning
                 CUDD.Ref(cEffect.Item1);
                 CUDDNode cEffectNode = CUDD.Function.Implies(cEffect.Item1, literalsNode);
 
-                //CUDDNode tmpNode = result;
                 result = CUDD.Function.And(result, cEffectNode);
             }
 

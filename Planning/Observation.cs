@@ -43,17 +43,8 @@ namespace Planning
         {
             Name = context.observationSymbol().GetText();
             Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
-            //foreach (DictionaryEntry pair in assignment)
-            //{
-            //    Console.WriteLine("key: {0}, value: {1}",pair.Key, pair.Value);
-            //}
-            //Console.WriteLine("  Context: {0}", context.emptyOrPreGD().GetText());
-            //Console.ReadLine();
             if (!Precondition.Equals(CUDD.ZERO))
             {
-                //Console.ReadLine();
-
-                //Console.WriteLine(FullName);
                 _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
             }
         }
