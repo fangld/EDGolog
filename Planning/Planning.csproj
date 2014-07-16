@@ -58,6 +58,8 @@
     <Compile Include="ContextExtensions\GdEventContextExtension.cs" />
     <Compile Include="ContextExtensions\ListVariableContextExtension.cs" />
     <Compile Include="EventEnumerator.cs" />
+    <Compile Include="MixedRadixEnumeratorWithAssignment.cs" />
+    <Compile Include="PredicateEnumerator.cs" />
     <Compile Include="IMixedRadixEnumerator.cs" />
     <Compile Include="MixedRadixEnumerator.cs" />
     <Compile Include="Observation.cs" />

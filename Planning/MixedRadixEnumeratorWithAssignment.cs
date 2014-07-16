@@ -1,40 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Planning
 {
-    public abstract class MixedRadixEnumerator<TContext> : IMixedRadixEnumerator
+    public abstract class MixedRadixEnumeratorWithAssignment<TContext> : MixedRadixEnumerator<TContext>
     {
-        #region Fields
+        //private StringDictionary _assignment;
 
-        protected TContext _context;
-        
-        private IReadOnlyList<IList<string>> _collection;
-
-        protected string[] _scanArray;
-
-        #endregion
-
-        #region Properties
-
-        public int CollectionCount
-        {
-            get { return _collection.Count; }
-        }
-
-        public IReadOnlyList<IList<string>> Collection
-        {
-            get { return _collection; }
-        }
-
-        #endregion
+        private IReadOnlyList<string> _variableNameList;
 
         #region Constructors
 
-        protected MixedRadixEnumerator(TContext context, IReadOnlyList<IList<string>> collection)
+        protected MixedRadixEnumeratorWithAssignment(TContext context, IReadOnlyList<IList<string>> collection, I)
         {
             _context = context;
             _collection = collection;

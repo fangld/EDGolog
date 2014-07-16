@@ -55,14 +55,14 @@ namespace Planning.Servers
 
             HandlePredicateDefine(domainContext.predicateDefine());
             Console.WriteLine("Finishing predicate!");
-            HandleInit(serverProblemContext.init());
-            Console.WriteLine("Finishing init object base!");
-            HandleEventsDefine(domainContext.eventDefine());
-            Console.WriteLine("Finishing event define!");
-            HandleActionsDefine(domainContext.actionDefine());
-            Console.WriteLine("Finishing action define!");
-            HandleObservationsDefine(domainContext.observationDefine());
-            Console.WriteLine("Finishing observation define!");
+            //HandleInit(serverProblemContext.init());
+            //Console.WriteLine("Finishing init object base!");
+            //HandleEventsDefine(domainContext.eventDefine());
+            //Console.WriteLine("Finishing event define!");
+            //HandleActionsDefine(domainContext.actionDefine());
+            //Console.WriteLine("Finishing action define!");
+            //HandleObservationsDefine(domainContext.observationDefine());
+            //Console.WriteLine("Finishing observation define!");
         }
 
         #endregion
@@ -82,24 +82,11 @@ namespace Planning.Servers
             _predicateDict = new Dictionary<string, Predicate>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
             {
-                Build(atomFormSkeleton.listVariable(), atomFormSkeleton, AddToPredicateDict);
+                IReadOnlyList<IList<string>> collection = atomFormSkeleton.listVariable().GetCollection();
+                PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, collection, _predicateDict, _currentCuddIndex);
+                IterativeScanMixedRadix(enumerator);
+                _currentCuddIndex = enumerator.CurrentCuddIndex;
             }
-        }
-
-        private void Build2<TContext>(PlanningParser.ListVariableContext listVariableContext, MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext> enumerator)
-        {
-            IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
-            MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext> enumerator = new EventEnumerator(context, collection, _predicateDict, _currentCuddIndex);
-
-            ScanMixedRadix(context, collection, action);
-        }
-
-        private void Build<TContext>(PlanningParser.ListVariableContext listVariableContext, TContext context, Action<TContext, string[]> action)
-        {
-            IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
-            MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext> enumerator  = new EventEnumerator(context, collection, _predicateDict, _currentCuddIndex);
-
-            ScanMixedRadix(context, collection, action);
         }
 
         private void IterativeScanMixedRadix(IMixedRadixEnumerator enumerator)
@@ -133,7 +120,6 @@ namespace Planning.Servers
                 index[j]++;
 
                 enumerator.MoveNext(j, index);
-                //Parallel.For(j, count, i => scanArray[i] = collection[i][index[i]]);
             } while (true);
 
         }
@@ -175,15 +161,6 @@ namespace Planning.Servers
             } while (true);
         }
 
-        private void AddToPredicateDict(PlanningParser.AtomFormSkeletonContext context, string[] constArray)
-        {
-            Predicate predicate = new Predicate(context, constArray, _currentCuddIndex);
-            _currentCuddIndex = predicate.SuccessiveCuddIndex;
-            _predicateDict.Add(predicate.FullName, predicate);
-            //Console.WriteLine(predicate.FullName);
-            //Console.ReadLine();
-        }
-
         #endregion
 
         #region Methods for generating the dictionary of events/actions/observations
@@ -193,7 +170,12 @@ namespace Planning.Servers
             _eventDict = new Dictionary<string, Event>();
             foreach (var eventDefineContext in contexts)
             {
-                Build(eventDefineContext.listVariable(), eventDefineContext, AddToEventDict);
+                IReadOnlyList<IList<string>> collection = eventDefineContext.listVariable().GetCollection();
+                EventEnumerator enumerator = new EventEnumerator(eventDefineContext, collection, _predicateDict, _currentCuddIndex);
+                IterativeScanMixedRadix(enumerator);
+                _currentCuddIndex = enumerator.CurrentCuddIndex;
+
+                //Build(eventDefineContext.listVariable(), eventDefineContext, AddToEventDict);
             }
         }
 
@@ -346,12 +328,12 @@ namespace Planning.Servers
             }
             Console.WriteLine(Domain.BarLine);
 
-            Console.WriteLine("Initial state:");
-            foreach (var pred in TruePredSet)
-            {
-                Console.WriteLine("  {0}", pred);
-            }
-            Console.WriteLine(Domain.BarLine);
+            //Console.WriteLine("Initial state:");
+            //foreach (var pred in TruePredSet)
+            //{
+            //    Console.WriteLine("  {0}", pred);
+            //}
+            //Console.WriteLine(Domain.BarLine);
 
             List<string> eventNameArray = new List<string>
             {
@@ -369,68 +351,65 @@ namespace Planning.Servers
                 //"learn(a1,1,0)"
             };
 
-            Console.WriteLine("Events:");
+            //Console.WriteLine("Events:");
 
-            for (int i = 0; i < eventNameArray.Count; i++)
-            {
-                string eventName = eventNameArray[i];
-                Event e = _eventDict[eventName];
-                Console.WriteLine("  Name: {0}", eventNameArray[i]);
-                Console.WriteLine("  Cudd index: {0}", e.CuddIndex);
+            //for (int i = 0; i < eventNameArray.Count; i++)
+            //{
+            //    string eventName = eventNameArray[i];
+            //    Event e = _eventDict[eventName];
+            //    Console.WriteLine("  Name: {0}", eventNameArray[i]);
+            //    Console.WriteLine("  Cudd index: {0}", e.CuddIndex);
 
-                Console.WriteLine("  Precondition:");
-                CUDD.Print.PrintMinterm(e.Precondition);
-                Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.Precondition));
+            //    Console.WriteLine("  Precondition:");
+            //    CUDD.Print.PrintMinterm(e.Precondition);
+            //    Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.Precondition));
 
-                //Console.WriteLine("  CondEffect:");
-                ////Console.WriteLine("  Count:{0}", e.CondEffect.Count);
-                //for (int j = 0; j < e.CondEffect.Count; j++)
-                //{
-                //    Console.WriteLine("    Index: {0}", j);
-                //    Console.WriteLine("    Condition:");
-                //    CUDD.Print.PrintMinterm(e.CondEffect[j].Item1);
-                //    Console.Write("    Literals: ");
+            //    //Console.WriteLine("  CondEffect:");
+            //    ////Console.WriteLine("  Count:{0}", e.CondEffect.Count);
+            //    //for (int j = 0; j < e.CondEffect.Count; j++)
+            //    //{
+            //    //    Console.WriteLine("    Index: {0}", j);
+            //    //    Console.WriteLine("    Condition:");
+            //    //    CUDD.Print.PrintMinterm(e.CondEffect[j].Item1);
+            //    //    Console.Write("    Literals: ");
 
-                //    foreach (var literal in e.CondEffect[j].Item2)
-                //    {
-                //        string format = literal.Item2 ? "{0} " : "!{0} ";
-                //        Console.Write(format, literal.Item1);
-                //    }
+            //    //    foreach (var literal in e.CondEffect[j].Item2)
+            //    //    {
+            //    //        string format = literal.Item2 ? "{0} " : "!{0} ";
+            //    //        Console.Write(format, literal.Item1);
+            //    //    }
 
-                //    Console.WriteLine();
-                //}
+            //    //    Console.WriteLine();
+            //    //}
 
-                //Console.WriteLine("  Successor state axiom:");
-                //CUDD.Print.PrintMinterm(e.SuccessorStateAxiom);
-            }
+            //    //Console.WriteLine("  Successor state axiom:");
+            //    //CUDD.Print.PrintMinterm(e.SuccessorStateAxiom);
+            //}
 
-            Console.WriteLine("Actions:");
+            //Console.WriteLine("Actions:");
 
-            foreach (var action in _actionDict.Values)
-            {
-                Console.WriteLine("  Name: {0}", action.FullName);
-                Console.WriteLine("  Response:");
-                foreach (var response in action.ResponseDict.Values)
-                {
-                    Console.WriteLine("    Name: {0}", response.FullName);
-                    for (int i = 0; i < response.EventCollectionList.Count; i++)
-                    {
-                        Console.WriteLine("    Plausibility degree: {0}", i);
-                        Console.Write("    Event list: ");
-                        foreach (var e in response.EventCollectionList[i])
-                        {
-                            Console.Write("{0}  ", e.FullName);
-                        }
-                        Console.WriteLine();
-                    }
-                    Console.WriteLine();
-                }
+            //foreach (var action in _actionDict.Values)
+            //{
+            //    Console.WriteLine("  Name: {0}", action.FullName);
+            //    Console.WriteLine("  Response:");
+            //    foreach (var response in action.ResponseDict.Values)
+            //    {
+            //        Console.WriteLine("    Name: {0}", response.FullName);
+            //        for (int i = 0; i < response.EventCollectionList.Count; i++)
+            //        {
+            //            Console.WriteLine("    Plausibility degree: {0}", i);
+            //            Console.Write("    Event list: ");
+            //            foreach (var e in response.EventCollectionList[i])
+            //            {
+            //                Console.Write("{0}  ", e.FullName);
+            //            }
+            //            Console.WriteLine();
+            //        }
+            //        Console.WriteLine();
+            //    }
 
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-
-            }
+            //    Console.WriteLine();
+            //}
         }
 
         #endregion
