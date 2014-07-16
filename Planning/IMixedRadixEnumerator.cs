@@ -17,6 +17,6 @@ namespace Planning
 
         void MoveNext(int j, int[] index);
 
-        void Action();
+        void Execute();
     }
 }

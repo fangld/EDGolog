@@ -21,7 +21,7 @@ namespace Planning
 
         #region Properties
 
-        public CUDDNode Precondition;
+        public CUDDNode Precondition { get; private set; }
 
         public int MaxPlausibilityDegree
         {
@@ -37,16 +37,13 @@ namespace Planning
 
         #region Constructors
 
-        public Observation(PlanningParser.ObservationDefineContext context,IReadOnlyDictionary<string, Predicate> predicateDict, IReadOnlyDictionary<string, Event> eventDict,
-            string[] constArray, StringDictionary assignment)
+        public Observation(PlanningParser.ObservationDefineContext context, CUDDNode precondition,
+            IReadOnlyDictionary<string, Event> eventDict, string[] constArray, StringDictionary assignment)
             : base(constArray)
         {
             Name = context.observationSymbol().GetText();
-            Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
-            if (!Precondition.Equals(CUDD.ZERO))
-            {
-                _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
-            }
+            Precondition = precondition;
+            _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
         }
 
         #endregion

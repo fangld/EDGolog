@@ -5,20 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
 namespace Planning
 {
-    public class EventEnumerator : MixedRadixEnumerator<PlanningParser.EventDefineContext>
+    public class EventEnumerator : MixedRadixEnumeratorWithAssignment<PlanningParser.EventDefineContext>
     {
         #region Fields
         
-        private IDictionary<string, Predicate> _predicateDict;
+        private IReadOnlyDictionary<string, Predicate> _predicateDict;
 
         private IDictionary<string, Event> _eventDict;
-
-        private StringDictionary _assignment;
-
-        private IReadOnlyList<string> _variableNameList;
 
         #endregion
 
@@ -32,11 +30,12 @@ namespace Planning
 
         #region Constructors
 
-        public EventEnumerator(PlanningParser.EventDefineContext context, IReadOnlyList<IList<string>> collection, IReadOnlyList<string> variableNameList, IDictionary<string, Predicate> predicateDict, IDictionary<string, Event> eventDict, int initialCuddIndex)
-            : base(context, collection)
+        public EventEnumerator(PlanningParser.EventDefineContext context, IReadOnlyList<IList<string>> collection,
+            IReadOnlyList<string> variableNameList, IReadOnlyDictionary<string, Predicate> predicateDict,
+            IDictionary<string, Event> eventDict, int initialCuddIndex) : base(context, collection, variableNameList)
         {
-            _assignment = new StringDictionary();
             _predicateDict = predicateDict;
+            _eventDict = eventDict;
             InitialCuddIndex = initialCuddIndex;
             CurrentCuddIndex = initialCuddIndex;
         }
@@ -47,22 +46,23 @@ namespace Planning
 
         public override void Initial(int[] index)
         {
-            CurrentCuddIndex = InitialCuddIndex;
             base.Initial(index);
-            for (int i = 0; i < CollectionCount; i++)
-            {
-                
-            }
-            Parallel.For(0, CollectionCount, assignment.Add(variableNameList[i], value))
+            CurrentCuddIndex = InitialCuddIndex;
         }
 
-        public override void Action()
+        public override void Execute()
         {
-            Event e = new Event(_context, _predicateDict, _scanArray,
-                
-                (_context, _scanArray, CurrentCuddIndex);
-            CurrentCuddIndex = e.CuddIndex;
-            _predicateDict.Add(e.FullName, e);
+            CUDDNode precondition = _context.emptyOrPreGD().ToPrecondition(_predicateDict, _assignment);
+            if (!precondition.Equals(CUDD.ZERO))
+            {
+                Event e = new Event(_context, precondition, _predicateDict, _scanArray, _assignment, CurrentCuddIndex);
+                _eventDict.Add(e.FullName, e);
+                CurrentCuddIndex++;
+            }
+            else
+            {
+                CUDD.Deref(precondition);
+            }
         }
 
         #endregion

@@ -9,34 +9,55 @@ namespace Planning
 {
     public abstract class MixedRadixEnumeratorWithAssignment<TContext> : MixedRadixEnumerator<TContext>
     {
-        //private StringDictionary _assignment;
+        #region Fields
+
+        protected StringDictionary _assignment;
 
         private IReadOnlyList<string> _variableNameList;
 
+        #endregion;
+
         #region Constructors
 
-        protected MixedRadixEnumeratorWithAssignment(TContext context, IReadOnlyList<IList<string>> collection, I)
+        protected MixedRadixEnumeratorWithAssignment(TContext context, IReadOnlyList<IList<string>> collection, IReadOnlyList<string> variableNameList)
+            : base(context, collection)
         {
+            _assignment = new StringDictionary();
             _context = context;
-            _collection = collection;
-            _scanArray = new string[CollectionCount];
+            _variableNameList = variableNameList;
+        }
+
+        protected MixedRadixEnumeratorWithAssignment(TContext context, IReadOnlyList<IList<string>> collection, IReadOnlyList<string> variableNameList, StringDictionary assignment)
+            : base(context, collection)
+        {
+            _assignment = assignment;
+            _context = context;
+            _variableNameList = variableNameList;
         }
 
         #endregion
 
         #region Methods
 
-        public virtual void Initial(int[] index)
+        public override void Initial(int[] index)
         {
-            Parallel.For(0, CollectionCount, i => _scanArray[i] = _collection[i][index[i]]);
+            base.Initial(index);
+            for (int i = 0; i < CollectionCount; i++)
+            {
+                string value = Collection[i][index[i]];
+                _assignment.Add(_variableNameList[i], value);
+            }
         }
 
-        public virtual void MoveNext(int j, int[] index)
+        public override void MoveNext(int j, int[] index)
         {
-            Parallel.For(j, CollectionCount, i => _scanArray[i] = _collection[i][index[i]]);
-        }
+            base.MoveNext(j, index);
+            for (int i = j; i < CollectionCount; i++)
+            {
+                _assignment[_variableNameList[i]] = _scanArray[i];
 
-        public abstract void Action();
+            }
+        }
 
         #endregion
     }

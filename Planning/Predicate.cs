@@ -23,7 +23,7 @@ namespace Planning
         {
             Name = context.predicate().GetText();
             PreviousCuddIndex = intialCuddIndex;
-            SuccessiveCuddIndex = PreviousCuddIndex + 1;
+            SuccessiveCuddIndex = intialCuddIndex + 1;
         }
 
         #endregion

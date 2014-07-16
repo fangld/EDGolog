@@ -55,7 +55,7 @@ namespace Planning
             Parallel.For(j, CollectionCount, i => _scanArray[i] = _collection[i][index[i]]);
         }
 
-        public abstract void Action();
+        public abstract void Execute();
 
         #endregion
     }

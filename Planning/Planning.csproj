@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="AbstractPredicate.cs" />
     <Compile Include="Action.cs" />
+    <Compile Include="ActionEnumerator.cs" />
+    <Compile Include="Algorithms.cs" />
     <Compile Include="Clients\ClientAction.cs" />
     <Compile Include="Clients\ClientGroundAction.cs" />
     <Compile Include="Clients\ClientProblem.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="ContextExtensions\EmptyOrPreGDContextExtension.cs" />
     <Compile Include="ContextExtensions\EventModelContextExtension.cs" />
     <Compile Include="Domain.cs" />
+    <Compile Include="CEffectEnumerator.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventCollection.cs" />
     <Compile Include="ContextExtensions\GdContextExtension.cs" />
@@ -59,6 +62,7 @@
     <Compile Include="ContextExtensions\ListVariableContextExtension.cs" />
     <Compile Include="EventEnumerator.cs" />
     <Compile Include="MixedRadixEnumeratorWithAssignment.cs" />
+    <Compile Include="ObservationEnumerator.cs" />
     <Compile Include="PredicateEnumerator.cs" />
     <Compile Include="IMixedRadixEnumerator.cs" />
     <Compile Include="MixedRadixEnumerator.cs" />

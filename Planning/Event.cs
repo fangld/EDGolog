@@ -24,9 +24,9 @@ namespace Planning
 
         #region Properties
 
-        public CUDDNode Precondition { get; set; }
+        public CUDDNode Precondition { get; private set; }
 
-        public int CuddIndex { get; set; }
+        public int CuddIndex { get; private set; }
 
         public IReadOnlyList<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> CondEffect
         {
@@ -44,32 +44,28 @@ namespace Planning
 
         #region Constructors
 
-        public Event(PlanningParser.EventDefineContext context, IReadOnlyDictionary<string, Predicate> predicateDict, string[] constArray, StringDictionary assignment, int initialCuddInex)
-            : base(constArray)
+        public Event(PlanningParser.EventDefineContext context, CUDDNode precondition,
+            IReadOnlyDictionary<string, Predicate> predicateDict, string[] constArray, StringDictionary assignment,
+            int initialCuddInex) : base(constArray)
         {
             CuddIndex = initialCuddInex;
             Name = context.eventSymbol().GetText();
-            Console.WriteLine(FullName);
-            Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
-            Console.WriteLine("Finishing event define precondition");
-            Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
+            Precondition = precondition;
+            //Console.WriteLine(FullName);
+            //Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
+            //Console.WriteLine("Finishing event define precondition");
+            //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
 
-            if (!Precondition.Equals(CUDD.ZERO))
-            {
-                //Console.ReadLine();
-                GenerateEffect(context.emptyOrEffect(), predicateDict, assignment);
-                Console.WriteLine("Finishing event effect");
-
-                GeneratePartialSuccessorStateAxiom();
-                Console.WriteLine("Finishing event parital successor state axiom");
-                Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(ParitalSuccessorStateAxiom));
-            }
-            //if (context.emptyOrPreGD() != null)
+            //if (!Precondition.Equals(CUDD.ZERO))
             //{
-            //    Console.WriteLine("  Context: {0}", context.emptyOrPreGD().GetText());
-            //}
-            //CUDD.Print.PrintMinterm(Precondition);
             //Console.ReadLine();
+            GenerateEffect(context.emptyOrEffect(), predicateDict, assignment);
+            //Console.WriteLine("Finishing event effect");
+
+            GeneratePartialSuccessorStateAxiom();
+            //Console.WriteLine("Finishing event parital successor state axiom");
+            //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(ParitalSuccessorStateAxiom));
+            //}
         }
 
         #endregion

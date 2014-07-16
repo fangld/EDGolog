@@ -25,7 +25,8 @@ namespace Planning
 
         #region Constructors
 
-        public PredicateEnumerator(PlanningParser.AtomFormSkeletonContext context, IReadOnlyList<IList<string>> collection, IDictionary<string, Predicate> predicateDict, int initialCuddIndex)
+        public PredicateEnumerator(PlanningParser.AtomFormSkeletonContext context,
+            IReadOnlyList<IList<string>> collection, IDictionary<string, Predicate> predicateDict, int initialCuddIndex)
             : base(context, collection)
         {
             _predicateDict = predicateDict;
@@ -43,11 +44,11 @@ namespace Planning
             base.Initial(index);
         }
 
-        public override void Action()
+        public override void Execute()
         {
             Predicate predicate = new Predicate(_context, _scanArray, CurrentCuddIndex);
-            CurrentCuddIndex = predicate.SuccessiveCuddIndex;
             _predicateDict.Add(predicate.FullName, predicate);
+            CurrentCuddIndex += 2;
         }
 
         #endregion
