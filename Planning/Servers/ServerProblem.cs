@@ -56,12 +56,19 @@ namespace Planning.Servers
 
             HandlePredicateDefine(domainContext.predicateDefine());
             Console.WriteLine("Finishing predicate!");
+            Console.ReadLine();
             HandleEventsDefine(domainContext.eventDefine());
             Console.WriteLine("Finishing event define!");
+            Console.ReadLine();
+
             HandleActionsDefine(domainContext.actionDefine());
             Console.WriteLine("Finishing action define!");
+            Console.ReadLine();
+
             HandleObservationsDefine(domainContext.observationDefine());
             Console.WriteLine("Finishing observation define!");
+            Console.ReadLine();
+
             //HandleInit(serverProblemContext.init());
             //Console.WriteLine("Finishing init object base!");
         }

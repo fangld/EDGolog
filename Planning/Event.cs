@@ -53,28 +53,13 @@ namespace Planning
             CuddIndex = initialCuddInex;
             Name = context.eventSymbol().GetText();
             Precondition = precondition;
-            //Console.WriteLine(FullName);
-            //Precondition = context.emptyOrPreGD().ToPrecondition(predicateDict, assignment);
-            //Console.WriteLine("Finishing event define precondition");
-            //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(Precondition));
-
-            //if (!Precondition.Equals(CUDD.ZERO))
-            //{
-            //Console.ReadLine();
             GenerateEffect(context.emptyOrEffect(), predicateDict, assignment);
-            //Console.WriteLine("Finishing event effect");
-
             GeneratePartialSuccessorStateAxiom();
-            //Console.WriteLine("Finishing event parital successor state axiom");
-            //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(ParitalSuccessorStateAxiom));
-            //}
         }
 
         #endregion
 
         #region Methods
-
-        #region Methods for generating effect
 
         private void GenerateEffect(PlanningParser.EmptyOrEffectContext context,
             IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
@@ -120,21 +105,13 @@ namespace Planning
             {
                 CEffectEnumerator enumerator = new CEffectEnumerator(context, currentConditionNode, predicateDict,
                     assignment);
-                //Console.WriteLine("Enter enumerator!");
                 Algorithms.IterativeScanMixedRadix(enumerator);
-                //Console.WriteLine("Leave enumerator!");
-
                 result = enumerator.CondEffectList;
             }
             else if (context.WHEN() != null)
             {
                 result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
                 CUDD.Ref(currentConditionNode);
-                //Console.WriteLine(context.gd().GetText());
-                //foreach (DictionaryEntry entry in assignment)
-                //{
-                //    Console.WriteLine("Key: {0}, value: {1}", entry.Key, entry.Value);
-                //}
                 CUDDNode gdNode = context.gd().GetCuddNode(predicateDict, assignment);
                 CUDDNode conditionNode = CUDD.Function.And(currentConditionNode, gdNode);
                 if (!conditionNode.Equals(CUDD.ZERO))
@@ -249,8 +226,6 @@ namespace Planning
 
             return result;
         }
-
-        #endregion
 
         #endregion
     }
