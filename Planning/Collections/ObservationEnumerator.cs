@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
-namespace Planning
+namespace Planning.Collections
 {
-    public class CEffectEnumerator : MixedRadixEnumeratorWithAssignment<PlanningParser.EffectContext>
+    public class ObservationEnumerator : MixedRadixEnumeratorWithAssignment<PlanningParser.ObservationDefineContext>
     {
         #region Fields
 
@@ -21,7 +23,7 @@ namespace Planning
 
         #region Constructors
 
-        public CEffectEnumerator(PlanningParser.EffectContext context,
+        public ObservationEnumerator(PlanningParser.ObservationDefineContext context,
             IReadOnlyList<IList<string>> collection, IReadOnlyList<string> variableNameList,
             IReadOnlyDictionary<string, Predicate> predicateDict, IReadOnlyDictionary<string, Event> eventDict,
             IDictionary<string, Observation> observationDict) : base(context, collection, variableNameList)

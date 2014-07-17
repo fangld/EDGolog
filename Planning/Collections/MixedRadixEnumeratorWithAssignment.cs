@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Planning
+namespace Planning.Collections
 {
     public abstract class MixedRadixEnumeratorWithAssignment<TContext> : MixedRadixEnumerator<TContext>
     {
@@ -45,7 +45,7 @@ namespace Planning
             for (int i = 0; i < CollectionCount; i++)
             {
                 string value = Collection[i][index[i]];
-                _assignment.Add(_variableNameList[i], value);
+                _assignment[_variableNameList[i]] = value;
             }
         }
 

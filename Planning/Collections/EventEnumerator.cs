@@ -8,7 +8,7 @@ using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 using Planning.ContextExtensions;
 
-namespace Planning
+namespace Planning.Collections
 {
     public class EventEnumerator : MixedRadixEnumeratorWithAssignment<PlanningParser.EventDefineContext>
     {

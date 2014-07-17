@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.Collections;
 using Planning.ContextExtensions;
 
 namespace Planning
@@ -94,7 +96,7 @@ namespace Planning
             }
         }
 
-        private List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(PlanningParser.EffectContext context,
+        public static List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(PlanningParser.EffectContext context,
             CUDDNode currentConditionNode, IReadOnlyDictionary<string, Predicate> predicateDict,
             StringDictionary assignment)
         {
@@ -109,23 +111,30 @@ namespace Planning
             return result;
         }
 
-        private List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(
+        private static List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(
             PlanningParser.CEffectContext context, CUDDNode currentConditionNode,
             IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> result;
             if (context.FORALL() != null)
             {
-                var listVariableContext = context.listVariable();
-                var varNameList = listVariableContext.GetVariableNameList();
-                var collection = listVariableContext.GetCollection();
-                result = IterativeScanMixedRadix(context.effect(),
-                    currentConditionNode, predicateDict, varNameList, collection, assignment);
+                CEffectEnumerator enumerator = new CEffectEnumerator(context, currentConditionNode, predicateDict,
+                    assignment);
+                //Console.WriteLine("Enter enumerator!");
+                Algorithms.IterativeScanMixedRadix(enumerator);
+                //Console.WriteLine("Leave enumerator!");
+
+                result = enumerator.CondEffectList;
             }
             else if (context.WHEN() != null)
             {
                 result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
                 CUDD.Ref(currentConditionNode);
+                //Console.WriteLine(context.gd().GetText());
+                //foreach (DictionaryEntry entry in assignment)
+                //{
+                //    Console.WriteLine("Key: {0}, value: {1}", entry.Key, entry.Value);
+                //}
                 CUDDNode gdNode = context.gd().GetCuddNode(predicateDict, assignment);
                 CUDDNode conditionNode = CUDD.Function.And(currentConditionNode, gdNode);
                 if (!conditionNode.Equals(CUDD.ZERO))
@@ -149,48 +158,7 @@ namespace Planning
             return result;
         }
 
-        private List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> IterativeScanMixedRadix(PlanningParser.EffectContext context,
-            CUDDNode currentConditionNode, IReadOnlyDictionary<string, Predicate> predicateDict,
-            IReadOnlyList<string> variableNameList, IReadOnlyList<IList<string>> collection, StringDictionary assignment)
-        {
-            var result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
-            int count = collection.Count;
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
-
-            do
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    string value = collection[i][index[i]];
-                    string variableName = variableNameList[i];
-                    assignment[variableName] = value;
-                }
-
-                var condEffectList = GetCondEffectList(context, currentConditionNode, predicateDict, assignment);
-                result.AddRange(condEffectList);
-
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
-                    {
-                        index[j] = 0;
-                        j--;
-                        continue;
-                    }
-                    break;
-                }
-                if (j == -1)
-                    return result;
-
-                index[j]++;
-
-            } while (true);
-        }
-
-        private Tuple<Predicate, bool>[] GetLiteralArray(PlanningParser.CondEffectContext context,
+        private static Tuple<Predicate, bool>[] GetLiteralArray(PlanningParser.CondEffectContext context,
             IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
             int count = context.termLiteral().Count;
@@ -199,11 +167,11 @@ namespace Planning
             return result;
         }
 
-        private Tuple<Predicate, bool> GetLiteral(PlanningParser.TermLiteralContext context,
+        private static Tuple<Predicate, bool> GetLiteral(PlanningParser.TermLiteralContext context,
             IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
-            string predicateFullName = GetFullName(context.termAtomForm(), assignment);
-            Predicate predicate = predicateDict[predicateFullName];
+            string fullName = GetFullName(context.termAtomForm(), assignment);
+            Predicate predicate = predicateDict[fullName];
             bool isPositive = context.NOT() == null;
             return new Tuple<Predicate, bool>(predicate, isPositive);
         }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.Collections;
 using Planning.ContextExtensions;
 
 namespace Planning.Servers
@@ -80,8 +81,8 @@ namespace Planning.Servers
             _predicateDict = new Dictionary<string, Predicate>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
             {
-                IReadOnlyList<IList<string>> collection = atomFormSkeleton.listVariable().GetCollection();
-                PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, collection, _predicateDict, _currentCuddIndex);
+                //IReadOnlyList<IList<string>> collection = atomFormSkeleton.listVariable().GetCollection();
+                PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, _predicateDict, _currentCuddIndex);
                 Algorithms.IterativeScanMixedRadix(enumerator);
                 _currentCuddIndex = enumerator.CurrentCuddIndex;
             }
@@ -106,10 +107,9 @@ namespace Planning.Servers
             _actionDict = new Dictionary<string, Action>();
             foreach (var actionDefineContext in contexts)
             {
-                IReadOnlyList<IList<string>> collection = actionDefineContext.listVariable().GetCollection();
-                IReadOnlyList<string> variableNameList = actionDefineContext.listVariable().GetVariableNameList();
-                ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, collection, variableNameList,
-                    _eventDict, _actionDict);
+                //IReadOnlyList<IList<string>> collection = actionDefineContext.listVariable().GetCollection();
+                //IReadOnlyList<string> variableNameList = actionDefineContext.listVariable().GetVariableNameList();
+                ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, _eventDict, _actionDict);
                 Algorithms.IterativeScanMixedRadix(enumerator);
             }
         }

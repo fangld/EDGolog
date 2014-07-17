@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
+using Planning.ContextExtensions;
 
-namespace Planning
+namespace Planning.Collections
 {
     public class PredicateEnumerator : MixedRadixEnumerator<PlanningParser.AtomFormSkeletonContext>
     {
@@ -26,8 +27,8 @@ namespace Planning
         #region Constructors
 
         public PredicateEnumerator(PlanningParser.AtomFormSkeletonContext context,
-            IReadOnlyList<IList<string>> collection, IDictionary<string, Predicate> predicateDict, int initialCuddIndex)
-            : base(context, collection)
+            IDictionary<string, Predicate> predicateDict, int initialCuddIndex)
+            : base(context, context.listVariable().GetCollection())
         {
             _predicateDict = predicateDict;
             InitialCuddIndex = initialCuddIndex;

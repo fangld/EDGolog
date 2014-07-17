@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.Collections;
 using Planning.ContextExtensions;
 
 namespace Planning
@@ -54,61 +55,14 @@ namespace Planning
         {
             if (context.PARAMETER() != null)
             {
-                var listVariableContext = context.listVariable();
-
-                IReadOnlyList<IList<string>> collection = listVariableContext.GetCollection();
-                IReadOnlyList<string> variableNameList = listVariableContext.GetVariableNameList();
-                ScanMixedRadix(context, variableNameList, collection, eventDict, assignment);
+                ResponseEnumerator enumerator = new ResponseEnumerator(context, eventDict, _responseDict, assignment);
+                Algorithms.IterativeScanMixedRadix(enumerator);
             }
             else
             {
                 Response response = new Response(context, eventDict, assignment);
                 _responseDict.Add(response.FullName, response);
             }
-        }
-
-        private void ScanMixedRadix(PlanningParser.ResponseDefineContext context, IReadOnlyList<string> variableNameList, IReadOnlyList<IList<string>> collection, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
-        {
-            int count = collection.Count;
-            string[] scanArray = new string[count];
-            int[] index = new int[count];
-            int[] maxIndex = new int[count];
-            Parallel.For(0, count, i => maxIndex[i] = collection[i].Count);
-
-            do
-            {
-                for (int i = 0; i < count; i ++)
-                {
-                    scanArray[i] = collection[i][index[i]];
-                    string varName = variableNameList[i];
-                    if (assignment.ContainsKey(varName))
-                    {
-                        assignment[varName] = scanArray[i];
-                    }
-                    else
-                    {
-                        assignment.Add(varName, scanArray[i]);
-                    }
-                }
-
-                Response response = new Response(context, eventDict, scanArray, assignment);
-                _responseDict.Add(response.FullName, response);
-
-                int j = count - 1;
-                while (j != -1)
-                {
-                    if (index[j] == maxIndex[j] - 1)
-                    {
-                        index[j] = 0;
-                        j--;
-                        continue;
-                    }
-                    break;
-                }
-                if (j == -1)
-                    return;
-                index[j]++;
-            } while (true);
         }
 
         #endregion

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Planning
+namespace Planning.Collections
 {
     public static class Algorithms
     {

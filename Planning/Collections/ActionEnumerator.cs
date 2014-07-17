@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
-namespace Planning
+namespace Planning.Collections
 {
     public class ActionEnumerator: MixedRadixEnumeratorWithAssignment<PlanningParser.ActionDefineContext>
     {
@@ -20,9 +21,9 @@ namespace Planning
 
         #region Constructors
 
-        public ActionEnumerator(PlanningParser.ActionDefineContext context, IReadOnlyList<IList<string>> collection,
-            IReadOnlyList<string> variableNameList, IReadOnlyDictionary<string, Event> eventDict,
-            IDictionary<string, Action> actionDict) : base(context, collection, variableNameList)
+        public ActionEnumerator(PlanningParser.ActionDefineContext context, IReadOnlyDictionary<string, Event> eventDict,
+            IDictionary<string, Action> actionDict)
+            : base(context, context.listVariable().GetCollection(), context.listVariable().GetVariableNameList())
         {
             _eventDict = eventDict;
             _actionDict = actionDict;

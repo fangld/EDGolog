@@ -93,6 +93,7 @@ namespace Planning.ContextExtensions
             if (context.predicate() != null)
             {
                 string predicateFullName = ConstContainer.GetFullName(context, assignment);
+                //Console.WriteLine(predicateFullName);
                 Predicate predicate = predicateDict[predicateFullName];
                 int cuddIndex = predicate.PreviousCuddIndex;
                 result = CUDD.Var(cuddIndex);
