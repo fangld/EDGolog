@@ -52,7 +52,7 @@ namespace Planning.Collections
 
         public override void Execute()
         {
-            Response response = new Response(_context, _eventDict, _scanArray, _assignment);
+            Response response = new Response(_context, _eventDict, _assignment, _scanArray);
             _responseDict.Add(response.FullName, response);
         }
 

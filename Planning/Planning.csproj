@@ -70,6 +70,7 @@
     <Compile Include="Collections\PredicateEnumerator.cs" />
     <Compile Include="Collections\IMixedRadixEnumerator.cs" />
     <Compile Include="Collections\MixedRadixEnumerator.cs" />
+    <Compile Include="EventCollectionArrayExtension.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Formulas\BinaryFormula.cs" />

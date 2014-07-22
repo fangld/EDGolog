@@ -11,5 +11,7 @@ namespace Planning
         public static TermInterpreter TermInterpreter;
 
         public static string[] EmptyConstArray = new string[0];
+
+        public static Random Random = new Random();
     }
 }

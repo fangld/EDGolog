@@ -29,7 +29,9 @@ namespace Planning.ContextExtensions
             //{
             //    result = new EventCollection[1];
             //    result[0] = context.gdEvent().ToEventCollection(eventDict, assignment);
-            //    //Console.WriteLine("Finishing event collection 0 precondition");
+            //    //
+            
+            //Console.WriteLine("Finishing event collection 0 precondition");
             //    //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(result[0].Precondition));
             //    //Console.WriteLine("Finishing event collection 0 partial successor state axiom");
             //    //Console.WriteLine("  Number of nodes: {0}", CUDD.GetNumNodes(result[0].PartialSuccessorStateAxiom));

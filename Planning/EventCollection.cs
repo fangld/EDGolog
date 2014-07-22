@@ -24,6 +24,11 @@ namespace Planning
 
         public CUDDNode PartialSuccessorStateAxiom;
 
+        public IReadOnlyList<Event> EventList
+        {
+            get { return _eventList; }
+        }
+
         #endregion
 
         #region Constructors
@@ -31,7 +36,6 @@ namespace Planning
         public EventCollection(List<Event> eventList)
         {
             _eventList = eventList;
-            Console.WriteLine(eventList.Count);
             GeneratePrecondition();
             GeneratePartialSuccessorStateAxiom();
         }

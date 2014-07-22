@@ -16,6 +16,8 @@ namespace Planning
 
         private EventCollection[] _eventCollectionArray;
 
+        private List<Event> _eventList;
+
         #endregion
 
         #region Properties
@@ -30,24 +32,30 @@ namespace Planning
             get { return _eventCollectionArray; }
         }
 
+        public IReadOnlyList<Event> EventList { get { return _eventList; } }
+
+        public CUDDNode EventPrecondition { get; private set; }
+
         #endregion
 
         #region Constructors
 
-        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, string[] constArray, StringDictionary assignment)
+        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment, string[] constArray)
             : base(constArray)
         {
             Name = context.responseSymbol().GetText();
             //Console.WriteLine(FullName);
             _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
+            _eventList = _eventCollectionArray.GetEventList();
         }
 
         public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
-            : base(Globals.EmptyConstArray)
+            : this(context, eventDict, assignment, Globals.EmptyConstArray)
         {
-            Name = context.responseSymbol().GetText();
-            //Console.WriteLine(FullName);
-            _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
+            //Name = context.responseSymbol().GetText();
+            ////Console.WriteLine(FullName);
+            //_eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
+
         }
 
         #endregion

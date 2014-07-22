@@ -1,126 +1,155 @@
-﻿//using System;
-//using System.CodeDom.Compiler;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using PAT.Common.Classes.CUDDLib;
+﻿using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using PAT.Common.Classes.CUDDLib;
 
-//namespace Planning.Servers
-//{
-//    public class ObjectBase
-//    {
-//        #region Fields
-        
-//        private Dictionary<string, bool> _predBooleanMap;
+namespace Planning.Servers
+{
+    public class ObjectBase
+    {
+        #region Fields
 
-//        private IReadOnlyDictionary<string, GroundPredicate> _gndPredicateDict;
+        private Dictionary<string, bool> _predBooleanMap;
 
-//        #endregion
+        private IReadOnlyDictionary<string, Predicate> _predicateDict;
 
-//        #region Constructors
+        #endregion
 
-//        public ObjectBase(ServerProblem problem)
-//        {
-//            _predBooleanMap = new Dictionary<string, bool>();
-//            _gndPredicateDict = problem.GroundPredicateDict;
-//            foreach (var gndPred in _gndPredicateDict.Keys)
-//            {
-//                bool value = problem.TruePredSet.Contains(gndPred);
-//                _predBooleanMap.Add(gndPred, value);
-//            }
-//        }
+        #region Constructors
 
-//        #endregion
+        public ObjectBase(ServerProblem problem)
+        {
+            _predBooleanMap = new Dictionary<string, bool>();
+            _predicateDict = problem.PredicateDict;
+            foreach (var predicateFullName in _predicateDict.Keys)
+            {
+                bool value = problem.TruePredSet.Contains(predicateFullName);
+                _predBooleanMap.Add(predicateFullName, value);
+            }
+        }
 
-//        #region Events
+        #endregion
 
-//        public EventHandler<Dictionary<string, bool>> ObjectBaseChanged;
+        #region Events
 
-//        #endregion
+        public EventHandler<Tuple<Dictionary<string, bool>, Event>> ObjectBaseChanged;
 
-//        #region Methods
+        #endregion
 
-//        private CUDDNode GetCuddNode()
-//        {
-//            List<CUDDNode> literalNodes = new List<CUDDNode>();
+        #region Methods
 
-//            foreach (var gndPred in _predBooleanMap)
-//            {
-//                string name = gndPred.Key;
-//                int index = _gndPredicateDict[name].CuddIndexList[0];
-//                CUDDNode node;
+        private CUDDNode GetKbNode()
+        {
+            List<CUDDNode> literalNodes = new List<CUDDNode>();
 
-//                node = gndPred.Value ? CUDD.Var(index) : CUDD.Function.Not(CUDD.Var(index));
-//                literalNodes.Add(node);
-//            }
+            foreach (var pair in _predBooleanMap)
+            {
+                string name = pair.Key;
+                int index = _predicateDict[name].PreviousCuddIndex;
+                CUDDNode node = pair.Value ? CUDD.Var(index) : CUDD.Function.Not(CUDD.Var(index));
+                literalNodes.Add(node);
+            }
 
-//            CUDDNode result = literalNodes[0];
-//            for (int i = 1; i < literalNodes.Count; i++)
-//            {
-//                CUDDNode literalNode = literalNodes[i];
-//                CUDDNode andNode = CUDD.Function.And(result, literalNode);
-//                CUDD.Ref(andNode);
-//                CUDD.Deref(result);
-//                CUDD.Deref(literalNode);
-//                result = andNode;
-//            }
-//            return result;
-//        }
+            CUDDNode result = literalNodes[0];
+            for (int i = 1; i < literalNodes.Count; i++)
+            {
+                result = CUDD.Function.And(result, literalNodes[i]);
+            }
+            return result;
+        }
 
-//        public void Update(ServerGroundAction gndAction)
-//        {
-//            CUDDNode kbNode = GetCuddNode();
-//            CUDDNode preconditionNode = CUDD.Function.Implies(kbNode, gndAction.Precondition);
+        public void Update(Action action)
+        {
+            CUDDNode kbNode = GetKbNode();
 
-//            if (preconditionNode.GetValue() > 0.5)
-//            {
-//                var gndLiteralList = GenerateLiteralList(kbNode, gndAction);
-//                UpdateByLiteralList(gndLiteralList);
-//                if (ObjectBaseChanged != null)
-//                {
-//                    ObjectBaseChanged(this, _predBooleanMap);
-//                }
-//                CUDD.Deref(kbNode);
-//            }
-//            else
-//            {
-//                Console.WriteLine("    Action {0} is not executable now!", gndAction);
-//            }
-//        }
+            List<Response> responseList = new List<Response>();
 
-//        private List<Tuple<Ground<Predicate>, bool>> GenerateLiteralList(CUDDNode node, ServerGroundAction gndAction)
-//        {
-//            List<Tuple<Ground<Predicate>, bool>> result = new List<Tuple<Ground<Predicate>, bool>>();
-//            foreach (var cEffect in gndAction.CondEffect)
-//            {
-//                CUDDNode impliesNode = CUDD.Function.Implies(node, cEffect.Item1);
-//                if (impliesNode.GetValue() > 0.5)
-//                {
-//                    result.AddRange(cEffect.Item2);
-//                }
-//            }
-//            return result;
-//        }
+            foreach (var pair in action.ResponseDict)
+            {
+                CUDDNode responsePrecondition = pair.Value.EventCollectionList.GetPrecondition();
 
-//        private void UpdateByLiteralList(List<Tuple<Ground<Predicate>, bool>> gndLiteralList)
-//        {
-//            foreach (var literal in gndLiteralList)
-//            {
-//                string gndPredName = literal.Item1.ToString();
-//                _predBooleanMap[gndPredName] = literal.Item2;
-//            }
-//        }
+                CUDD.Ref(kbNode);
+                CUDDNode impliesNode = CUDD.Function.Implies(kbNode, responsePrecondition);
+                if (impliesNode.Equals(CUDD.ONE))
+                {
+                    responseList.Add(pair.Value);
+                }
+            }
 
-//        public void ShowInfo()
-//        {
-//            Console.WriteLine("Object base:");
-//            foreach (var pair in _predBooleanMap)
-//            {
-//                Console.WriteLine("  Predicate: {0}, Value: {1}", pair.Key, pair.Value);
-//            }
-//        }
+            int selectiveRepsonseIndex = Globals.Random.Next(responseList.Count);
+            Response selectiveResponse = responseList[selectiveRepsonseIndex];
+            IReadOnlyList<Event> eventList = selectiveResponse.EventList;
 
-//        #endregion
-//    }
-//}
+            foreach (var e in eventList)
+            {
+                CUDD.Ref(e.Precondition);
+                CUDDNode impliesNode = CUDD.Function.Implies(kbNode, e.Precondition);
+                if (impliesNode.Equals(CUDD.ONE))
+                {
+                    var literalList = GenerateLiteralList(kbNode, e);
+                    UpdateByLiteralList(literalList);
+                    if (ObjectBaseChanged != null)
+                    {
+                        var tuple = new Tuple<Dictionary<string, bool>, Event>(_predBooleanMap, e);
+                        ObjectBaseChanged(this, tuple);
+                    }
+                    break;
+                }
+            }
+
+            //if (preconditionNode.Equals(CUDD.ONE))
+            //{
+            //    var literalList = GenerateLiteralList(kbNode, e);
+            //    UpdateByLiteralList(literalList);
+            //    if (ObjectBaseChanged != null)
+            //    {
+            //        ObjectBaseChanged(this, _predBooleanMap);
+            //    }
+            //    CUDD.Deref(kbNode);
+            //}
+            //else
+            //{
+            //    Console.WriteLine("    Event {0} is not executable now!", e);
+            //}
+        }
+
+        private List<Tuple<Predicate, bool>> GenerateLiteralList(CUDDNode node, Event e)
+        {
+            List<Tuple<Predicate, bool>> result = new List<Tuple<Predicate, bool>>();
+            foreach (var cEffect in e.CondEffect)
+            {
+                CUDD.Ref(node);
+                CUDD.Ref(cEffect.Item1);
+                CUDDNode impliesNode = CUDD.Function.Implies(node, cEffect.Item1);
+                if (impliesNode.Equals(CUDD.ONE))
+                {
+                    result.AddRange(cEffect.Item2);
+                }
+            }
+            return result;
+        }
+
+        private void UpdateByLiteralList(List<Tuple<Predicate, bool>> literalList)
+        {
+            foreach (var literal in literalList)
+            {
+                string predicateFullName = literal.Item1.ToString();
+                _predBooleanMap[predicateFullName] = literal.Item2;
+            }
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine("Object base:");
+            foreach (var pair in _predBooleanMap)
+            {
+                Console.WriteLine("  Predicate: {0}, Value: {1}", pair.Key, pair.Value);
+            }
+        }
+
+        #endregion
+    }
+}

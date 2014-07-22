@@ -11,6 +11,7 @@ using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
 //using ObjectWorlds.Network;
+using ObjectWorlds.Network;
 using PAT.Common.Classes.CUDDLib;
 using Planning;
 //using Planning.Servers;
@@ -88,8 +89,8 @@ namespace ObjectWorlds
             ServerProblem problem = ServerProblem.CreateInstance(domainContext, serverProblemContext);
             problem.ShowInfo();
 
-            //Server server = new Server(port, listenBacklog, problem);
-            //server.Run();
+            Server server = new Server(port, listenBacklog, problem);
+            server.Run();
             Console.ReadLine();
         }
 

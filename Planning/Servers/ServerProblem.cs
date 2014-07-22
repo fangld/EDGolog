@@ -24,6 +24,8 @@ namespace Planning.Servers
         private Dictionary<string, Action> _actionDict;
 
         private Dictionary<string, Observation> _obervationDict;
+
+        private List<string> _agentList;
         
         private int _currentCuddIndex;
 
@@ -39,6 +41,22 @@ namespace Planning.Servers
 
         public Domain Domain { get; set; }
 
+        public IReadOnlyDictionary<string, Predicate> PredicateDict
+        {
+            get { return _predicateDict; }
+        }
+
+        public IReadOnlyDictionary<string, Action> ActionDict
+        {
+            get { return _actionDict; }
+        }
+
+        public IReadOnlyList<string> AgentList
+        {
+            get { return _agentList; }
+        }
+
+
         #endregion
 
         #region Constructors
@@ -49,28 +67,33 @@ namespace Planning.Servers
 
             DomainName = domainContext.NAME().GetText();
             ProblemName = serverProblemContext.problemName().GetText();
-            Console.WriteLine("Finishing name!");
+            Console.WriteLine("Finishing setting name!");
+
             Globals.TermInterpreter = new TermInterpreter(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
-            Console.WriteLine("Finishing term interpreter!");
+            Console.WriteLine("Finishing genertating term interpreter!");
 
             HandlePredicateDefine(domainContext.predicateDefine());
-            Console.WriteLine("Finishing predicate!");
-            Console.ReadLine();
+            Console.WriteLine("Finishing handling predicate!");
+            //Console.ReadLine();
+
             HandleEventsDefine(domainContext.eventDefine());
-            Console.WriteLine("Finishing event define!");
-            Console.ReadLine();
+            Console.WriteLine("Finishing handling event define!");
+            //Console.ReadLine();
 
             HandleActionsDefine(domainContext.actionDefine());
-            Console.WriteLine("Finishing action define!");
-            Console.ReadLine();
+            Console.WriteLine("Finishing handling action define!");
+            //Console.ReadLine();
 
             HandleObservationsDefine(domainContext.observationDefine());
-            Console.WriteLine("Finishing observation define!");
-            Console.ReadLine();
+            Console.WriteLine("Finishing handling observation define!");
+            //Console.ReadLine();
 
-            //HandleInit(serverProblemContext.init());
-            //Console.WriteLine("Finishing init object base!");
+            HandleInit(serverProblemContext.init());
+            Console.WriteLine("Finishing handling init object base!");
+
+            GenerateAgentList();
+            Console.WriteLine("Finishing generating agent list!");
         }
 
         #endregion
@@ -148,6 +171,11 @@ namespace Planning.Servers
 
                 TruePredSet.Add(predicateFullname);
             }
+        }
+
+        private void GenerateAgentList()
+        {
+            _agentList = new List<string> {"a1", "a2"};
         }
 
         public void ShowInfo()
