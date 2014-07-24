@@ -22,7 +22,7 @@ namespace ObjectWorlds
     public class Program
     {
         private const int port = 888;
-        private const int listenBacklog = 1;
+        private const int listenBacklog = 2;
 
         public static void Main(string[] args)
         {

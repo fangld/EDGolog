@@ -126,7 +126,7 @@
 :eventmodel (rightSucWithoutNotice ?i))
 
 (:response fail
-:eventmodel (leftFail ?i))
+:eventmodel (rightFail ?i))
 )
 
 

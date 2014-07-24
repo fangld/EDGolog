@@ -35,7 +35,7 @@ namespace Planning.Servers
 
         #region Events
 
-        public EventHandler<Tuple<Dictionary<string, bool>, Event>> ObjectBaseChanged;
+        public EventHandler<Tuple<IReadOnlyDictionary<string, bool>, Event>> ObjectBaseChanged;
 
         #endregion
 
@@ -61,7 +61,7 @@ namespace Planning.Servers
             return result;
         }
 
-        public void Update(Action action)
+        public Response Update(Action action)
         {
             CUDDNode kbNode = GetKbNode();
 
@@ -70,8 +70,9 @@ namespace Planning.Servers
             foreach (var pair in action.ResponseDict)
             {
                 CUDDNode responsePrecondition = pair.Value.EventCollectionList.GetPrecondition();
-
+                
                 CUDD.Ref(kbNode);
+
                 CUDDNode impliesNode = CUDD.Function.Implies(kbNode, responsePrecondition);
                 if (impliesNode.Equals(CUDD.ONE))
                 {
@@ -80,8 +81,8 @@ namespace Planning.Servers
             }
 
             int selectiveRepsonseIndex = Globals.Random.Next(responseList.Count);
-            Response selectiveResponse = responseList[selectiveRepsonseIndex];
-            IReadOnlyList<Event> eventList = selectiveResponse.EventList;
+            Response result = responseList[selectiveRepsonseIndex];
+            IReadOnlyList<Event> eventList = result.EventList;
 
             foreach (var e in eventList)
             {
@@ -93,27 +94,13 @@ namespace Planning.Servers
                     UpdateByLiteralList(literalList);
                     if (ObjectBaseChanged != null)
                     {
-                        var tuple = new Tuple<Dictionary<string, bool>, Event>(_predBooleanMap, e);
+                        var tuple = new Tuple<IReadOnlyDictionary<string, bool>, Event>(_predBooleanMap, e);
                         ObjectBaseChanged(this, tuple);
                     }
                     break;
                 }
             }
-
-            //if (preconditionNode.Equals(CUDD.ONE))
-            //{
-            //    var literalList = GenerateLiteralList(kbNode, e);
-            //    UpdateByLiteralList(literalList);
-            //    if (ObjectBaseChanged != null)
-            //    {
-            //        ObjectBaseChanged(this, _predBooleanMap);
-            //    }
-            //    CUDD.Deref(kbNode);
-            //}
-            //else
-            //{
-            //    Console.WriteLine("    Event {0} is not executable now!", e);
-            //}
+            return result;
         }
 
         private List<Tuple<Predicate, bool>> GenerateLiteralList(CUDDNode node, Event e)

@@ -38,7 +38,7 @@ namespace ObjectWorlds.Network
 
         #region Properties
 
-        public string Name { get; set; }
+        public string AgentId { get; set; }
 
         /// <summary>
         /// The host address of peer
@@ -72,9 +72,9 @@ namespace ObjectWorlds.Network
             _actionDict = problem.ActionDict;
         }
 
-        public Client(ServerProblem problem, string name)
+        public Client(ServerProblem problem, string agentId)
         {
-            Name = name;
+            AgentId = agentId;
             _actionDict = problem.ActionDict;
             IsConnected = false;
         }
@@ -86,12 +86,16 @@ namespace ObjectWorlds.Network
         public void Handshake()
         {
             byte[] contentBuffer = ReceiveBuffer();
-            Name = BytesToString(contentBuffer);
+            AgentId = BytesToString(contentBuffer);
         }
 
-        public void SendMessage()
+        public void SendMessage(string message)
         {
-
+            byte[] lengthBuffer = new byte[4];
+            byte[] contentBuffer = StringToBytes(message);
+            SetBytesLength(lengthBuffer, contentBuffer.Length);
+            _socket.Send(lengthBuffer);
+            _socket.Send(contentBuffer);
         }
 
         public Action GetAction()
@@ -110,16 +114,24 @@ namespace ObjectWorlds.Network
                 b => b == (byte)',' || b == (byte)')');
             while (parmToExclusive != -1)
             {
-                char[] parmChars = new char[parmToExclusive - parmFromInclusive];
-                Parallel.For(parmFromInclusive, parmToExclusive, i => parmChars[i - parmFromInclusive] = (char)contentBuffer[i]);
-                string parm = new string(parmChars);
-                constantList.Add(parm);
-                parmFromInclusive = parmToExclusive + 1;
-                parmToExclusive = Array.FindIndex(contentBuffer, parmFromInclusive,
-                    b => b == (byte)',' || b == (byte)')');
+                if (contentBuffer[parmToExclusive - 1] != (byte)'(')
+                {
+                    char[] parmChars = new char[parmToExclusive - parmFromInclusive];
+                    Parallel.For(parmFromInclusive, parmToExclusive,
+                        i => parmChars[i - parmFromInclusive] = (char) contentBuffer[i]);
+                    string parm = new string(parmChars);
+                    constantList.Add(parm);
+                    parmFromInclusive = parmToExclusive + 1;
+                    parmToExclusive = Array.FindIndex(contentBuffer, parmFromInclusive,
+                        b => b == (byte) ',' || b == (byte) ')');
+                    continue;
+                }
+                break;
             }
 
             string actionFullName = ConstContainer.GetFullName(actionName, constantList.ToArray());
+            Console.WriteLine(constantList.Count);
+            Console.WriteLine(actionFullName);
             return _actionDict[actionFullName];
         }
 
@@ -127,21 +139,33 @@ namespace ObjectWorlds.Network
         {
             byte[] lengthBuffer = new byte[LengthBufferSize];
             int offset = 0;
+            int remaining = LengthBufferSize;
             do
             {
-                int rcvCount = _socket.Receive(lengthBuffer, offset, LengthBufferSize, SocketFlags.None);
+                int rcvCount = _socket.Receive(lengthBuffer, offset, remaining, SocketFlags.None);
                 offset += rcvCount;
+                remaining -= rcvCount;
             } while (offset < 4);
 
             int contentBufferSize = GetLength(lengthBuffer);
             byte[] result = new byte[contentBufferSize];
             offset = 0;
+            remaining = contentBufferSize;
             do
             {
-                int rcvCount = _socket.Receive(result, offset, contentBufferSize, SocketFlags.None);
+                int rcvCount = _socket.Receive(result, offset, remaining, SocketFlags.None);
                 offset += rcvCount;
+                remaining -= rcvCount;
             } while (offset < contentBufferSize);
 
+            return result;
+        }
+
+        private byte[] StringToBytes(string message)
+        {
+            int length = message.Length;
+            byte[] result = new byte[length];
+            Parallel.For(0, length, i => result[i] = (byte)message[i]);
             return result;
         }
 

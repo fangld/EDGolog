@@ -61,7 +61,9 @@ namespace ObjectWorlds.Network
         public void Run()
         {
             _objectBase.ShowInfo();
+            Console.WriteLine("Wait for an agent");
             Listen();
+            Console.WriteLine("Connect 2 agents");
             ReceiveActions();
         }
 
@@ -77,8 +79,8 @@ namespace ObjectWorlds.Network
                 Socket newSocket = _socket.Accept();
                 Client client = new Client(newSocket, _problem);
                 client.Handshake();
-                _agentClientDict.Add(client.Name, client);
-                Console.WriteLine("Agent {0} connected!", client.Name);
+                _agentClientDict.Add(client.AgentId, client);
+                Console.WriteLine("Agent {0} connected!", client.AgentId);
 
                 i++;
             } while (i < _problem.AgentList.Count);
@@ -94,7 +96,8 @@ namespace ObjectWorlds.Network
                 {
                     Action action = _agentClientDict[agent].GetAction();
                     Console.WriteLine(action);
-                    _objectBase.Update(action);
+                    Response response = _objectBase.Update(action);
+                    _agentClientDict[agent].SendMessage(response.FullName);
                     _objectBase.ShowInfo();
                 }
             } while (true);

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Agents.Network;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
@@ -31,8 +32,9 @@ namespace Agents
                 domainFileName = "d1.pddl";
                 problemFileName = "a1.pddl";
             }
-            Test3(domainFileName, problemFileName);
-            Console.ReadLine();
+            Client client = new Client();
+            //Test3(domainFileName, problemFileName);
+            //Console.ReadLine();
         }
 
         static void Test3(string domainFileName, string problemFileName)
@@ -73,8 +75,8 @@ namespace Agents
             var problemContext = parser.clientProblem();// begin parsing at init rule
             tr.Close();
 
-            ClientProblem problem = ClientProblem.CreateInstance(domain, problemContext);
-            problem.ShowInfo();
+            //ClientProblem problem = ClientProblem.CreateInstance(domain, problemContext);
+            //problem.ShowInfo();
 
             //Server server = new Server(port, listenBacklog, problem);
             //server.Run();
