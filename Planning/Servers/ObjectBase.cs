@@ -78,6 +78,7 @@ namespace Planning.Servers
                 {
                     responseList.Add(pair.Value);
                 }
+                CUDD.Deref(impliesNode);
             }
 
             int selectiveRepsonseIndex = Globals.Random.Next(responseList.Count);
@@ -99,6 +100,7 @@ namespace Planning.Servers
                     }
                     break;
                 }
+                CUDD.Deref(impliesNode);
             }
             return result;
         }
@@ -115,6 +117,7 @@ namespace Planning.Servers
                 {
                     result.AddRange(cEffect.Item2);
                 }
+                CUDD.Deref(impliesNode);
             }
             return result;
         }
