@@ -19,8 +19,13 @@ namespace Planning
             return result;
         }
 
+        /// <summary>
+        /// [ REFS: 'result', DEREFS: none ]
+        /// </summary>
+        /// <returns></returns>
         public static CUDDNode GetPrecondition(this IReadOnlyList<EventCollection> eventCollectionList)
         {
+            //OK
             CUDDNode result = eventCollectionList[0].Precondition;
             CUDD.Ref(result);
 
@@ -28,7 +33,6 @@ namespace Planning
             {
                 CUDDNode eventCollection2Precondition = eventCollectionList[1].Precondition;
                 CUDD.Ref(eventCollection2Precondition);
-
                 result = CUDD.Function.And(result, eventCollection2Precondition);
             }
             return result;

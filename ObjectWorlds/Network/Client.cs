@@ -130,8 +130,8 @@ namespace ObjectWorlds.Network
             }
 
             string actionFullName = ConstContainer.GetFullName(actionName, constantList.ToArray());
-            Console.WriteLine(constantList.Count);
-            Console.WriteLine(actionFullName);
+            //Console.WriteLine(constantList.Count);
+            //Console.WriteLine(actionFullName);
             return _actionDict[actionFullName];
         }
 

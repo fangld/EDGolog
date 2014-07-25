@@ -13,17 +13,25 @@ namespace Planning.ContextExtensions
     {
         public static CUDDNode ToPrecondition(this PlanningParser.EmptyOrPreGDContext context, IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
         {
-            CUDDNode result = CUDD.ONE;
-            CUDD.Ref(result);
+            CUDDNode result;
 
             if (context != null)
             {
                 PlanningParser.GdContext gdContext = context.gd();
                 if (gdContext != null)
                 {
-                    CUDD.Deref(result);
                     result = gdContext.GetCuddNode(predicateDict, assignment);
                 }
+                else
+                {
+                    result = CUDD.ONE;
+                    CUDD.Ref(result);
+                }
+            }
+            else
+            {
+                result = CUDD.ONE;
+                CUDD.Ref(result);
             }
 
             return result;

@@ -15,10 +15,11 @@ namespace Planning.ContextExtensions
         {
             List<Event> eventList = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
-            CUDD.Ref(gdEventNode);
+
             foreach (var e in eventDict.Values)
             {
                 CUDDNode eventNode = CUDD.Var(e.CuddIndex);
+                CUDD.Ref(gdEventNode);
                 CUDDNode impliesNode = CUDD.Function.Implies(eventNode, gdEventNode);
                 if (impliesNode.Equals(CUDD.ONE))
                 {
@@ -26,6 +27,7 @@ namespace Planning.ContextExtensions
                 }
                 CUDD.Deref(impliesNode);
             }
+            CUDD.Deref(gdEventNode);
 
             EventCollection result = new EventCollection(eventList);
             return result;
@@ -69,7 +71,6 @@ namespace Planning.ContextExtensions
                     {
                         result = firstValue < secondValue ? CUDD.ONE : CUDD.ZERO;
                     }
-
                     else if (context.LEQ() != null)
                     {
                         result = firstValue <= secondValue ? CUDD.ONE : CUDD.ZERO;
@@ -111,6 +112,7 @@ namespace Planning.ContextExtensions
                         {
                             CUDD.Deref(result);
                             result = CUDD.ZERO;
+                            CUDD.Ref(result);
                             break;
                         }
                         result = CUDD.Function.And(result, gdNode);
@@ -130,7 +132,8 @@ namespace Planning.ContextExtensions
                         if (gdNode.Equals(CUDD.ONE))
                         {
                             CUDD.Deref(result);
-                            result = CUDD.ZERO;
+                            result = CUDD.ONE;
+                            CUDD.Ref(result);
                             break;
                         }
                         result = CUDD.Function.Or(result, gdNode);
@@ -194,6 +197,7 @@ namespace Planning.ContextExtensions
                     {
                         CUDD.Deref(result);
                         result = equalNode;
+                        CUDD.Ref(result);
                         break;
                     }
 

@@ -36,6 +36,7 @@ namespace Planning.ContextExtensions
                         {
                             CUDD.Deref(result);
                             result = CUDD.ZERO;
+                            CUDD.Ref(result);
                             break;
                         }
                         result = CUDD.Function.And(result, gdNode); 
@@ -55,7 +56,8 @@ namespace Planning.ContextExtensions
                         if (gdNode.Equals(CUDD.ONE))
                         {
                             CUDD.Deref(result);
-                            result = CUDD.ZERO;
+                            result = CUDD.ONE;
+                            CUDD.Ref(result);
                             break;
                         }
                         result = CUDD.Function.Or(result, gdNode);
@@ -93,7 +95,6 @@ namespace Planning.ContextExtensions
             if (context.predicate() != null)
             {
                 string predicateFullName = ConstContainer.GetFullName(context, assignment);
-                //Console.WriteLine(predicateFullName);
                 Predicate predicate = predicateDict[predicateFullName];
                 int cuddIndex = predicate.PreviousCuddIndex;
                 result = CUDD.Var(cuddIndex);
@@ -172,6 +173,7 @@ namespace Planning.ContextExtensions
                     {
                         CUDD.Deref(result);
                         result = equalNode;
+                        CUDD.Ref(result);
                         break;
                     }
 

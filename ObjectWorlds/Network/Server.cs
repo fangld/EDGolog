@@ -103,7 +103,7 @@ namespace ObjectWorlds.Network
             } while (true);
         }
 
-        private void ShowObjectBase(object sender, Tuple<Dictionary<string, bool>, Event> tuple)
+        private void ShowObjectBase(object sender, Tuple<IReadOnlyDictionary<string, bool>, Event> tuple)
         {
             Console.WriteLine("Object base:");
             foreach (var pair in tuple.Item1)

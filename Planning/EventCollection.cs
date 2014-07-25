@@ -20,9 +20,9 @@ namespace Planning
 
         #region Properties
 
-        public CUDDNode Precondition;
+        public CUDDNode Precondition { get; private set; }
 
-        public CUDDNode PartialSuccessorStateAxiom;
+        public CUDDNode PartialSuccessorStateAxiom { get; private set; }
 
         public IReadOnlyList<Event> EventList
         {
@@ -46,17 +46,15 @@ namespace Planning
 
         private void GeneratePrecondition()
         {
-            Precondition = CUDD.ZERO;
+            //OK
+            Precondition = _eventList[0].Precondition;
             CUDD.Ref(Precondition);
 
-            foreach (var e in _eventList)
+            for (int i = 1; i < _eventList.Count; i++)
             {
-                CUDDNode eventPreNode = e.Precondition;
+                CUDDNode eventPreNode = _eventList[i].Precondition;
                 CUDD.Ref(eventPreNode);
-                CUDDNode orNode = CUDD.Function.Or(Precondition, eventPreNode);
-                CUDD.Ref(orNode);
-                CUDD.Deref(Precondition);
-                Precondition = orNode;
+                Precondition = CUDD.Function.Or(Precondition, eventPreNode);
             }
         }
 

@@ -40,22 +40,17 @@ namespace Planning
 
         #region Constructors
 
-        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment, string[] constArray)
-            : base(constArray)
+        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict,
+            StringDictionary assignment, string[] constArray) : base(constArray)
         {
             Name = context.responseSymbol().GetText();
-            //Console.WriteLine(FullName);
             _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
             _eventList = _eventCollectionArray.GetEventList();
         }
 
-        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
-            : this(context, eventDict, assignment, Globals.EmptyConstArray)
+        public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict,
+            StringDictionary assignment) : this(context, eventDict, assignment, Globals.EmptyConstArray)
         {
-            //Name = context.responseSymbol().GetText();
-            ////Console.WriteLine(FullName);
-            //_eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
-
         }
 
         #endregion

@@ -41,8 +41,13 @@ namespace Planning.Servers
 
         #region Methods
 
+        /// <summary>
+        /// [ REFS: 'result', DEREFS: none ]
+        /// </summary>
+        /// <returns></returns>
         private CUDDNode GetKbNode()
         {
+            //OK
             List<CUDDNode> literalNodes = new List<CUDDNode>();
 
             foreach (var pair in _predBooleanMap)
@@ -63,17 +68,21 @@ namespace Planning.Servers
 
         public Response Update(Action action)
         {
+            //OK
             CUDDNode kbNode = GetKbNode();
 
             List<Response> responseList = new List<Response>();
 
             foreach (var pair in action.ResponseDict)
             {
+                //OK
                 CUDDNode responsePrecondition = pair.Value.EventCollectionList.GetPrecondition();
-                
-                CUDD.Ref(kbNode);
+                Console.WriteLine("Event collection name: {0}", pair.Value.FullName);
+                //CUDD.Print.PrintMinterm(responsePrecondition);
 
+                CUDD.Ref(kbNode);
                 CUDDNode impliesNode = CUDD.Function.Implies(kbNode, responsePrecondition);
+                Console.WriteLine("Implies : {0}", impliesNode.Equals(CUDD.ONE));
                 if (impliesNode.Equals(CUDD.ONE))
                 {
                     responseList.Add(pair.Value);
@@ -82,22 +91,28 @@ namespace Planning.Servers
             }
 
             int selectiveRepsonseIndex = Globals.Random.Next(responseList.Count);
+            Console.WriteLine("Count of response list: {0}", responseList.Count);
+
             Response result = responseList[selectiveRepsonseIndex];
             IReadOnlyList<Event> eventList = result.EventList;
 
             foreach (var e in eventList)
             {
+                CUDD.Ref(kbNode);
                 CUDD.Ref(e.Precondition);
                 CUDDNode impliesNode = CUDD.Function.Implies(kbNode, e.Precondition);
                 if (impliesNode.Equals(CUDD.ONE))
                 {
                     var literalList = GenerateLiteralList(kbNode, e);
                     UpdateByLiteralList(literalList);
+                    
                     if (ObjectBaseChanged != null)
                     {
                         var tuple = new Tuple<IReadOnlyDictionary<string, bool>, Event>(_predBooleanMap, e);
                         ObjectBaseChanged(this, tuple);
                     }
+                    CUDD.Deref(kbNode);
+                    CUDD.Deref(impliesNode);
                     break;
                 }
                 CUDD.Deref(impliesNode);
@@ -107,6 +122,7 @@ namespace Planning.Servers
 
         private List<Tuple<Predicate, bool>> GenerateLiteralList(CUDDNode node, Event e)
         {
+            //OK
             List<Tuple<Predicate, bool>> result = new List<Tuple<Predicate, bool>>();
             foreach (var cEffect in e.CondEffect)
             {

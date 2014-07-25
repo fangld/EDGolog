@@ -116,6 +116,11 @@ namespace Planning.Servers
                 Algorithms.IterativeScanMixedRadix(enumerator);
                 _currentCuddIndex = enumerator.CurrentCuddIndex;
             }
+
+            foreach (var predicate in _predicateDict.Values)
+            {
+                Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
+            }
         }
 
         private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
@@ -142,6 +147,34 @@ namespace Planning.Servers
                 ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, _eventDict, _actionDict);
                 Algorithms.IterativeScanMixedRadix(enumerator);
             }
+
+            foreach (var action in _actionDict.Values)
+            {
+                CUDDNode testNode = CUDD.Constant(0);
+
+                foreach (var response in action.ResponseDict.Values)
+                {
+                    CUDDNode responsePrecondition = response.EventCollectionList.GetPrecondition();
+                    testNode = CUDD.Function.Or(testNode, responsePrecondition);
+                }
+
+
+
+                Console.WriteLine("Disjunction of {0}'s every event's precondition is true node: {1}",
+                    action.FullName, testNode.Equals(CUDD.ONE));
+
+                if (!testNode.Equals(CUDD.ONE))
+                {
+                    CUDD.Print.PrintMinterm(testNode);
+                    Console.WriteLine("Not test node");
+                    CUDD.Print.PrintMinterm(CUDD.Function.Not(testNode));
+
+                    Console.ReadLine();
+
+                }
+            }
+
+            Console.ReadLine();
         }
 
         private void HandleObservationsDefine(IReadOnlyList<PlanningParser.ObservationDefineContext> contexts)
