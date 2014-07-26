@@ -33,7 +33,7 @@ namespace Planning
             {
                 CUDDNode eventCollection2Precondition = eventCollectionList[1].Precondition;
                 CUDD.Ref(eventCollection2Precondition);
-                result = CUDD.Function.And(result, eventCollection2Precondition);
+                result = CUDD.Function.Or(result, eventCollection2Precondition);
             }
             return result;
         }

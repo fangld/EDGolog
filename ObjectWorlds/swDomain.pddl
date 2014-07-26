@@ -77,7 +77,7 @@
 
 (:event dropSuc
 :parameters (?i - agent)
-:precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (not (hold ?i)) (< ?n maxAcorn)))
+:precondition (exists (?x - point  ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x)  (hold ?i) (< ?n maxAcorn)))
 :effect (forall (?x - point ?n - numOfAcorn)
                 (when (and (loc ?i ?x) (acorn ?x ?n) (!= ?n maxAcorn)) (and (acorn ?x (+ ?n 1)) (not (acorn ?x ?n)) (not (hold ?i)))))
 )

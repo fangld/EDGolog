@@ -72,6 +72,8 @@ namespace Planning.Servers
             CUDDNode kbNode = GetKbNode();
 
             List<Response> responseList = new List<Response>();
+            //Console.WriteLine("Kb:");
+            //CUDD.Print.PrintMinterm(kbNode);
 
             foreach (var pair in action.ResponseDict)
             {
@@ -83,6 +85,8 @@ namespace Planning.Servers
                 CUDD.Ref(kbNode);
                 CUDDNode impliesNode = CUDD.Function.Implies(kbNode, responsePrecondition);
                 Console.WriteLine("Implies : {0}", impliesNode.Equals(CUDD.ONE));
+                //Console.ReadLine();
+
                 if (impliesNode.Equals(CUDD.ONE))
                 {
                     responseList.Add(pair.Value);

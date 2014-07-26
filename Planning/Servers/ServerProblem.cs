@@ -121,6 +121,7 @@ namespace Planning.Servers
             {
                 Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
             }
+            //Console.ReadLine();
         }
 
         private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
@@ -148,33 +149,33 @@ namespace Planning.Servers
                 Algorithms.IterativeScanMixedRadix(enumerator);
             }
 
-            foreach (var action in _actionDict.Values)
-            {
-                CUDDNode testNode = CUDD.Constant(0);
+            //foreach (var action in _actionDict.Values)
+            //{
+            //    if (action.FullName == "smell(a1)")
+            //    {
+            //        CUDDNode testNode = CUDD.Constant(0);
 
-                foreach (var response in action.ResponseDict.Values)
-                {
-                    CUDDNode responsePrecondition = response.EventCollectionList.GetPrecondition();
-                    testNode = CUDD.Function.Or(testNode, responsePrecondition);
-                }
+            //        foreach (var response in action.ResponseDict.Values)
+            //        {
+            //            CUDDNode responsePrecondition = response.EventCollectionList.GetPrecondition();
+            //            testNode = CUDD.Function.Or(testNode, responsePrecondition);
+            //        }
 
+            //        Console.WriteLine("Disjunction of {0}'s every event's precondition is true node: {1}",
+            //            action.FullName, testNode.Equals(CUDD.ONE));
 
+            //        if (!testNode.Equals(CUDD.ONE))
+            //        {
+            //            //CUDD.Print.PrintMinterm(testNode);
+            //            Console.WriteLine("Not test node");
+            //            CUDD.Print.PrintMinterm(CUDD.Function.Not(testNode));
 
-                Console.WriteLine("Disjunction of {0}'s every event's precondition is true node: {1}",
-                    action.FullName, testNode.Equals(CUDD.ONE));
+            //            Console.ReadLine();
+            //        }
+            //    }
+            //}
 
-                if (!testNode.Equals(CUDD.ONE))
-                {
-                    CUDD.Print.PrintMinterm(testNode);
-                    Console.WriteLine("Not test node");
-                    CUDD.Print.PrintMinterm(CUDD.Function.Not(testNode));
-
-                    Console.ReadLine();
-
-                }
-            }
-
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         private void HandleObservationsDefine(IReadOnlyList<PlanningParser.ObservationDefineContext> contexts)
