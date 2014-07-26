@@ -64,6 +64,8 @@
     <Antlr4 Include="HighLevelProgram.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
+      <Listener>False</Listener>
+      <Visitor>False</Visitor>
     </Antlr4>
     <Antlr4 Include="Planning.g4">
       <Generator>MSBuild:Compile</Generator>

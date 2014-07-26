@@ -29,6 +29,11 @@ namespace Planning
             get { return _eventList; }
         }
 
+        public HashSet<Predicate> AffectedPredicateSet
+        {
+            get { return _affectedPredicateSet; }
+        }
+
         #endregion
 
         #region Constructors
@@ -61,7 +66,7 @@ namespace Planning
         private void GeneratePartialSuccessorStateAxiom()
         {
             _affectedPredicateSet = new HashSet<Predicate>();
-            PartialSuccessorStateAxiom = CUDD.ONE;
+            PartialSuccessorStateAxiom = CUDD.ZERO;
             CUDD.Ref(PartialSuccessorStateAxiom);
 
             foreach (var e in _eventList)
@@ -91,10 +96,11 @@ namespace Planning
                     }
                 }
 
-                CUDDNode andNode = CUDD.Function.And(PartialSuccessorStateAxiom, eventPssa);
-                CUDD.Ref(andNode);
-                CUDD.Deref(PartialSuccessorStateAxiom);
-                PartialSuccessorStateAxiom = andNode;
+                PartialSuccessorStateAxiom = CUDD.Function.Or(PartialSuccessorStateAxiom, eventPssa);
+                //CUDDNode andNode = CUDD.Function.And(PartialSuccessorStateAxiom, eventPssa);
+                //CUDD.Ref(andNode);
+                //CUDD.Deref(PartialSuccessorStateAxiom);
+                //PartialSuccessorStateAxiom = andNode;
             }
         }
 

@@ -42,16 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractPredicate.cs" />
     <Compile Include="Action.cs" />
     <Compile Include="Collections\ActionEnumerator.cs" />
     <Compile Include="Collections\Algorithms.cs" />
     <Compile Include="Clients\ClientAction.cs" />
-    <Compile Include="Clients\ClientGroundAction.cs" />
     <Compile Include="Clients\ClientProblem.cs" />
     <Compile Include="Clients\MentalAttitude.cs" />
-    <Compile Include="Collections\MixedRadixToDictionaryWithAssignment.cs" />
-    <Compile Include="Collections\MixedRadixToListWithAssignment.cs" />
     <Compile Include="ConstContainer.cs" />
     <Compile Include="ContextExtensions\EmptyOrPreGDContextExtension.cs" />
     <Compile Include="ContextExtensions\EventModelContextExtension.cs" />
@@ -64,8 +60,6 @@
     <Compile Include="ContextExtensions\ListVariableContextExtension.cs" />
     <Compile Include="Collections\EventEnumerator.cs" />
     <Compile Include="Collections\MixedRadixEnumeratorWithAssignment.cs" />
-    <Compile Include="Collections\MixedRadixToDictionary.cs" />
-    <Compile Include="Collections\MixedRadixToList.cs" />
     <Compile Include="Collections\ObservationEnumerator.cs" />
     <Compile Include="Collections\PredicateEnumerator.cs" />
     <Compile Include="Collections\IMixedRadixEnumerator.cs" />
@@ -79,9 +73,6 @@
     <Compile Include="Formulas\MultiFormula.cs" />
     <Compile Include="Formulas\UnaryFormula.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="Ground.cs" />
-    <Compile Include="GroundAction.cs" />
-    <Compile Include="GroundPredicate.cs" />
     <Compile Include="PlanningLexer.cs" />
     <Compile Include="PlanningNumericType.cs" />
     <Compile Include="PlanningParser.cs" />
@@ -91,7 +82,6 @@
     <Compile Include="Collections\ResponseEnumerator.cs" />
     <Compile Include="Servers\ObjectBase.cs" />
     <Compile Include="Servers\ServerAction.cs" />
-    <Compile Include="Servers\ServerGroundAction.cs" />
     <Compile Include="Servers\ServerProblem.cs" />
     <Compile Include="PlanningType.cs" />
     <Compile Include="TermInterpreter.cs" />

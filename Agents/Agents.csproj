@@ -46,12 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HighLevelPrograms\HighLevelProgramBaseListener.cs" />
-    <Compile Include="HighLevelPrograms\HighLevelProgramBaseVisitor.cs" />
     <Compile Include="HighLevelPrograms\HighLevelProgramLexer.cs" />
-    <Compile Include="HighLevelPrograms\HighLevelProgramListener.cs" />
     <Compile Include="HighLevelPrograms\HighLevelProgramParser.cs" />
-    <Compile Include="HighLevelPrograms\HighLevelProgramVisitor.cs" />
     <Compile Include="HighLevelPrograms\MentalAttitude.cs" />
     <Compile Include="HighLevelPrograms\ProgramInterpretor.cs" />
     <Compile Include="Network\Client.cs" />
