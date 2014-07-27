@@ -50,7 +50,7 @@ namespace Planning.Collections
 
         public override void Execute()
         {
-            var condEffectList = Event.GetCondEffectList(_context.effect(), _conditionNode, _predicateDict, _assignment);
+            var condEffectList = _context.effect().GetCondEffectList(_conditionNode, _predicateDict, _assignment);
             _condEffectList.AddRange(condEffectList);
         }
 

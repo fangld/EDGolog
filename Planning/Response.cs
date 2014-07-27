@@ -12,29 +12,10 @@ namespace Planning
 {
     public class Response : ConstContainer
     {
-        #region Fields
-
-        private EventCollection[] _eventCollectionArray;
-
-        private List<Event> _eventList;
-
-        #endregion
 
         #region Properties
 
-        public int MaxPlausibilityDegree
-        {
-            get { return _eventCollectionArray.Length; }
-        }
-
-        public IReadOnlyList<EventCollection> EventCollectionList
-        {
-            get { return _eventCollectionArray; }
-        }
-
-        public IReadOnlyList<Event> EventList { get { return _eventList; } }
-
-        public CUDDNode EventPrecondition { get; private set; }
+        public EventModel EventModel { get; private set; }
 
         #endregion
 
@@ -44,8 +25,7 @@ namespace Planning
             StringDictionary assignment, string[] constArray) : base(constArray)
         {
             Name = context.responseSymbol().GetText();
-            _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
-            _eventList = _eventCollectionArray.GetEventList();
+            EventModel = context.eventModel().GetEventModel(eventDict, assignment);
         }
 
         public Response(PlanningParser.ResponseDefineContext context, IReadOnlyDictionary<string, Event> eventDict,

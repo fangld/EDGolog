@@ -22,6 +22,8 @@ namespace Planning
 
         private HashSet<Predicate> _affectedPredicateSet;
 
+        private List<Observation> _observationList;
+
         #endregion
 
         #region Properties
@@ -40,7 +42,12 @@ namespace Planning
             get { return _affectedPredicateSet; }
         }
 
-        public CUDDNode ParitalSuccessorStateAxiom { get; set; }
+        public CUDDNode PartialSsa { get; set; }
+
+        public IReadOnlyList<Observation> ObservationList
+        {
+            get { return _observationList; }
+        }
 
         #endregion
 
@@ -53,115 +60,118 @@ namespace Planning
             CuddIndex = initialCuddInex;
             Name = context.eventSymbol().GetText();
             Precondition = precondition;
-            GenerateEffect(context.emptyOrEffect(), predicateDict, assignment);
+            _condEffect = context.emptyOrEffect().GetEffect(predicateDict, assignment);
             GeneratePartialSuccessorStateAxiom();
+            _observationList = new List<Observation>();
         }
 
         #endregion
 
         #region Methods
 
-        private void GenerateEffect(PlanningParser.EmptyOrEffectContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
+        public void AddObservation(Observation observation)
         {
-            _condEffect = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
-            if (context != null)
-            {
-                PlanningParser.EffectContext effectContext = context.effect();
-                if (effectContext != null)
-                {
-                    foreach (var cEffectContext in effectContext.cEffect())
-                    {
-                        CUDDNode initialCuddNode = CUDD.ONE;
-                        CUDD.Ref(initialCuddNode);
-                        var condEffect = GetCondEffectList(cEffectContext, initialCuddNode, predicateDict, assignment);
-                        _condEffect.AddRange(condEffect);
-                    }
-                }
-            }
+            _observationList.Add(observation);
         }
 
-        public static List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(PlanningParser.EffectContext context,
-            CUDDNode currentConditionNode, IReadOnlyDictionary<string, Predicate> predicateDict,
-            StringDictionary assignment)
-        {
-            var result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
+        //private void GenerateEffect(PlanningParser.EmptyOrEffectContext context,
+        //    IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
+        //{
+        //    _condEffect = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
+        //    if (context != null)
+        //    {
+        //        PlanningParser.EffectContext effectContext = context.effect();
+        //        if (effectContext != null)
+        //        {
+        //            foreach (var cEffectContext in effectContext.cEffect())
+        //            {
+        //                CUDDNode initialCuddNode = CUDD.ONE;
+        //                CUDD.Ref(initialCuddNode);
+        //                var condEffect = GetCondEffectList(cEffectContext, initialCuddNode, predicateDict, assignment);
+        //                _condEffect.AddRange(condEffect);
+        //            }
+        //        }
+        //    }
+        //}
 
-            foreach (var cEffectContext in context.cEffect())
-            {
-                var condEffect = GetCondEffectList(cEffectContext, currentConditionNode, predicateDict, assignment);
-                result.AddRange(condEffect);
-            }
+        //public static List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(PlanningParser.EffectContext context,
+        //    CUDDNode currentConditionNode, IReadOnlyDictionary<string, Predicate> predicateDict,
+        //    StringDictionary assignment)
+        //{
+        //    var result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
 
-            return result;
-        }
+        //    foreach (var cEffectContext in context.cEffect())
+        //    {
+        //        var condEffect = GetCondEffectList(cEffectContext, currentConditionNode, predicateDict, assignment);
+        //        result.AddRange(condEffect);
+        //    }
 
-        private static List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(
-            PlanningParser.CEffectContext context, CUDDNode currentConditionNode,
-            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
-        {
-            List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> result;
-            if (context.FORALL() != null)
-            {
-                CEffectEnumerator enumerator = new CEffectEnumerator(context, currentConditionNode, predicateDict,
-                    assignment);
-                Algorithms.IterativeScanMixedRadix(enumerator);
-                result = enumerator.CondEffectList;
-            }
-            else if (context.WHEN() != null)
-            {
-                result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
-                CUDD.Ref(currentConditionNode);
-                CUDDNode gdNode = context.gd().GetCuddNode(predicateDict, assignment);
-                CUDDNode conditionNode = CUDD.Function.And(currentConditionNode, gdNode);
-                if (!conditionNode.Equals(CUDD.ZERO))
-                {
-                    var literaCollection = GetLiteralArray(context.condEffect(), predicateDict, assignment);
-                    var condEffect = new Tuple<CUDDNode, Tuple<Predicate, bool>[]>(conditionNode, literaCollection);
-                    result.Add(condEffect);
-                }
-                else
-                {
-                    CUDD.Deref(conditionNode);
-                }
-            }
-            else
-            {
-                result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
-                var literals = GetLiteralArray(context.condEffect(), predicateDict, assignment);
-                var condEffect = new Tuple<CUDDNode, Tuple<Predicate, bool>[]>(currentConditionNode, literals);
-                result.Add(condEffect);
-            }
-            return result;
-        }
+        //    return result;
+        //}
 
-        private static Tuple<Predicate, bool>[] GetLiteralArray(PlanningParser.CondEffectContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
-        {
-            int count = context.termLiteral().Count;
-            Tuple<Predicate, bool>[] result = new Tuple<Predicate, bool>[count];
-            Parallel.For(0, count, i => result[i] = GetLiteral(context.termLiteral()[i], predicateDict, assignment));
-            return result;
-        }
+        //private static List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> GetCondEffectList(
+        //    PlanningParser.CEffectContext context, CUDDNode currentConditionNode,
+        //    IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
+        //{
+        //    List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>> result;
+        //    if (context.FORALL() != null)
+        //    {
+        //        CEffectEnumerator enumerator = new CEffectEnumerator(context, currentConditionNode, predicateDict,
+        //            assignment);
+        //        Algorithms.IterativeScanMixedRadix(enumerator);
+        //        result = enumerator.CondEffectList;
+        //    }
+        //    else if (context.WHEN() != null)
+        //    {
+        //        result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
+        //        CUDD.Ref(currentConditionNode);
+        //        CUDDNode gdNode = context.gd().GetCuddNode(predicateDict, assignment);
+        //        CUDDNode conditionNode = CUDD.Function.And(currentConditionNode, gdNode);
+        //        if (!conditionNode.Equals(CUDD.ZERO))
+        //        {
+        //            var literaCollection = GetLiteralArray(context.condEffect(), predicateDict, assignment);
+        //            var condEffect = new Tuple<CUDDNode, Tuple<Predicate, bool>[]>(conditionNode, literaCollection);
+        //            result.Add(condEffect);
+        //        }
+        //        else
+        //        {
+        //            CUDD.Deref(conditionNode);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        result = new List<Tuple<CUDDNode, Tuple<Predicate, bool>[]>>();
+        //        var literals = GetLiteralArray(context.condEffect(), predicateDict, assignment);
+        //        var condEffect = new Tuple<CUDDNode, Tuple<Predicate, bool>[]>(currentConditionNode, literals);
+        //        result.Add(condEffect);
+        //    }
+        //    return result;
+        //}
 
-        private static Tuple<Predicate, bool> GetLiteral(PlanningParser.TermLiteralContext context,
-            IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
-        {
-            string fullName = GetFullName(context.termAtomForm(), assignment);
-            Predicate predicate = predicateDict[fullName];
-            bool isPositive = context.NOT() == null;
-            return new Tuple<Predicate, bool>(predicate, isPositive);
-        }
+        //private static Tuple<Predicate, bool>[] GetLiteralArray(PlanningParser.CondEffectContext context,
+        //    IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
+        //{
+        //    int count = context.termLiteral().Count;
+        //    Tuple<Predicate, bool>[] result = new Tuple<Predicate, bool>[count];
+        //    Parallel.For(0, count, i => result[i] = GetLiteral(context.termLiteral()[i], predicateDict, assignment));
+        //    return result;
+        //}
 
-        #endregion
+        //private static Tuple<Predicate, bool> GetLiteral(PlanningParser.TermLiteralContext context,
+        //    IReadOnlyDictionary<string, Predicate> predicateDict, StringDictionary assignment)
+        //{
+        //    string fullName = GetFullName(context.termAtomForm(), assignment);
+        //    Predicate predicate = predicateDict[fullName];
+        //    bool isPositive = context.NOT() == null;
+        //    return new Tuple<Predicate, bool>(predicate, isPositive);
+        //}
 
-        #region Methods for generating partial successor state axiom
 
         private void GeneratePartialSuccessorStateAxiom()
         {
             CUDDNode effectNode = GetEffectNode();
             CUDDNode partialFrameNode = GetPartialFrameNode();
-            ParitalSuccessorStateAxiom = CUDD.Function.And(effectNode, partialFrameNode);
+            PartialSsa = CUDD.Function.And(effectNode, partialFrameNode);
         }
 
         private CUDDNode GetEffectNode()

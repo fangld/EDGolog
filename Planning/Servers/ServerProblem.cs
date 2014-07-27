@@ -25,6 +25,8 @@ namespace Planning.Servers
 
         private Dictionary<string, Observation> _obervationDict;
 
+        private Dictionary<string, Agent> _agentDict;
+
         private List<string> _agentList;
         
         private int _currentCuddIndex;
@@ -51,6 +53,11 @@ namespace Planning.Servers
             get { return _actionDict; }
         }
 
+        public IReadOnlyDictionary<string, Agent> AgentDict
+        {
+            get { return _agentDict; }
+        }
+
         public IReadOnlyList<string> AgentList
         {
             get { return _agentList; }
@@ -72,6 +79,9 @@ namespace Planning.Servers
             Globals.TermInterpreter = new TermInterpreter(serverProblemContext.numericSetting(), domainContext.typeDefine(),
                 serverProblemContext.objectDeclaration());
             Console.WriteLine("Finishing genertating term interpreter!");
+
+            GenerateAgentDict();
+            Console.WriteLine("Finishing genertating agent!");
 
             HandlePredicateDefine(domainContext.predicateDefine());
             Console.WriteLine("Finishing handling predicate!");
@@ -105,13 +115,21 @@ namespace Planning.Servers
             ServerProblem result = new ServerProblem(domainContext, context);
             return result;
         }
+        
+        private void GenerateAgentDict()
+        {
+            _agentDict = new Dictionary<string, Agent>();
+            Agent a1 = new Agent("a1");
+            Agent a2 = new Agent("a2");
+            _agentDict.Add(a1.Name, a1);
+            _agentDict.Add(a2.Name, a2);
+        }
 
         private void HandlePredicateDefine(PlanningParser.PredicateDefineContext context)
         {
             _predicateDict = new Dictionary<string, Predicate>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
             {
-                //IReadOnlyList<IList<string>> collection = atomFormSkeleton.listVariable().GetCollection();
                 PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, _predicateDict, _currentCuddIndex);
                 Algorithms.IterativeScanMixedRadix(enumerator);
                 _currentCuddIndex = enumerator.CurrentCuddIndex;
@@ -143,9 +161,7 @@ namespace Planning.Servers
             _actionDict = new Dictionary<string, Action>();
             foreach (var actionDefineContext in contexts)
             {
-                //IReadOnlyList<IList<string>> collection = actionDefineContext.listVariable().GetCollection();
-                //IReadOnlyList<string> variableNameList = actionDefineContext.listVariable().GetVariableNameList();
-                ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, _eventDict, _actionDict);
+                ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, _eventDict, _agentDict, _actionDict);
                 Algorithms.IterativeScanMixedRadix(enumerator);
             }
 
@@ -186,7 +202,7 @@ namespace Planning.Servers
                 IReadOnlyList<IList<string>> collection = obsDefineContext.listVariable().GetCollection();
                 IReadOnlyList<string> variableNameList = obsDefineContext.listVariable().GetVariableNameList();
                 ObservationEnumerator enumerator = new ObservationEnumerator(obsDefineContext, collection,
-                    variableNameList, _predicateDict, _eventDict, _obervationDict);
+                    variableNameList, _predicateDict, _eventDict,  _agentDict, _obervationDict);
                 Algorithms.IterativeScanMixedRadix(enumerator);
             }
         }
@@ -283,7 +299,7 @@ namespace Planning.Servers
                 //}
 
                 Console.WriteLine("  Partial successor state axiom:");
-                Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.ParitalSuccessorStateAxiom));
+                Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.PartialSsa));
                 Console.WriteLine();
             }
             Console.WriteLine(Domain.BarLine);
@@ -297,15 +313,16 @@ namespace Planning.Servers
                 foreach (var response in action.ResponseDict.Values)
                 {
                     Console.WriteLine("    Name: {0}", response.FullName);
-                    for (int i = 0; i < response.EventCollectionList.Count; i++)
+                    Console.Write("      Believe Event list: ");
+                    foreach (var e in response.EventModel.BelieveEventList)
                     {
-                        Console.WriteLine("      Plausibility degree: {0}", i);
-                        Console.Write("      Event list: ");
-                        foreach (var e in response.EventCollectionList[i])
-                        {
-                            Console.Write("{0}  ", e.FullName);
-                        }
-                        Console.WriteLine();
+                        Console.Write("{0}  ", e.FullName);
+                    }
+                    Console.WriteLine();
+                    Console.Write("      Know Event list: ");
+                    foreach (var e in response.EventModel.KnowEventList)
+                    {
+                        Console.Write("{0}  ", e.FullName);
                     }
                     Console.WriteLine();
                 }
@@ -318,17 +335,16 @@ namespace Planning.Servers
             foreach (var observation in _obervationDict.Values)
             {
                 Console.WriteLine("  Name: {0}", observation.FullName);
-                //Console.WriteLine("  Response:");
-                //Console.WriteLine("    Name: {0}", response.FullName);
-                for (int i = 0; i < observation.EventCollectionList.Count; i++)
+                Console.Write("      Believe Event list: ");
+                foreach (var e in observation.EventModel.BelieveEventList)
                 {
-                    Console.WriteLine("      Plausibility degree: {0}", i);
-                    Console.Write("      Event list: ");
-                    foreach (var e in observation.EventCollectionList[i])
-                    {
-                        Console.Write("{0}  ", e.FullName);
-                    }
-                    Console.WriteLine();
+                    Console.Write("{0}  ", e.FullName);
+                }
+                Console.WriteLine();
+                Console.Write("      Know Event list: ");
+                foreach (var e in observation.EventModel.KnowEventList)
+                {
+                    Console.Write("{0}  ", e.FullName);
                 }
                 Console.WriteLine();
             }

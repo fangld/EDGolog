@@ -92,13 +92,45 @@ namespace ObjectWorlds.Network
         {
             do
             {
-                foreach (var agent in _problem.AgentList)
+                foreach (var agentName in _problem.AgentList)
                 {
-                    Action action = _agentClientDict[agent].GetAction();
+                    Action action = _agentClientDict[agentName].GetAction();
                     Console.WriteLine(action);
-                    Response response = _objectBase.Update(action);
-                    _agentClientDict[agent].SendMessage(response.FullName);
+                    var tuple = _objectBase.Update(action);
+                    _agentClientDict[agentName].SendMessage(tuple.Item1.FullName);
                     _objectBase.ShowInfo();
+
+                    foreach (var otherAgentName in _problem.AgentList)
+                    {
+                        if (otherAgentName != agentName)
+                        {
+                            Agent otherAgent = _problem.AgentDict[otherAgentName];
+                            Console.WriteLine("agent name: {0}, observation list count: {1}", otherAgentName, otherAgent.ObservationList.Count);
+                            foreach (var observation in tuple.Item2.ObservationList)
+                            {
+                                Console.WriteLine("Event's observation: {0}", observation.FullName);
+                            }
+
+                            foreach (var observation in otherAgent.ObservationList)
+                            {
+                                Console.WriteLine("Other agent observation: {0}", observation.FullName);
+                                if (tuple.Item2.ObservationList.Any(obs => obs == observation))
+                                {
+                                    CUDDNode obsPreNode = observation.Precondition;
+                                    CUDDNode objectBaseNode = _objectBase.CurrentCuddNode;
+                                    CUDD.Ref(obsPreNode);
+                                    CUDD.Ref(objectBaseNode);
+                                    CUDDNode impliesNode = CUDD.Function.Implies(objectBaseNode, obsPreNode);
+                                    if (impliesNode.Equals(CUDD.ONE))
+                                    {
+                                        _agentClientDict[otherAgentName].SendMessage(observation.FullName);
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
                 }
             } while (true);
         }

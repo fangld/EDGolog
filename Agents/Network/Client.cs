@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Agents.HighLevelPrograms;
+//using Agents.HighLevelPrograms;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
@@ -36,7 +36,7 @@ namespace Agents.Network
 
         private HighLevelProgramParser.ProgramContext _programContext;
 
-        private ProgramInterpretor _interpretor;
+        //private ProgramInterpretor _interpretor;
 
         //private MentalAttitude _mentalAttitude;
 
@@ -53,22 +53,48 @@ namespace Agents.Network
             Console.WriteLine("Please enter the agent id");
             _agentId = Console.ReadLine();
             SendMessage(_agentId);
-
             string action;
-            do
+            string rcvMsg;
+
+            if (_agentId == "a1")
             {
-                action = Console.ReadLine();
-                if (action != "quit")
+                do
                 {
-                    SendMessage(action);
-                    string rcvMsg = ReceiveMessage();
-                    Console.WriteLine("Receive: {0}", rcvMsg);
-                }
-                else
+                    action = Console.ReadLine();
+                    if (action != "quit")
+                    {
+                        SendMessage(action);
+                        rcvMsg = ReceiveMessage();
+                        Console.WriteLine("Receive response: {0}", rcvMsg);
+                        rcvMsg = ReceiveMessage();
+                        Console.WriteLine("Receive observation: {0}", rcvMsg);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (true);
+            }
+            else
+            {
+                do
                 {
-                    break;
-                }
-            } while (true);
+                    rcvMsg = ReceiveMessage();
+                    Console.WriteLine("Receive observation: {0}", rcvMsg);
+
+                    action = Console.ReadLine();
+                    if (action != "quit")
+                    {
+                        SendMessage(action);
+                        rcvMsg = ReceiveMessage();
+                        Console.WriteLine("Receive response: {0}", rcvMsg);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (true);
+            }
         }
 
         public Client(string domainFileName, string problemFileName, string programFileName)

@@ -11,7 +11,7 @@ namespace Planning.ContextExtensions
 {
     public static class GdEventContextExtension
     {
-        public static EventCollection ToEventCollection(this PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
+        public static Event[] ToEventCollection(this PlanningParser.GdEventContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)
         {
             List<Event> eventList = new List<Event>();
             CUDDNode gdEventNode = GetCuddNode(context, eventDict, assignment);
@@ -29,8 +29,8 @@ namespace Planning.ContextExtensions
             }
             CUDD.Deref(gdEventNode);
 
-            EventCollection result = new EventCollection(eventList);
-            return result;
+            //EventCollection result = new EventCollection(eventList);
+            return eventList.ToArray();
         }
 
         private static CUDDNode GetCuddNode(PlanningParser.TermEventFormContext context, IReadOnlyDictionary<string, Event> eventDict, StringDictionary assignment)

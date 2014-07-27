@@ -13,25 +13,11 @@ namespace Planning
 {
     public class Observation : ConstContainer
     {
-        #region Fields
-
-        private EventCollection[] _eventCollectionArray;
-
-        #endregion
-
         #region Properties
 
         public CUDDNode Precondition { get; private set; }
 
-        public int MaxPlausibilityDegree
-        {
-            get { return _eventCollectionArray.Length; }
-        }
-
-        public IReadOnlyList<EventCollection> EventCollectionList
-        {
-            get { return _eventCollectionArray; }
-        }
+        public EventModel EventModel { get; private set; }
 
         #endregion
 
@@ -43,7 +29,12 @@ namespace Planning
         {
             Name = context.observationSymbol().GetText();
             Precondition = precondition;
-            _eventCollectionArray = context.eventModel().ToEventCollectionArray(eventDict, assignment);
+            EventModel = context.eventModel().GetEventModel(eventDict, assignment);
+
+            foreach (var e in EventModel.KnowEventList)
+            {
+                e.AddObservation(this);
+            }
         }
 
         #endregion

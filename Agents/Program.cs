@@ -8,7 +8,7 @@ using Agents.Network;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
-using Agents.HighLevelPrograms;
+//using Agents.HighLevelPrograms;
 using PAT.Common.Classes.CUDDLib;
 using Planning;
 
@@ -197,8 +197,8 @@ namespace Agents
             HighLevelProgramParser parser = new HighLevelProgramParser(tokens);
 
             HighLevelProgramParser.ProgramContext programContext = parser.program();// begin parsing at init rule
-            ProgramInterpretor interpretor = new ProgramInterpretor();
-            interpretor.EnterProgram(programContext);
+            //ProgramInterpretor interpretor = new ProgramInterpretor();
+            //interpretor.EnterProgram(programContext);
             //Console.WriteLine(programContext.GetText());
 
             tr.Close();
