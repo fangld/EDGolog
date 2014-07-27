@@ -87,19 +87,6 @@ public partial class HighLevelProgramParser : Parser {
 		{
 		}
 		public override int GetRuleIndex() { return RULE_program; }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.EnterProgram(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.ExitProgram(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHighLevelProgramVisitor<TResult> typedVisitor = visitor as IHighLevelProgramVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitProgram(this);
-			else return visitor.VisitChildren(this);
-		}
 	}
 
 	[RuleVersion(0)]
@@ -216,19 +203,6 @@ public partial class HighLevelProgramParser : Parser {
 		{
 		}
 		public override int GetRuleIndex() { return RULE_subjectFormula; }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.EnterSubjectFormula(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.ExitSubjectFormula(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHighLevelProgramVisitor<TResult> typedVisitor = visitor as IHighLevelProgramVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitSubjectFormula(this);
-			else return visitor.VisitChildren(this);
-		}
 	}
 
 	[RuleVersion(0)]
@@ -346,19 +320,6 @@ public partial class HighLevelProgramParser : Parser {
 		{
 		}
 		public override int GetRuleIndex() { return RULE_objectFormula; }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.EnterObjectFormula(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.ExitObjectFormula(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHighLevelProgramVisitor<TResult> typedVisitor = visitor as IHighLevelProgramVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitObjectFormula(this);
-			else return visitor.VisitChildren(this);
-		}
 	}
 
 	[RuleVersion(0)]
@@ -464,19 +425,6 @@ public partial class HighLevelProgramParser : Parser {
 		{
 		}
 		public override int GetRuleIndex() { return RULE_predicate; }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.EnterPredicate(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.ExitPredicate(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHighLevelProgramVisitor<TResult> typedVisitor = visitor as IHighLevelProgramVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitPredicate(this);
-			else return visitor.VisitChildren(this);
-		}
 	}
 
 	[RuleVersion(0)]
@@ -515,19 +463,6 @@ public partial class HighLevelProgramParser : Parser {
 		{
 		}
 		public override int GetRuleIndex() { return RULE_action; }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.EnterAction(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.ExitAction(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHighLevelProgramVisitor<TResult> typedVisitor = visitor as IHighLevelProgramVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitAction(this);
-			else return visitor.VisitChildren(this);
-		}
 	}
 
 	[RuleVersion(0)]
@@ -573,19 +508,6 @@ public partial class HighLevelProgramParser : Parser {
 		{
 		}
 		public override int GetRuleIndex() { return RULE_listName; }
-		public override void EnterRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.EnterListName(this);
-		}
-		public override void ExitRule(IParseTreeListener listener) {
-			IHighLevelProgramListener typedListener = listener as IHighLevelProgramListener;
-			if (typedListener != null) typedListener.ExitListName(this);
-		}
-		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
-			IHighLevelProgramVisitor<TResult> typedVisitor = visitor as IHighLevelProgramVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitListName(this);
-			else return visitor.VisitChildren(this);
-		}
 	}
 
 	[RuleVersion(0)]
