@@ -96,9 +96,9 @@ namespace ObjectWorlds.Network
                 {
                     Action action = _agentClientDict[agentName].GetAction();
                     Console.WriteLine(action);
-                    var tuple = _objectBase.Update(action);
-                    _agentClientDict[agentName].SendMessage(tuple.Item1.FullName);
-                    _objectBase.ShowInfo();
+                    Response response = _objectBase.GetActualResponse(action);
+                    _agentClientDict[agentName].SendMessage(response.FullName);
+                    Event e = _objectBase.GetActualEvent(response);
 
                     foreach (var otherAgentName in _problem.AgentList)
                     {
@@ -106,7 +106,7 @@ namespace ObjectWorlds.Network
                         {
                             Agent otherAgent = _problem.AgentDict[otherAgentName];
                             Console.WriteLine("agent name: {0}, observation list count: {1}", otherAgentName, otherAgent.ObservationList.Count);
-                            foreach (var observation in tuple.Item2.ObservationList)
+                            foreach (var observation in e.ObservationList)
                             {
                                 Console.WriteLine("Event's observation: {0}", observation.FullName);
                             }
@@ -114,7 +114,7 @@ namespace ObjectWorlds.Network
                             foreach (var observation in otherAgent.ObservationList)
                             {
                                 Console.WriteLine("Other agent observation: {0}", observation.FullName);
-                                if (tuple.Item2.ObservationList.Any(obs => obs == observation))
+                                if (e.ObservationList.Any(obs => obs == observation))
                                 {
                                     CUDDNode obsPreNode = observation.Precondition;
                                     CUDDNode objectBaseNode = _objectBase.CurrentCuddNode;
@@ -131,6 +131,9 @@ namespace ObjectWorlds.Network
                             
                         }
                     }
+
+                    _objectBase.Update(e);
+                    //_objectBase.ShowInfo();
                 }
             } while (true);
         }

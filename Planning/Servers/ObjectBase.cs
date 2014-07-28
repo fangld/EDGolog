@@ -35,10 +35,7 @@ namespace Planning.Servers
                 bool value = problem.TruePredSet.Contains(predicateFullName);
                 _predBooleanMap.Add(predicateFullName, value);
             }
-            CurrentCuddNode = CUDD.ONE;
-            CUDD.Ref(CurrentCuddNode);
-
-            GetKbNode();
+            CurrentCuddNode = GetKbNode();
         }
 
         #endregion
@@ -55,32 +52,24 @@ namespace Planning.Servers
         /// [ REFS: 'result', DEREFS: none ]
         /// </summary>
         /// <returns></returns>
-        private void GetKbNode()
+        private CUDDNode GetKbNode()
         {
-            CUDD.Deref(CurrentCuddNode);
             //OK
-            List<CUDDNode> literalNodes = new List<CUDDNode>();
+            CUDDNode result = CUDD.Constant(1);
 
             foreach (var pair in _predBooleanMap)
             {
                 string name = pair.Key;
                 int index = _predicateDict[name].PreviousCuddIndex;
-                CUDDNode node = pair.Value ? CUDD.Var(index) : CUDD.Function.Not(CUDD.Var(index));
-                literalNodes.Add(node);
+                CUDDNode literal = pair.Value ? CUDD.Var(index) : CUDD.Function.Not(CUDD.Var(index));
+                result = CUDD.Function.And(result, literal);
             }
-
-            CurrentCuddNode = literalNodes[0];
-            for (int i = 1; i < literalNodes.Count; i++)
-            {
-                CurrentCuddNode = CUDD.Function.And(CurrentCuddNode, literalNodes[i]);
-            }
+            return result;
         }
 
-        public Tuple<Response, Event> Update(Action action)
+        public Response GetActualResponse(Action action)
         {
-            //OK
-            Tuple<Response, Event> result = null;
-            //CUDDNode kbNode = GetKbNode();
+            Response result;
 
             List<Response> responseList = new List<Response>();
             //Console.WriteLine("Kb:");
@@ -90,12 +79,12 @@ namespace Planning.Servers
             {
                 //OK
                 CUDDNode responsePrecondition = pair.Value.EventModel.KnowPrecondition;
-                Console.WriteLine("Event collection name: {0}", pair.Value.FullName);
+                //Console.WriteLine("Event collection name: {0}", pair.Value.FullName);
                 //CUDD.Print.PrintMinterm(responsePrecondition);
 
                 CUDD.Ref(CurrentCuddNode);
                 CUDDNode impliesNode = CUDD.Function.Implies(CurrentCuddNode, responsePrecondition);
-                Console.WriteLine("Implies : {0}", impliesNode.Equals(CUDD.ONE));
+                //Console.WriteLine("Implies : {0}", impliesNode.Equals(CUDD.ONE));
                 //Console.ReadLine();
 
                 if (impliesNode.Equals(CUDD.ONE))
@@ -106,9 +95,16 @@ namespace Planning.Servers
             }
 
             int selectiveRepsonseIndex = Globals.Random.Next(responseList.Count);
-            Console.WriteLine("Count of response list: {0}", responseList.Count);
+            //Console.WriteLine("Count of response list: {0}", responseList.Count);
 
-            Response response = responseList[selectiveRepsonseIndex];
+            result = responseList[selectiveRepsonseIndex];
+            return result;
+        }
+
+        public Event GetActualEvent(Response response)
+        {
+            Event result = null;
+
             IReadOnlyList<Event> eventList = response.EventModel.KnowEventList;
 
             foreach (var e in eventList)
@@ -118,22 +114,27 @@ namespace Planning.Servers
                 CUDDNode impliesNode = CUDD.Function.Implies(CurrentCuddNode, e.Precondition);
                 if (impliesNode.Equals(CUDD.ONE))
                 {
-                    var literalList = GenerateLiteralList(CurrentCuddNode, e);
-                    UpdateByLiteralList(literalList);
-                    
-                    if (ObjectBaseChanged != null)
-                    {
-                        var tuple = new Tuple<IReadOnlyDictionary<string, bool>, Event>(_predBooleanMap, e);
-                        ObjectBaseChanged(this, tuple);
-                    }
-                    //CUDD.Deref(CurrentCuddNode);
                     CUDD.Deref(impliesNode);
-                    result = new Tuple<Response, Event>(response, e);
+                    result = e;
                     break;
                 }
                 CUDD.Deref(impliesNode);
             }
             return result;
+        }
+
+        public void Update(Event e)
+        {
+            var literalList = GenerateLiteralList(CurrentCuddNode, e);
+            UpdateByLiteralList(literalList);
+            CUDD.Deref(CurrentCuddNode);
+            CurrentCuddNode = GetKbNode();
+
+            if (ObjectBaseChanged != null)
+            {
+                var tuple = new Tuple<IReadOnlyDictionary<string, bool>, Event>(_predBooleanMap, e);
+                ObjectBaseChanged(this, tuple);
+            }
         }
 
         private List<Tuple<Predicate, bool>> GenerateLiteralList(CUDDNode node, Event e)
