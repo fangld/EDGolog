@@ -52,8 +52,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="d1.pddl" />
-    <None Include="p1.pddl" />
     <None Include="packages.config" />
     <None Include="swDomain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

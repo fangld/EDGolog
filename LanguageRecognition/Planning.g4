@@ -141,14 +141,14 @@ numericSetting: LB COLON NUMS (LB numericSymbol INTEGER RB)+
 
 
 init: LB COLON INIT constTermAtomForm* RB;
-constTermGd: constTermAtomForm
+/*constTermGd: constTermAtomForm
            | constTermLiteral
            | LB AND constTermGd+ RB
            | LB OR constTermGd+ RB
            | LB NOT constTermGd RB
            | LB IMPLY constTermGd constTermGd RB
            | LB EXISTS LB listVariable RB gd RB
-           | LB FORALL LB listVariable RB gd RB;
+           | LB FORALL LB listVariable RB gd RB;*/
 
 constTermAtomForm: LB predicate constTerm* RB
                  | LB EQ constTerm constTerm RB
@@ -156,7 +156,7 @@ constTermAtomForm: LB predicate constTerm* RB
 				 | LB LEQ constTerm constTerm RB
 				 | LB GT constTerm constTerm RB
 				 | LB GEQ constTerm constTerm RB;
-constTermLiteral: constTermAtomForm | LB NOT constTermAtomForm RB;
+/*constTermLiteral: constTermAtomForm | LB NOT constTermAtomForm RB;*/
 
 // Client problem description
 clientProblem: LB DEFINE LB PROBLEM problemName RB
@@ -169,9 +169,23 @@ clientProblem: LB DEFINE LB PROBLEM problemName RB
 			             initBelief?
 			   RB;
 
-initKnowledge: LB COLON INITKNOWLEDGE constTermGd RB;
-initBelief: LB COLON INITBELIEF constTermGd RB;
+initKnowledge: LB COLON INITKNOWLEDGE gd RB;
+initBelief: LB COLON INITBELIEF gd RB;
 agentId: NAME;
+
+// High level program description
+program: LB actionSymbol term* RB
+       | LB SEQ program+ RB
+	   | LB IF subjectGd program program? RB
+	   | LB WHILE subjectGd program RB;
+
+subjectGd: LB KNOW gd RB
+         | LB BEL gd RB
+	     | LB NOT subjectGd RB
+	     | LB AND subjectGd+ RB
+	     | LB OR subjectGd+ RB
+	     | LB EXISTS LB listVariable RB subjectGd RB
+	     | LB FORALL LB listVariable RB subjectGd RB;
 
 /*
  * Lexer Rules
@@ -203,6 +217,11 @@ AGENT: 'agent';
 EITHER: 'either';
 INITKNOWLEDGE: 'initknowledge';
 INITBELIEF: 'initbelief';
+SEQ: 'seq';
+IF: 'if';
+WHILE: 'while';
+KNOW: 'know';
+BEL: 'bel';
 
 OBJS: 'objects';
 

@@ -41,7 +41,7 @@ namespace Planning.Servers
 
         public HashSet<string> TruePredSet { get; set; }
 
-        public Domain Domain { get; set; }
+        //public Domain Domain { get; set; }
 
         public IReadOnlyDictionary<string, Predicate> PredicateDict
         {
@@ -68,16 +68,16 @@ namespace Planning.Servers
 
         #region Constructors
 
-        private ServerProblem(PlanningParser.DomainContext domainContext, PlanningParser.ServerProblemContext serverProblemContext)
+        private ServerProblem(PlanningParser.DomainContext domainContext, PlanningParser.ServerProblemContext problemContext)
         {
             _currentCuddIndex = 0;
 
             DomainName = domainContext.NAME().GetText();
-            ProblemName = serverProblemContext.problemName().GetText();
+            ProblemName = problemContext.problemName().GetText();
             Console.WriteLine("Finishing setting name!");
 
-            Globals.TermInterpreter = new TermInterpreter(serverProblemContext.numericSetting(), domainContext.typeDefine(),
-                serverProblemContext.objectDeclaration());
+            Globals.TermInterpreter = new TermInterpreter(problemContext.numericSetting(), domainContext.typeDefine(),
+                problemContext.objectDeclaration());
             Console.WriteLine("Finishing genertating term interpreter!");
 
             GenerateAgentDict();
@@ -99,7 +99,7 @@ namespace Planning.Servers
             Console.WriteLine("Finishing handling observation define!");
             //Console.ReadLine();
 
-            HandleInit(serverProblemContext.init());
+            HandleInit(problemContext.init());
             Console.WriteLine("Finishing handling init object base!");
 
             GenerateAgentList();
@@ -164,34 +164,6 @@ namespace Planning.Servers
                 ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, _eventDict, _agentDict, _actionDict);
                 Algorithms.IterativeScanMixedRadix(enumerator);
             }
-
-            //foreach (var action in _actionDict.Values)
-            //{
-            //    if (action.FullName == "smell(a1)")
-            //    {
-            //        CUDDNode testNode = CUDD.Constant(0);
-
-            //        foreach (var response in action.ResponseDict.Values)
-            //        {
-            //            CUDDNode responsePrecondition = response.EventCollectionList.GetPrecondition();
-            //            testNode = CUDD.Function.Or(testNode, responsePrecondition);
-            //        }
-
-            //        Console.WriteLine("Disjunction of {0}'s every event's precondition is true node: {1}",
-            //            action.FullName, testNode.Equals(CUDD.ONE));
-
-            //        if (!testNode.Equals(CUDD.ONE))
-            //        {
-            //            //CUDD.Print.PrintMinterm(testNode);
-            //            Console.WriteLine("Not test node");
-            //            CUDD.Print.PrintMinterm(CUDD.Function.Not(testNode));
-
-            //            Console.ReadLine();
-            //        }
-            //    }
-            //}
-
-            //Console.ReadLine();
         }
 
         private void HandleObservationsDefine(IReadOnlyList<PlanningParser.ObservationDefineContext> contexts)

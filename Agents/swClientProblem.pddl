@@ -1,0 +1,13 @@
+(define (problem sw-7-3)
+	(:domain squirrelsWorlds)
+	(:agents a1)
+	(:agentid a1)
+	(:numbers (maxLoc 7) (maxAcorn 3) (noticeRelLoc 1) (errorSencingAcorn 1))
+	(:initknowledge (and 
+      	(loc a1 0)
+		(loc a2 maxLoc)
+		(not (hold a1))
+		(not (hold a2))
+        )
+	)
+)

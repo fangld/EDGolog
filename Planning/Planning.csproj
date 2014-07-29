@@ -87,7 +87,7 @@
     <Compile Include="Problem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Collections\ResponseEnumerator.cs" />
-    <Compile Include="Servers\Agent.cs" />
+    <Compile Include="Agent.cs" />
     <Compile Include="Servers\ObjectBase.cs" />
     <Compile Include="Servers\ServerAction.cs" />
     <Compile Include="Servers\ServerProblem.cs" />

@@ -4,7 +4,7 @@ grammar HighLevelProgram;
  * Parser Rules
  */
 
-program: action
+program: action LB listName? RB
        | program SEMICOLON program
 	   | IF subjectFormula THEN program ELSE program ENDIF
 	   | IF subjectFormula THEN program ENDIF
@@ -12,20 +12,26 @@ program: action
 
 subjectFormula: KNOW LB objectFormula RB
               | BEL LB objectFormula RB
+			  | LB subjectFormula RB
 			  | NOT subjectFormula
 			  | subjectFormula AND subjectFormula
-			  | subjectFormula OR subjectFormula;
+			  | subjectFormula OR subjectFormula
+			  | LB EXISTS listVariable RB LB subjectFormula RB
+			  | LB FORALL listVariable RB LB subjectFormula RB;
 
-objectFormula: predicate
-       | LB objectFormula RB
+objectFormula: predicate LB listName RB
        | NOT objectFormula
        | objectFormula AND objectFormula
-	   | objectFormula OR objectFormula;
-predicate: NAME LB listName RB;
+	   | objectFormula OR objectFormula
+	   | LB EXISTS listVariable RB LB objectFormula RB
+	   | LB FORALL listVariable RB LB objectFormula RB
+	   | LB objectFormula RB;
 
-action: NAME LB listName? RB;
-
+predicate: NAME;
+action: NAME;
 listName: NAME | NAME COMMA listName;
+listVariable: VAR* | VAR+ MINUS type listVariable;
+type: OBJECT | AGENT | NAME;
 
 /*
  * Lexer Rules
@@ -56,6 +62,8 @@ NOT: 'not';
 IMPLY: 'imply';
 FORALL: 'forall';
 EXISTS: 'exists';
+OBJECT: 'object';
+AGENT: 'agent';
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 

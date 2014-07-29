@@ -49,21 +49,23 @@
     <Compile Include="HighLevelPrograms\HighLevelProgramLexer.cs" />
     <Compile Include="HighLevelPrograms\HighLevelProgramParser.cs" />
     <Compile Include="HighLevelPrograms\MentalAttitude.cs" />
+    <Compile Include="HighLevelPrograms\MentalAttitudeExtension.cs" />
     <Compile Include="HighLevelPrograms\ProgramInterpretor.cs" />
+    <Compile Include="HighLevelPrograms\ObjectFormulaContextExtension.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="d1.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="a1.pddl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="program.edp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="swClientProblem.pddl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="swDomain.pddl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

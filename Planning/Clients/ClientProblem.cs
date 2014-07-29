@@ -1,210 +1,319 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using LanguageRecognition;
-//using PAT.Common.Classes.CUDDLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
+using Planning.Collections;
+using Planning.ContextExtensions;
 
-//namespace Planning.Clients
-//{
-//    public class ClientProblem : Problem<ClientAction, ClientGroundAction>
-//    {
-//        #region Properties
+namespace Planning.Clients
+{
+    public class ClientProblem
+    {
+        #region Fields
 
-//        protected override int PredicateCuddIndexNumber
-//        {
-//            get { return 2; }
-//        }
+        private Dictionary<string, Predicate> _predicateDict;
 
-//        public string AgentId { get; set; }
+        private Dictionary<string, Event> _eventDict;
 
-//        public CUDDNode Knowledge { get; set; }
+        private Dictionary<string, Action> _actionDict;
 
-//        public CUDDNode Belief { get; set; }
+        private Dictionary<string, Observation> _obervationDict;
 
-//        #endregion
+        private Dictionary<string, Agent> _agentDict;
 
-//        #region Constructors
+        private List<string> _agentList;
 
-//        private ClientProblem(Domain<ClientAction> domain, PlanningParser.ClientProblemContext context)
-//            : base(domain)
-//        {
-//            HandleClientProblem(context);
-//        }
+        private int _currentCuddIndex;
 
-//        #endregion
+        #endregion
 
-//        #region Methods
+        #region Properties
 
-//        public static ClientProblem CreateInstance(Domain<ClientAction> domain,
-//            PlanningParser.ClientProblemContext context)
-//        {
-//            ClientProblem result = new ClientProblem(domain, context);
-//            return result;
-//        }
+        public string DomainName { get; set; }
 
-//        private void HandleClientProblem(PlanningParser.ClientProblemContext context)
-//        {
-//            Name = context.problemName().GetText();
-//            DomainName = context.domainName().GetText();
-//            HandleAgentDefine(context.agentDefine());
-//            HandleObjectDeclaration(context.objectDeclaration());
-//            HandleInitKnowledgeAndBelief(context.initKnowledge(), context.initBelief());
-//        }
+        public string ProblemName { get; set; }
 
-//        private void HandleInitKnowledgeAndBelief(PlanningParser.InitKnowledgeContext knowledgeContext, PlanningParser.InitBeliefContext beliefContext)
-//        {
-//            Knowledge = knowledgeContext != null ? GetCuddNode(knowledgeContext.gdName()) : CUDD.ONE;
-//            Belief = beliefContext != null ? GetCuddNode(beliefContext.gdName()) : Knowledge;
-//        }
+        public string AgentId { get; set; }
 
-//        public override void ShowInfo()
-//        {
-//            Console.WriteLine("Name: {0}", Name);
-//            Console.WriteLine(Domain<ClientAction>.BarLine);
+        public CUDDNode InitKnowledge { get; set; }
 
-//            Console.WriteLine("Domain name: {0}", DomainName);
-//            Console.WriteLine(Domain<ClientAction>.BarLine);
+        public CUDDNode InitBelief { get; set; }
 
-//            Console.WriteLine("Agents:");
-//            foreach (var agent in AgentList)
-//            {
-//                Console.WriteLine("  {0}", agent);
-//            }
-//            Console.WriteLine(Domain<ClientAction>.BarLine);
+        public IReadOnlyDictionary<string, Predicate> PredicateDict
+        {
+            get { return _predicateDict; }
+        }
 
-//            Console.WriteLine("Variables:");
-//            foreach (var pair in ConstantTypeMap)
-//            {
-//                Console.WriteLine("  {0} - {1}", pair.Key, pair.Value);
-//            }
-//            Console.WriteLine(Domain<ClientAction>.BarLine);
+        #endregion
 
-//            Console.WriteLine("Ground predicates:");
-//            Console.WriteLine("  Previous:");
-//            foreach (var pair in GroundPredicateDict)
-//            {
-//                Console.WriteLine("    Name: {0}, Previous index: {1}, Successsor index:{2}", pair.Key,
-//                    pair.Value.CuddIndexList[0], pair.Value.CuddIndexList[1]);
-//            }
-//            Console.WriteLine(Domain<ClientAction>.BarLine);
+        #region Constructors
 
-//            Console.WriteLine("Ground actions:");
-//            foreach (var gndAction in GroundActionDict.Values)
-//            {
-//                Console.WriteLine("  Name: {0}", gndAction.Container.Name);
-//                Console.WriteLine("  Variable: {0}", gndAction.Container.Count);
-//                for (int i = 0; i < gndAction.ConstantList.Count; i++)
-//                {
-//                    Console.WriteLine("    Index: {0}, Name: {1}", i, gndAction.ConstantList[i]);
-//                }
-//                Console.WriteLine("  Precondition:");
-//                CUDD.Print.PrintMinterm(gndAction.Precondition);
+        private ClientProblem(PlanningParser.DomainContext domainContext, PlanningParser.ClientProblemContext problemContext)
+        {
+            _currentCuddIndex = 0;
 
-//                Console.WriteLine("  Successor state axiom:");
-//                CUDD.Print.PrintMinterm(gndAction.SuccessorStateAxiom);
-//            }
-//        }
+            DomainName = domainContext.NAME().GetText();
+            ProblemName = problemContext.problemName().GetText();
+            Console.WriteLine("Finishing setting name!");
 
-//        #endregion
+            Globals.TermInterpreter = new TermInterpreter(problemContext.numericSetting(), domainContext.typeDefine(),
+                problemContext.objectDeclaration());
+            Console.WriteLine("Finishing genertating term interpreter!");
 
-//        #region Methods for generating knowledge and belief
+            GenerateAgentDict();
+            Console.WriteLine("Finishing genertating agent!");
 
-//        private CUDDNode GetCuddNode(PlanningParser.AtomicFormulaNameContext context)
-//        {
-//            GroundPredicate gndPred = GetGroundPredicate(context);
+            HandlePredicateDefine(domainContext.predicateDefine());
+            Console.WriteLine("Finishing handling predicate!");
+            //Console.ReadLine();
 
-//            int index = gndPred.CuddIndexList[0];
+            HandleEventsDefine(domainContext.eventDefine());
+            Console.WriteLine("Finishing handling event define!");
+            //Console.ReadLine();
 
-//            CUDDNode result = CUDD.Var(index);
-//            return result;
-//        }
+            HandleActionsDefine(domainContext.actionDefine());
+            Console.WriteLine("Finishing handling action define!");
+            //Console.ReadLine();
 
-//        private GroundPredicate GetGroundPredicate(PlanningParser.AtomicFormulaNameContext context)
-//        {
-//            string gndPredName = VariableContainer.GetFullName(context);
-//            GroundPredicate result = GroundPredicateDict[gndPredName];
-//            return result;
-//        }
+            HandleObservationsDefine(domainContext.observationDefine());
+            Console.WriteLine("Finishing handling observation define!");
+            //Console.ReadLine();
 
-//        private CUDDNode GetCuddNode(PlanningParser.LiteralNameContext context)
-//        {
-//            CUDDNode subNode = GetCuddNode(context.atomicFormulaName());
-//            CUDDNode result;
+            HandleInitKnowledge(problemContext.initKnowledge());
+            Console.WriteLine("Finishing handling init knowledge!");
 
-//            if (context.NOT() != null)
-//            {
-//                result = CUDD.Function.Not(subNode);
-//                CUDD.Ref(result);
-//            }
-//            else
-//            {
-//                result = subNode;
-//            }
+            HandleInitBelief(problemContext.initBelief());
+            Console.WriteLine("Finishing handling init knowledge!");
 
-//            return result;
-//        }
+            GenerateAgentList();
+            Console.WriteLine("Finishing generating agent list!");
+        }
 
-//        private CUDDNode GetCuddNode(PlanningParser.GdNameContext context)
-//        {
-//            CUDDNode result = null;
+        #endregion
 
-//            if (context.atomicFormulaName() != null)
-//            {
-//                result = GetCuddNode(context.atomicFormulaName());
-//            }
-//            else if (context.literalName() != null)
-//            {
-//                result = GetCuddNode(context.literalName());
-//            }
-//            else if (context.AND() != null)
-//            {
-//                result = GetCuddNode(context.gdName()[0]);
-//                for (int i = 1; i < context.gdName().Count; i++)
-//                {
-//                    CUDDNode gdNode = GetCuddNode(context.gdName()[i]);
-//                    CUDDNode andNode = CUDD.Function.And(result, gdNode);
-//                    CUDD.Ref(andNode);
-//                    CUDD.Deref(result);
-//                    CUDD.Deref(gdNode);
-//                    result = andNode;
-//                }
-//            }
-//            else if (context.OR() != null)
-//            {
-//                result = GetCuddNode(context.gdName()[0]);
-//                for (int i = 1; i < context.gdName().Count; i++)
-//                {
-//                    CUDDNode gdNode = GetCuddNode(context.gdName()[i]);
-//                    CUDDNode orNode = CUDD.Function.Or(result, gdNode);
-//                    CUDD.Ref(orNode);
-//                    CUDD.Deref(result);
-//                    CUDD.Deref(gdNode);
-//                    result = orNode;
-//                }
-//            }
-//            else if (context.NOT() != null)
-//            {
-//                CUDDNode gdNode = GetCuddNode(context.gdName()[0]);
-//                result = CUDD.Function.Not(gdNode);
-//                CUDD.Ref(result);
-//                CUDD.Deref(gdNode);
-//            }
-//            else if (context.IMPLY() != null)
-//            {
-//                CUDDNode gdNode0 = GetCuddNode(context.gdName()[0]);
-//                CUDDNode gdNode1 = GetCuddNode(context.gdName()[1]);
+        #region Methods
 
-//                result = CUDD.Function.Implies(gdNode0, gdNode1);
-//                CUDD.Ref(result);
-//                CUDD.Deref(gdNode0);
-//                CUDD.Deref(gdNode1);
-//            }
+        public static ClientProblem CreateInstance(PlanningParser.DomainContext domainContext, PlanningParser.ClientProblemContext context)
+        {
+            ClientProblem result = new ClientProblem(domainContext, context);
+            return result;
+        }
 
-//            return result;
-//        }
+        private void GenerateAgentDict()
+        {
+            _agentDict = new Dictionary<string, Agent>();
+            Agent a1 = new Agent("a1");
+            Agent a2 = new Agent("a2");
+            _agentDict.Add(a1.Name, a1);
+            _agentDict.Add(a2.Name, a2);
+        }
 
-//        #endregion
-//    }
-//}
+        private void HandlePredicateDefine(PlanningParser.PredicateDefineContext context)
+        {
+            _predicateDict = new Dictionary<string, Predicate>();
+            foreach (var atomFormSkeleton in context.atomFormSkeleton())
+            {
+                PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, _predicateDict, _currentCuddIndex);
+                Algorithms.IterativeScanMixedRadix(enumerator);
+                _currentCuddIndex = enumerator.CurrentCuddIndex;
+            }
+
+            foreach (var predicate in _predicateDict.Values)
+            {
+                Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
+            }
+            //Console.ReadLine();
+        }
+
+        private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
+        {
+            _eventDict = new Dictionary<string, Event>();
+            foreach (var eventDefineContext in contexts)
+            {
+                IReadOnlyList<IList<string>> collection = eventDefineContext.listVariable().GetCollection();
+                IReadOnlyList<string> variableNameList = eventDefineContext.listVariable().GetVariableNameList();
+                EventEnumerator enumerator = new EventEnumerator(eventDefineContext, collection, variableNameList,
+                    _predicateDict, _eventDict, _currentCuddIndex);
+                Algorithms.IterativeScanMixedRadix(enumerator);
+                _currentCuddIndex = enumerator.CurrentCuddIndex;
+            }
+        }
+
+        private void HandleActionsDefine(IReadOnlyList<PlanningParser.ActionDefineContext> contexts)
+        {
+            _actionDict = new Dictionary<string, Action>();
+            foreach (var actionDefineContext in contexts)
+            {
+                ActionEnumerator enumerator = new ActionEnumerator(actionDefineContext, _eventDict, _agentDict, _actionDict);
+                Algorithms.IterativeScanMixedRadix(enumerator);
+            }
+        }
+
+        private void HandleObservationsDefine(IReadOnlyList<PlanningParser.ObservationDefineContext> contexts)
+        {
+            _obervationDict = new Dictionary<string, Observation>();
+            foreach (var obsDefineContext in contexts)
+            {
+                IReadOnlyList<IList<string>> collection = obsDefineContext.listVariable().GetCollection();
+                IReadOnlyList<string> variableNameList = obsDefineContext.listVariable().GetVariableNameList();
+                ObservationEnumerator enumerator = new ObservationEnumerator(obsDefineContext, collection,
+                    variableNameList, _predicateDict, _eventDict, _agentDict, _obervationDict);
+                Algorithms.IterativeScanMixedRadix(enumerator);
+            }
+        }
+
+        private void HandleInitKnowledge(PlanningParser.InitKnowledgeContext context)
+        {
+            if (context != null)
+            {
+                StringDictionary assignment = new StringDictionary();
+                InitKnowledge = context.gd().GetCuddNode(_predicateDict, assignment);
+            }
+            else
+            {
+                InitKnowledge = CUDD.Constant(1);
+            }
+        }
+
+        private void HandleInitBelief(PlanningParser.InitBeliefContext context)
+        {
+            if (context != null)
+            {
+                StringDictionary assignment = new StringDictionary();
+                InitBelief = context.gd().GetCuddNode(_predicateDict, assignment);
+            }
+            else
+            {
+                InitBelief = InitKnowledge;
+            }
+        }
+
+        private void GenerateAgentList()
+        {
+            _agentList = new List<string> { "a1", "a2" };
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine("Domain name: {0}", DomainName);
+            Console.WriteLine(Domain.BarLine);
+
+            Console.WriteLine("Problem Name: {0}", ProblemName);
+            Console.WriteLine(Domain.BarLine);
+
+            Globals.TermInterpreter.ShowInfo();
+
+            Console.WriteLine("Predicates:");
+            foreach (var pair in _predicateDict)
+            {
+                Console.WriteLine("  Name: {0}, PreCuddIndex: {1}, SucCuddIndex: {2}", pair.Key,
+                    pair.Value.PreviousCuddIndex, pair.Value.SuccessiveCuddIndex);
+            }
+            Console.WriteLine(Domain.BarLine);
+
+            List<string> eventNameArray = new List<string>
+            {
+                "leftFail(a1)",
+                "rightSucWithNotice(a2,-2)",
+                "leftSucWithNotice(a1,0)",
+                "leftSucWithoutNotice(a1)",
+                "leftSucWithoutNotice(a2)",
+                "rightSucWithoutNotice(a1)",
+                "rightSucWithoutNotice(a2)",
+                "dropFail(a1)",
+                "dropSuc(a1)",
+                "pickSuc(a2)",
+                "learn(a1,1,-1)",
+                "learn(a1,1,0)"
+            };
+
+            Console.WriteLine("Events:");
+
+            for (int i = 0; i < eventNameArray.Count; i++)
+            {
+                string eventName = eventNameArray[i];
+                Event e = _eventDict[eventName];
+                Console.WriteLine("  Name: {0}", eventNameArray[i]);
+                Console.WriteLine("  Cudd index: {0}", e.CuddIndex);
+
+                Console.WriteLine("  Precondition:");
+                Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.Precondition));
+
+                //Console.WriteLine("  CondEffect:");
+                ////Console.WriteLine("  Count:{0}", e.CondEffect.Count);
+                //for (int j = 0; j < e.CondEffect.Count; j++)
+                //{
+                //    Console.WriteLine("    Index: {0}", j);
+                //    //Console.WriteLine("    Condition:");
+                //    //CUDD.Print.PrintMinterm(e.CondEffect[j].Item1);
+                //    Console.Write("    Literals: ");
+
+                //    foreach (var literal in e.CondEffect[j].Item2)
+                //    {
+                //        string format = literal.Item2 ? "{0} " : "!{0} ";
+                //        Console.Write(format, literal.Item1);
+                //    }
+
+                //    Console.WriteLine();
+                //}
+
+                Console.WriteLine("  Partial successor state axiom:");
+                Console.WriteLine("    Number of nodes: {0}", CUDD.GetNumNodes(e.PartialSsa));
+                Console.WriteLine();
+            }
+            Console.WriteLine(Domain.BarLine);
+
+            Console.WriteLine("Actions:");
+
+            foreach (var action in _actionDict.Values)
+            {
+                Console.WriteLine("  Name: {0}", action.FullName);
+                Console.WriteLine("  Response:");
+                foreach (var response in action.ResponseDict.Values)
+                {
+                    Console.WriteLine("    Name: {0}", response.FullName);
+                    Console.Write("      Believe Event list: ");
+                    foreach (var e in response.EventModel.BelieveEventList)
+                    {
+                        Console.Write("{0}  ", e.FullName);
+                    }
+                    Console.WriteLine();
+                    Console.Write("      Know Event list: ");
+                    foreach (var e in response.EventModel.KnowEventList)
+                    {
+                        Console.Write("{0}  ", e.FullName);
+                    }
+                    Console.WriteLine();
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine(Domain.BarLine);
+
+            Console.WriteLine("Observations:");
+
+            foreach (var observation in _obervationDict.Values)
+            {
+                Console.WriteLine("  Name: {0}", observation.FullName);
+                Console.Write("      Believe Event list: ");
+                foreach (var e in observation.EventModel.BelieveEventList)
+                {
+                    Console.Write("{0}  ", e.FullName);
+                }
+                Console.WriteLine();
+                Console.Write("      Know Event list: ");
+                foreach (var e in observation.EventModel.KnowEventList)
+                {
+                    Console.Write("{0}  ", e.FullName);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine(Domain.BarLine);
+        }
+
+        #endregion
+    }
+}

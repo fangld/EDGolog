@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Planning.Servers
+namespace Planning
 {
     public class Agent : IEquatable<Agent>
     {

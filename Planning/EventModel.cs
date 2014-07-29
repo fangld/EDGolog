@@ -18,9 +18,9 @@ namespace Planning
 
         private Event[] _knowEventArray;
 
-        private HashSet<Predicate> _believeAffectedPredset;
+        private HashSet<Predicate> _believeAffectedPredSet;
 
-        private HashSet<Predicate> _knowAffectedPredset;
+        private HashSet<Predicate> _knowAffectedPredSet;
 
         #endregion
 
@@ -34,14 +34,14 @@ namespace Planning
 
         public CUDDNode KnowPartialSsa { get; private set; }
 
-        public HashSet<Predicate> BelieveAffectedPredset
+        public HashSet<Predicate> BelieveAffectedPredSet
         {
-            get { return _believeAffectedPredset; }
+            get { return _believeAffectedPredSet; }
         }
 
-        public HashSet<Predicate> KnowAffectedPredset
+        public HashSet<Predicate> KnowAffectedPredSet
         {
-            get { return _knowAffectedPredset; }
+            get { return _knowAffectedPredSet; }
         }
 
         public IReadOnlyList<Event> BelieveEventList
@@ -128,13 +128,13 @@ namespace Planning
 
         private void GenerateBelievePssa()
         {
-            _believeAffectedPredset = new HashSet<Predicate>();
+            _believeAffectedPredSet = new HashSet<Predicate>();
             BelievePartialSsa = CUDD.ZERO;
             CUDD.Ref(BelievePartialSsa);
 
             foreach (var e in _believeEventArray)
             {
-                _believeAffectedPredset.UnionWith(e.AffectedPredicateSet);
+                _believeAffectedPredSet.UnionWith(e.AffectedPredicateSet);
             }
 
             foreach (var e in _believeEventArray)
@@ -144,7 +144,7 @@ namespace Planning
                 CUDD.Ref(e.Precondition);
                 eventPssa = CUDD.Function.And(eventPssa, e.Precondition);
 
-                foreach (var pred in _believeAffectedPredset)
+                foreach (var pred in _believeAffectedPredSet)
                 {
                     if (!e.AffectedPredicateSet.Contains(pred))
                     {
@@ -167,13 +167,13 @@ namespace Planning
             }
             else
             {
-                _knowAffectedPredset = new HashSet<Predicate>();
+                _knowAffectedPredSet = new HashSet<Predicate>();
                 KnowPartialSsa = CUDD.ZERO;
                 CUDD.Ref(KnowPartialSsa);
 
                 foreach (var e in _knowEventArray)
                 {
-                    _knowAffectedPredset.UnionWith(e.AffectedPredicateSet);
+                    _knowAffectedPredSet.UnionWith(e.AffectedPredicateSet);
                 }
 
                 foreach (var e in _knowEventArray)
@@ -183,7 +183,7 @@ namespace Planning
                     CUDD.Ref(e.Precondition);
                     eventPssa = CUDD.Function.And(eventPssa, e.Precondition);
 
-                    foreach (var pred in _knowAffectedPredset)
+                    foreach (var pred in _knowAffectedPredSet)
                     {
                         if (!e.AffectedPredicateSet.Contains(pred))
                         {

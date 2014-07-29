@@ -1,179 +1,308 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using PAT.Common.Classes.CUDDLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LanguageRecognition;
+using PAT.Common.Classes.CUDDLib;
+using Planning.ContextExtensions;
 
-//namespace Planning.Clients
-//{
-//    public class MentalAttitude
-//    {
-//        #region Fields
+namespace Planning.Clients
+{
+    public class MentalAttitude
+    {
+        #region Fields
 
-//        private Problem _problem;
+        private IReadOnlyDictionary<string, Predicate> _predicateDict;
 
-//        #endregion
+        #endregion
 
-//        #region Properties
+        #region Properties
 
-//        private CUDDNode Knowledge;
+        public CUDDNode Knowledge { get; private set; }
 
-//        private CUDDNode Belief;
+        public CUDDNode Belief { get; private set; }
 
-//        #endregion
+        #endregion
 
-//        #region Constructors
+        #region Constructors
 
-//        public MentalAttitude(Problem problem)
-//        {
-//            _problem = problem;
-//            Knowledge = _problem.Knowledge;
-//            Belief = _problem.Belief;
-//        }
+        public MentalAttitude(ClientProblem problem)
+        {
+            Knowledge = problem.InitKnowledge;
+            Belief = problem.InitBelief;
+            _predicateDict = problem.PredicateDict;
+        }
 
-//        #endregion
+        #endregion
 
-//        #region Methods
+        #region Methods
 
-//        public void Update(GroundAction gndAction)
-//        {
-//            //CUDDNode preconditionNode = CUDD.Function.Implies(Knowledge, gndAction.Precondition);
+        public void Update(EventModel eventModel)
+        {
+            CUDD.Ref(Belief);
+            CUDDNode impliesNode = CUDD.Function.Implies(Belief, eventModel.BelievePrecondition);
 
-//            //CUDD.Print.PrintMinterm(Knowledge);
+            if (impliesNode.Equals(CUDD.ONE))
+            {
+                UpdateBelief(eventModel.BelievePrecondition, eventModel.BelievePartialSsa,
+                    eventModel.BelieveAffectedPredSet);
+                return;
+            }
 
-//            CUDDNode knowledgeAndPre = CUDD.Function.And(Knowledge, gndAction.Precondition);
-//            CUDD.Ref(knowledgeAndPre);
-//            CUDD.Deref(Knowledge);
+            CUDD.Ref(Belief);
+            impliesNode = CUDD.Function.Implies(Belief, eventModel.KnowPrecondition);
+            if (impliesNode.Equals(CUDD.ONE))
+            {
+                UpdateBelief(eventModel.KnowPrecondition, eventModel.KnowPartialSsa, eventModel.KnowAffectedPredSet);
+                CUDD.Deref(Belief);
+                return;
+            }
 
-//            CUDDNode combinationNode = CUDD.Function.And(knowledgeAndPre, gndAction.SuccessorStateAxiom);
-//            CUDD.Ref(combinationNode);
-//            CUDD.Deref(knowledgeAndPre);
+            CUDD.Ref(Knowledge);
+            impliesNode = CUDD.Function.Implies(Knowledge, eventModel.BelievePrecondition);
+            if (impliesNode.Equals(CUDD.ONE))
+            {
+                Belief = Knowledge;
+                CUDD.Ref(Belief);
+                UpdateBelief(eventModel.BelievePrecondition, eventModel.BelievePartialSsa,
+                    eventModel.BelieveAffectedPredSet);
+                return;
+            }
 
-//            foreach (var pair in gndAction.GroundPredicateList)
-//            {
-//                CUDDNode intermediateNode = combinationNode;
+            UpdateKnowledge(eventModel);
+            Belief = Knowledge;
+        }
 
-//                CUDDNode trueRestrictBy = CUDD.Var(pair.PreviousCuddIndex);
-//                CUDDNode trueNode = CUDD.Function.Restrict(intermediateNode, trueRestrictBy);
-//                CUDD.Ref(trueNode);
+        private void UpdateKnowledge(EventModel eventModel)
+        {
+            CUDD.Ref(eventModel.KnowPrecondition);
+            CUDDNode knowledgeWithPre = CUDD.Function.And(Knowledge, eventModel.KnowPrecondition);
+            CUDD.Ref(eventModel.KnowPartialSsa);
+            CUDDNode knowledgeWithPreAndPssa = CUDD.Function.And(knowledgeWithPre, eventModel.KnowPartialSsa);
 
-//                CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
-//                CUDD.Ref(falseRestrictBy);
-//                CUDDNode falseNode = CUDD.Function.Restrict(intermediateNode, falseRestrictBy);
-//                CUDD.Ref(falseNode);
+            CUDDVars oldVars = new CUDDVars();
+            CUDDVars newVars = new CUDDVars();
 
-//                CUDD.Deref(falseRestrictBy);
-//                CUDD.Deref(intermediateNode);
+            foreach (var predicate in eventModel.KnowAffectedPredSet)
+            {
+                CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
+                CUDD.Ref(trueRestrictBy);
+                CUDD.Ref(knowledgeWithPreAndPssa);
+                CUDDNode trueNode = CUDD.Function.Restrict(knowledgeWithPreAndPssa, trueRestrictBy);
+                CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
+                CUDDNode falseNode = CUDD.Function.Restrict(knowledgeWithPreAndPssa, falseRestrictBy);
 
-//                combinationNode = CUDD.Function.Or(trueNode, falseNode);
-//                CUDD.Deref(trueNode);
-//                CUDD.Deref(falseNode);
-//                CUDD.Ref(combinationNode);
-//            }
+                knowledgeWithPreAndPssa = CUDD.Function.Or(trueNode, falseNode);
 
-//            CUDDVars oldVars = new CUDDVars();
-//            CUDDVars newVars = new CUDDVars();
+                oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
+                newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
+            }
 
-//            foreach (var gndPred in gndAction.GroundPredicateList)
-//            {
-//                oldVars.AddVar(CUDD.Var(gndPred.SuccessorCuddIndex));
-//                newVars.AddVar(CUDD.Var(gndPred.PreviousCuddIndex));
-//            }
+            Knowledge = CUDD.Variable.SwapVariables(knowledgeWithPreAndPssa, oldVars, newVars);
+        }
 
-//            Knowledge = CUDD.Variable.SwapVariables(combinationNode, oldVars, newVars);
-//            CUDD.Ref(Knowledge);
-//            CUDD.Deref(combinationNode);
+        private void UpdateBelief(CUDDNode precondition, CUDDNode partialSsa, HashSet<Predicate> affectedPredSet)
+        {
+            CUDD.Ref(precondition);
+            CUDDNode beliefWithPre = CUDD.Function.And(Belief, precondition);
+            CUDD.Ref(partialSsa);
+            CUDDNode beliefWithPreAndPssa = CUDD.Function.And(beliefWithPre, partialSsa);
+            CUDDVars oldVars = new CUDDVars();
+            CUDDVars newVars = new CUDDVars();
 
+            foreach (var predicate in affectedPredSet)
+            {
+                CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
+                CUDD.Ref(trueRestrictBy);
+                CUDD.Ref(beliefWithPreAndPssa);
+                CUDDNode trueNode = CUDD.Function.Restrict(beliefWithPreAndPssa, trueRestrictBy);
+                CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
+                CUDDNode falseNode = CUDD.Function.Restrict(beliefWithPreAndPssa, falseRestrictBy);
+                beliefWithPreAndPssa = CUDD.Function.Or(trueNode, falseNode);
 
-//            //if (preconditionNode.GetValue() > 0.5)
-//            //{
+                oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
+                newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
+            }
 
-//            //}
-//            //else
-//            //{
-//            //    Console.WriteLine("    Action {0} is not executable now!", gndAction);
-//            //}
-//            //CUDD.Deref(kbNode);
-//        }
+            Belief = CUDD.Variable.SwapVariables(beliefWithPreAndPssa, oldVars, newVars);
+        }
 
-//        public bool Implies(HighLevelProgramParser.ObjectFormulaContext context)
-//        {
-//            CUDDNode query = GetCuddNode(context);
-//            CUDDNode impliesNode = CUDD.Function.Implies(Knowledge, query);
-//            CUDD.Ref(impliesNode);
-//            CUDD.Deref(query);
-//            return impliesNode.GetValue() > 0.5;
-//        }
+        public bool Implies(PlanningParser.SubjectGdContext context, StringDictionary assignment)
+        {
+            bool result;
+            if (context.KNOW() != null)
+            {
+                CUDDNode objectNode = context.gd().GetCuddNode(_predicateDict, assignment);
+                CUDD.Ref(Knowledge);
+                CUDDNode impliesNode = CUDD.Function.Implies(Knowledge, objectNode);
+                result = impliesNode.Equals(CUDD.ONE);
+            }
+            else if (context.BEL() != null)
+            {
+                CUDDNode objectNode = context.gd().GetCuddNode(_predicateDict, assignment);
+                CUDD.Ref(Belief);
+                CUDDNode impliesNode = CUDD.Function.Implies(Belief, objectNode);
+                result = impliesNode.Equals(CUDD.ONE);
+            }
+            else if (context.NOT() != null)
+            {
+                result = !Implies(context.subjectGd(0), assignment);
+            }
+            else if (context.AND() != null)
+            {
+                result = true;
+                for (int i = 0; i < context.subjectGd().Count; i++)
+                {
+                    result &= Implies(context.subjectGd(i), assignment);
+                    if (!result)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (context.OR() != null)
+            {
+                result = false;
+                for (int i = 0; i < context.subjectGd().Count; i++)
+                {
+                    result |= Implies(context.subjectGd(i), assignment);
+                    if (result)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                var listVariableContext = context.listVariable();
+                var collection = listVariableContext.GetCollection();
+                var varNameList = listVariableContext.GetVariableNameList();
+                bool isForall = context.FORALL() != null;
+                result = RecursiveScanMixedRaio(context.subjectGd(0), varNameList, collection, assignment, 0, isForall);
+            }
 
-//        public void ShowInfo()
-//        {
-//            Console.WriteLine("Knowledge:");
-//            CUDD.Print.PrintMinterm(Knowledge);
-//        }
+            return result;
+        }
 
-//        private CUDDNode GetCuddNode(HighLevelProgramParser.ObjectFormulaContext context)
-//        {
-//            CUDDNode result = null;
-//            if (context.AND() != null)
-//            {
-//                CUDDNode leftNode = GetCuddNode(context.objectFormula()[0]);
-//                CUDDNode rightNode = GetCuddNode(context.objectFormula()[0]);
-//                result = CUDD.Function.And(leftNode, rightNode);
-//                CUDD.Deref(leftNode);
-//                CUDD.Deref(rightNode);
-//            }
-//            else if (context.OR() != null)
-//            {
-//                CUDDNode leftNode = GetCuddNode(context.objectFormula()[0]);
-//                CUDDNode rightNode = GetCuddNode(context.objectFormula()[0]);
-//                result = CUDD.Function.Or(leftNode, rightNode);
-//                CUDD.Deref(leftNode);
-//                CUDD.Deref(rightNode);
-//            }
-//            else if (context.NOT() != null)
-//            {
-//                CUDDNode node = GetCuddNode(context.objectFormula()[0]);
-//                result = CUDD.Function.Not(node);
-//                CUDD.Deref(node);
-//            }
-//            else if (context.LB() != null)
-//            {
-//                result = GetCuddNode(context.objectFormula()[0]);
-//            }
-//            else if (context.predicate() != null)
-//            {
-//                result = GetCuddNode(context.predicate());
-//            }
+        private bool RecursiveScanMixedRaio(PlanningParser.SubjectGdContext context, IReadOnlyList<string> variableNameList,
+            IReadOnlyList<IList<string>> collection, StringDictionary assignment, int currentLevel = 0,
+            bool isForall = true)
+        {
+            bool result;
+            if (currentLevel != variableNameList.Count)
+            {
+                string variableName = variableNameList[currentLevel];
+                result = isForall;
 
-//            CUDD.Ref(result);
-//            return result;
-//        }
+                bool terminateCondition = !isForall;
+                Func<bool, bool, bool> boolFunc;
+                if (isForall)
+                {
+                    boolFunc = (b1, b2) => b1 && b2;
+                }
+                else
+                {
+                    boolFunc = (b1, b2) => b1 || b2;
+                }
 
-//        private CUDDNode GetCuddNode(HighLevelProgramParser.PredicateContext context)
-//        {
-//            string fullName = GetFullName(context);
-//            int index = _problem.GroundPredicateDict[fullName].PreviousCuddIndex;
-//            CUDDNode result = CUDD.Var(index);
-//            return result;
-//        }
+                foreach (string value in collection[currentLevel])
+                {
+                    assignment[variableName] = value;
 
-//        private string GetFullName(HighLevelProgramParser.PredicateContext context)
-//        {
-//            string name = context.NAME().GetText();
-//            List<string> constantList = new List<string>();
-//            HighLevelProgramParser.ListNameContext listNameContext = context.listName();
-//            while (listNameContext != null)
-//            {
-//                string constant = context.listName().NAME().GetText();
-//                constantList.Add(constant);
-//                listNameContext = listNameContext.listName();
-//            }
-//            string result = VariableContainer.GetFullName(name, constantList);
-//            return result;
+                    bool gdResult = RecursiveScanMixedRaio(context, variableNameList, collection,
+                        assignment,
+                        currentLevel + 1, isForall);
 
-//        }
+                    if (gdResult == terminateCondition)
+                    {
+                        result = terminateCondition;
+                        break;
+                    }
 
-//        #endregion
-//    }
-//}
+                    result = boolFunc(result, gdResult);
+                }
+            }
+            else
+            {
+                result = Implies(context, assignment);
+            }
+
+            return result;
+        }
+
+        public void ShowInfo()
+        {
+            Console.WriteLine("Init knowledge:");
+            CUDD.Print.PrintMinterm(Knowledge);
+
+            Console.WriteLine("Init belief:");
+            CUDD.Print.PrintMinterm(Belief);
+        }
+
+        //private CUDDNode GetCuddNode(HighLevelProgramParser.ObjectFormulaContext context)
+        //{
+        //    CUDDNode result = null;
+        //    if (context.AND() != null)
+        //    {
+        //        CUDDNode leftNode = GetCuddNode(context.objectFormula()[0]);
+        //        CUDDNode rightNode = GetCuddNode(context.objectFormula()[0]);
+        //        result = CUDD.Function.And(leftNode, rightNode);
+        //        CUDD.Deref(leftNode);
+        //        CUDD.Deref(rightNode);
+        //    }
+        //    else if (context.OR() != null)
+        //    {
+        //        CUDDNode leftNode = GetCuddNode(context.objectFormula()[0]);
+        //        CUDDNode rightNode = GetCuddNode(context.objectFormula()[0]);
+        //        result = CUDD.Function.Or(leftNode, rightNode);
+        //        CUDD.Deref(leftNode);
+        //        CUDD.Deref(rightNode);
+        //    }
+        //    else if (context.NOT() != null)
+        //    {
+        //        CUDDNode node = GetCuddNode(context.objectFormula()[0]);
+        //        result = CUDD.Function.Not(node);
+        //        CUDD.Deref(node);
+        //    }
+        //    else if (context.LB() != null)
+        //    {
+        //        result = GetCuddNode(context.objectFormula()[0]);
+        //    }
+        //    else if (context.predicate() != null)
+        //    {
+        //        result = GetCuddNode(context.predicate());
+        //    }
+
+        //    CUDD.Ref(result);
+        //    return result;
+        //}
+
+        //private CUDDNode GetCuddNode(HighLevelProgramParser.PredicateContext context)
+        //{
+        //    string fullName = GetFullName(context);
+        //    int index = _problem.GroundPredicateDict[fullName].PreviousCuddIndex;
+        //    CUDDNode result = CUDD.Var(index);
+        //    return result;
+        //}
+
+        //private string GetFullName(HighLevelProgramParser.PredicateContext context)
+        //{
+        //    string name = context.NAME().GetText();
+        //    List<string> constantList = new List<string>();
+        //    HighLevelProgramParser.ListNameContext listNameContext = context.listName();
+        //    while (listNameContext != null)
+        //    {
+        //        string constant = context.listName().NAME().GetText();
+        //        constantList.Add(constant);
+        //        listNameContext = listNameContext.listName();
+        //    }
+        //    string result = VariableContainer.GetFullName(name, constantList);
+        //    return result;
+
+        //}
+
+        #endregion
+    }
+}
