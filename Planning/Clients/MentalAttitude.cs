@@ -46,8 +46,8 @@ namespace Planning.Clients
 
             if (impliesNode.Equals(CUDD.ONE))
             {
-                UpdateBelief(eventModel.BelievePrecondition, eventModel.BelievePartialSsa,
-                    eventModel.BelieveAffectedPredSet);
+                UpdateBelief(eventModel.BelievePartialSsa,eventModel.BelieveAffectedPredSet);
+                UpdateKnowledge(eventModel);
                 return;
             }
 
@@ -55,19 +55,20 @@ namespace Planning.Clients
             impliesNode = CUDD.Function.Implies(Belief, eventModel.KnowPrecondition);
             if (impliesNode.Equals(CUDD.ONE))
             {
-                UpdateBelief(eventModel.KnowPrecondition, eventModel.KnowPartialSsa, eventModel.KnowAffectedPredSet);
-                CUDD.Deref(Belief);
+                UpdateBelief(eventModel.KnowPartialSsa, eventModel.KnowAffectedPredSet);
+                UpdateKnowledge(eventModel);
                 return;
             }
 
+            CUDD.Deref(Belief);
             CUDD.Ref(Knowledge);
             impliesNode = CUDD.Function.Implies(Knowledge, eventModel.BelievePrecondition);
             if (impliesNode.Equals(CUDD.ONE))
             {
                 Belief = Knowledge;
                 CUDD.Ref(Belief);
-                UpdateBelief(eventModel.BelievePrecondition, eventModel.BelievePartialSsa,
-                    eventModel.BelieveAffectedPredSet);
+                UpdateBelief(eventModel.BelievePartialSsa, eventModel.BelieveAffectedPredSet);
+                UpdateKnowledge(eventModel);
                 return;
             }
 
@@ -77,63 +78,94 @@ namespace Planning.Clients
 
         private void UpdateKnowledge(EventModel eventModel)
         {
-            CUDD.Ref(eventModel.KnowPrecondition);
-            CUDDNode knowledgeWithPre = CUDD.Function.And(Knowledge, eventModel.KnowPrecondition);
-            CUDD.Ref(eventModel.KnowPartialSsa);
-            CUDDNode knowledgeWithPreAndPssa = CUDD.Function.And(knowledgeWithPre, eventModel.KnowPartialSsa);
+            //Console.WriteLine("Enter update knowledge");
 
+            //CUDD.Ref(eventModel.KnowPrecondition);
+            //Console.WriteLine("After ref know precondition");
+
+            //CUDDNode knowledgeWithPre = CUDD.Function.And(Knowledge, eventModel.KnowPrecondition);
+            CUDD.Ref(eventModel.KnowPartialSsa);
+            //Console.WriteLine("After ref know partial ssa");
+
+            CUDDNode knowledgeWithPssa = CUDD.Function.And(Knowledge, eventModel.KnowPartialSsa);
+
+            //Console.WriteLine("After get knowleget with pre and partial ssa");
+            
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
 
+            //Console.WriteLine("Is know affected pred set null: {0}", eventModel.KnowAffectedPredSet == null);
+
             foreach (var predicate in eventModel.KnowAffectedPredSet)
             {
+                Console.WriteLine("Know predicate: {0}", predicate.FullName);
+
                 CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
                 CUDD.Ref(trueRestrictBy);
-                CUDD.Ref(knowledgeWithPreAndPssa);
-                CUDDNode trueNode = CUDD.Function.Restrict(knowledgeWithPreAndPssa, trueRestrictBy);
+                CUDD.Ref(knowledgeWithPssa);
+                CUDDNode trueNode = CUDD.Function.Restrict(knowledgeWithPssa, trueRestrictBy);
                 CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
-                CUDDNode falseNode = CUDD.Function.Restrict(knowledgeWithPreAndPssa, falseRestrictBy);
+                CUDDNode falseNode = CUDD.Function.Restrict(knowledgeWithPssa, falseRestrictBy);
 
-                knowledgeWithPreAndPssa = CUDD.Function.Or(trueNode, falseNode);
+                knowledgeWithPssa = CUDD.Function.Or(trueNode, falseNode);
 
                 oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
                 newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
             }
 
-            Knowledge = CUDD.Variable.SwapVariables(knowledgeWithPreAndPssa, oldVars, newVars);
+            Knowledge = CUDD.Variable.SwapVariables(knowledgeWithPssa, oldVars, newVars);
+
+            oldVars.Deref();
+            newVars.Deref();
+            Console.WriteLine("Whether knowledge is equal to false: {0}", Knowledge.Equals(CUDD.ZERO));
+            Console.WriteLine("Finish!");
         }
 
-        private void UpdateBelief(CUDDNode precondition, CUDDNode partialSsa, HashSet<Predicate> affectedPredSet)
+        private void UpdateBelief(CUDDNode partialSsa, HashSet<Predicate> affectedPredSet)
         {
-            CUDD.Ref(precondition);
-            CUDDNode beliefWithPre = CUDD.Function.And(Belief, precondition);
+            //CUDD.Ref(precondition);
+            //CUDDNode beliefWithPre = CUDD.Function.And(Belief, precondition);
             CUDD.Ref(partialSsa);
-            CUDDNode beliefWithPreAndPssa = CUDD.Function.And(beliefWithPre, partialSsa);
+            CUDDNode beliefWithPssa = CUDD.Function.And(Belief, partialSsa);
             CUDDVars oldVars = new CUDDVars();
             CUDDVars newVars = new CUDDVars();
 
             foreach (var predicate in affectedPredSet)
             {
+                Console.WriteLine("Believe predicate: {0}", predicate.FullName);
+
                 CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
                 CUDD.Ref(trueRestrictBy);
-                CUDD.Ref(beliefWithPreAndPssa);
-                CUDDNode trueNode = CUDD.Function.Restrict(beliefWithPreAndPssa, trueRestrictBy);
+                CUDD.Ref(beliefWithPssa);
+                CUDDNode trueNode = CUDD.Function.Restrict(beliefWithPssa, trueRestrictBy);
                 CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
-                CUDDNode falseNode = CUDD.Function.Restrict(beliefWithPreAndPssa, falseRestrictBy);
-                beliefWithPreAndPssa = CUDD.Function.Or(trueNode, falseNode);
+                CUDDNode falseNode = CUDD.Function.Restrict(beliefWithPssa, falseRestrictBy);
+                beliefWithPssa = CUDD.Function.Or(trueNode, falseNode);
 
                 oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
                 newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
             }
 
-            Belief = CUDD.Variable.SwapVariables(beliefWithPreAndPssa, oldVars, newVars);
+            Belief = CUDD.Variable.SwapVariables(beliefWithPssa, oldVars, newVars);
+            Console.WriteLine("Whether belief is equal to false: {0}", Belief.Equals(CUDD.ZERO));
+            Console.WriteLine("Finish!");
+        }
+
+        public bool Implies(PlanningParser.SubjectGdContext context)
+        {
+            StringDictionary emtpyAssignment = new StringDictionary();
+            return Implies(context, emtpyAssignment);
         }
 
         public bool Implies(PlanningParser.SubjectGdContext context, StringDictionary assignment)
         {
+            //Console.WriteLine("Enter implies");
             bool result;
             if (context.KNOW() != null)
             {
+                //Console.WriteLine("Enter Know");
+                //CUDD.Print.PrintMinterm(Knowledge);
+                //Console.WriteLine("Whether knowledge is equal to false: {0}", Knowledge.Equals(CUDD.ZERO));
                 CUDDNode objectNode = context.gd().GetCuddNode(_predicateDict, assignment);
                 CUDD.Ref(Knowledge);
                 CUDDNode impliesNode = CUDD.Function.Implies(Knowledge, objectNode);
@@ -155,9 +187,9 @@ namespace Planning.Clients
                 result = true;
                 for (int i = 0; i < context.subjectGd().Count; i++)
                 {
-                    result &= Implies(context.subjectGd(i), assignment);
-                    if (!result)
+                    if (!Implies(context.subjectGd(i), assignment))
                     {
+                        result = false;
                         break;
                     }
                 }
@@ -167,9 +199,9 @@ namespace Planning.Clients
                 result = false;
                 for (int i = 0; i < context.subjectGd().Count; i++)
                 {
-                    result |= Implies(context.subjectGd(i), assignment);
-                    if (result)
+                    if (Implies(context.subjectGd(i), assignment))
                     {
+                        result = true;
                         break;
                     }
                 }
@@ -183,6 +215,8 @@ namespace Planning.Clients
                 result = RecursiveScanMixedRaio(context.subjectGd(0), varNameList, collection, assignment, 0, isForall);
             }
 
+            //Console.WriteLine("Implies result: {0}", result);
+            //Console.ReadLine();
             return result;
         }
 
@@ -240,68 +274,6 @@ namespace Planning.Clients
             Console.WriteLine("Init belief:");
             CUDD.Print.PrintMinterm(Belief);
         }
-
-        //private CUDDNode GetCuddNode(HighLevelProgramParser.ObjectFormulaContext context)
-        //{
-        //    CUDDNode result = null;
-        //    if (context.AND() != null)
-        //    {
-        //        CUDDNode leftNode = GetCuddNode(context.objectFormula()[0]);
-        //        CUDDNode rightNode = GetCuddNode(context.objectFormula()[0]);
-        //        result = CUDD.Function.And(leftNode, rightNode);
-        //        CUDD.Deref(leftNode);
-        //        CUDD.Deref(rightNode);
-        //    }
-        //    else if (context.OR() != null)
-        //    {
-        //        CUDDNode leftNode = GetCuddNode(context.objectFormula()[0]);
-        //        CUDDNode rightNode = GetCuddNode(context.objectFormula()[0]);
-        //        result = CUDD.Function.Or(leftNode, rightNode);
-        //        CUDD.Deref(leftNode);
-        //        CUDD.Deref(rightNode);
-        //    }
-        //    else if (context.NOT() != null)
-        //    {
-        //        CUDDNode node = GetCuddNode(context.objectFormula()[0]);
-        //        result = CUDD.Function.Not(node);
-        //        CUDD.Deref(node);
-        //    }
-        //    else if (context.LB() != null)
-        //    {
-        //        result = GetCuddNode(context.objectFormula()[0]);
-        //    }
-        //    else if (context.predicate() != null)
-        //    {
-        //        result = GetCuddNode(context.predicate());
-        //    }
-
-        //    CUDD.Ref(result);
-        //    return result;
-        //}
-
-        //private CUDDNode GetCuddNode(HighLevelProgramParser.PredicateContext context)
-        //{
-        //    string fullName = GetFullName(context);
-        //    int index = _problem.GroundPredicateDict[fullName].PreviousCuddIndex;
-        //    CUDDNode result = CUDD.Var(index);
-        //    return result;
-        //}
-
-        //private string GetFullName(HighLevelProgramParser.PredicateContext context)
-        //{
-        //    string name = context.NAME().GetText();
-        //    List<string> constantList = new List<string>();
-        //    HighLevelProgramParser.ListNameContext listNameContext = context.listName();
-        //    while (listNameContext != null)
-        //    {
-        //        string constant = context.listName().NAME().GetText();
-        //        constantList.Add(constant);
-        //        listNameContext = listNameContext.listName();
-        //    }
-        //    string result = VariableContainer.GetFullName(name, constantList);
-        //    return result;
-
-        //}
 
         #endregion
     }

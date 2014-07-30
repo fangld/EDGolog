@@ -33,7 +33,19 @@ namespace Planning
 
             foreach (var e in EventModel.KnowEventList)
             {
+                if (FullName == "noinfo(a2,a1)")
+                {
+                        Console.WriteLine(e.FullName);
+                }
                 e.AddObservation(this);
+            }
+
+            if (FullName == "noinfo(a2,a1)")
+            {
+                foreach (var predicate in EventModel.KnowAffectedPredSet)
+                {
+                    Console.WriteLine(predicate.FullName);
+                }
             }
         }
 

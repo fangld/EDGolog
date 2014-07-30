@@ -117,7 +117,7 @@ namespace Planning
             {
                 CUDD.Ref(KnowPrecondition);
 
-                for (int i = 0; i < _knowEventArray.Length; i++)
+                for (int i = _believeEventArray.Length; i < _knowEventArray.Length; i++)
                 {
                     CUDDNode eventPreNode = _knowEventArray[i].Precondition;
                     CUDD.Ref(eventPreNode);
@@ -129,14 +129,13 @@ namespace Planning
         private void GenerateBelievePssa()
         {
             _believeAffectedPredSet = new HashSet<Predicate>();
-            BelievePartialSsa = CUDD.ZERO;
-            CUDD.Ref(BelievePartialSsa);
 
             foreach (var e in _believeEventArray)
             {
                 _believeAffectedPredSet.UnionWith(e.AffectedPredicateSet);
             }
 
+            BelievePartialSsa = CUDD.Constant(0);
             foreach (var e in _believeEventArray)
             {
                 CUDDNode eventPssa = e.PartialSsa;
@@ -164,18 +163,18 @@ namespace Planning
             if (MaxPlausibilityDegree == 0)
             {
                 KnowPartialSsa = BelievePartialSsa;
+                _knowAffectedPredSet = _believeAffectedPredSet;
             }
             else
             {
                 _knowAffectedPredSet = new HashSet<Predicate>();
-                KnowPartialSsa = CUDD.ZERO;
-                CUDD.Ref(KnowPartialSsa);
 
                 foreach (var e in _knowEventArray)
                 {
                     _knowAffectedPredSet.UnionWith(e.AffectedPredicateSet);
                 }
 
+                KnowPartialSsa = CUDD.Constant(0);
                 foreach (var e in _knowEventArray)
                 {
                     CUDDNode eventPssa = e.PartialSsa;
@@ -194,7 +193,7 @@ namespace Planning
                         }
                     }
 
-                    KnowPartialSsa = CUDD.Function.Or(BelievePartialSsa, eventPssa);
+                    KnowPartialSsa = CUDD.Function.Or(KnowPartialSsa, eventPssa);
                 }
             }
         }

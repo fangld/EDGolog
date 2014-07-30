@@ -115,6 +115,16 @@ namespace Planning
             return GetFullName(name, termContextList, assignment);
         }
 
+        public static string GetFullName(PlanningParser.ActionSymbolContext context,
+            IReadOnlyList<PlanningParser.TermContext> termList)
+        {
+            string name = context.GetText();
+            int count = termList.Count;
+            string[] termArray = new string[count];
+            Parallel.For(0, count, i => termArray[i] = termList[i].GetText());
+            return GetFullName(name, termArray);
+        }
+
         public static string GetFullName(string name, IReadOnlyList<PlanningParser.TermContext> termContextList, StringDictionary assignment)
         {
             int count = termContextList.Count;

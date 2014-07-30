@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="Clients\ProgramInterpretor.cs" />
     <Compile Include="Collections\ActionEnumerator.cs" />
     <Compile Include="Collections\Algorithms.cs" />
     <Compile Include="Clients\ClientAction.cs" />

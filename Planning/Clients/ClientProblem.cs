@@ -33,11 +33,11 @@ namespace Planning.Clients
 
         #region Properties
 
-        public string DomainName { get; set; }
+        public string DomainName { get; private set; }
 
-        public string ProblemName { get; set; }
+        public string ProblemName { get; private set; }
 
-        public string AgentId { get; set; }
+        public string AgentId { get; private set; }
 
         public CUDDNode InitKnowledge { get; set; }
 
@@ -46,6 +46,16 @@ namespace Planning.Clients
         public IReadOnlyDictionary<string, Predicate> PredicateDict
         {
             get { return _predicateDict; }
+        }
+
+        public IReadOnlyDictionary<string, Action> ActionDict
+        {
+            get { return _actionDict; }
+        }
+
+        public IReadOnlyDictionary<string, Observation> ObservationDict
+        {
+            get { return _obervationDict; }
         }
 
         #endregion
@@ -58,6 +68,8 @@ namespace Planning.Clients
 
             DomainName = domainContext.NAME().GetText();
             ProblemName = problemContext.problemName().GetText();
+            AgentId = problemContext.agentId().GetText();
+            Console.WriteLine("Agent id: {0}", AgentId);
             Console.WriteLine("Finishing setting name!");
 
             Globals.TermInterpreter = new TermInterpreter(problemContext.numericSetting(), domainContext.typeDefine(),
@@ -87,7 +99,7 @@ namespace Planning.Clients
             Console.WriteLine("Finishing handling init knowledge!");
 
             HandleInitBelief(problemContext.initBelief());
-            Console.WriteLine("Finishing handling init knowledge!");
+            Console.WriteLine("Finishing handling init belief!");
 
             GenerateAgentList();
             Console.WriteLine("Finishing generating agent list!");
@@ -126,7 +138,6 @@ namespace Planning.Clients
             {
                 Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
             }
-            //Console.ReadLine();
         }
 
         private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)

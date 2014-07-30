@@ -20,19 +20,19 @@ namespace Agents
         {
             //string programFileName = @"program.edp";
             //Test2(programFileName);
-            //Test1();
-            string domainFileName, problemFileName;
-            if (args.Length == 3)
-            {
-                domainFileName = args[1];
-                problemFileName = args[2];
-            }
-            else
-            {
-                domainFileName = "d1.pddl";
-                problemFileName = "a1.pddl";
-            }
-            Client client = new Client();
+            Test1();
+            //string domainFileName, problemFileName;
+            //if (args.Length == 3)
+            //{
+            //    domainFileName = args[1];
+            //    problemFileName = args[2];
+            //}
+            //else
+            //{
+            //    domainFileName = "d1.pddl";
+            //    problemFileName = "a1.pddl";
+            //}
+            //Client client = new Client();
             //Test3(domainFileName, problemFileName);
             //Console.ReadLine();
         }
@@ -85,14 +85,30 @@ namespace Agents
 
         private static void Test1()
         {
-            string domainFileName = "d1.pddl";
-            string problomFileName = "a1.pddl";
+            try
+            {
+                string domainFileName = "swDomain.pddl";
+                string problomFileName = "swClientProblem.pddl";
 
-            string programFileName = "program.edp";
-            //Client agent = new Client(domainFileName, problomFileName, programFileName);
-            //agent.Connect();
-            //agent.ExecuteActions();
-            
+                string programFileName = "program.pddl";
+                Client client = new Client(domainFileName, problomFileName, programFileName);
+                client.Connect();
+                client.Handshake();
+                Console.WriteLine("Start to execute program");
+                Console.ReadLine();
+                client.ExecuteProgram();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.Source);
+                Console.WriteLine(e.StackTrace);
+            }
+            finally
+            {
+                Console.ReadLine();                
+            }
+
         }
 
         //public static void ShowDomainInfo(Domain<ClientAction> domain)

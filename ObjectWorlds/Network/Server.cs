@@ -105,24 +105,31 @@ namespace ObjectWorlds.Network
                         if (otherAgentName != agentName)
                         {
                             Agent otherAgent = _problem.AgentDict[otherAgentName];
-                            Console.WriteLine("agent name: {0}, observation list count: {1}", otherAgentName, otherAgent.ObservationList.Count);
-                            foreach (var observation in e.ObservationList)
-                            {
-                                Console.WriteLine("Event's observation: {0}", observation.FullName);
-                            }
+                            //Console.WriteLine("agent name: {0}, observation list count: {1}", otherAgentName, otherAgent.ObservationList.Count);
+                            //foreach (var observation in e.ObservationList)
+                            //{
+                            //    Console.WriteLine("Event's observation: {0}", observation.FullName);
+                            //}
 
                             foreach (var observation in otherAgent.ObservationList)
                             {
-                                Console.WriteLine("Other agent observation: {0}", observation.FullName);
+                                //Console.WriteLine("Other agent observation: {0}", observation.FullName);
                                 if (e.ObservationList.Any(obs => obs == observation))
                                 {
-                                    CUDDNode obsPreNode = observation.Precondition;
                                     CUDDNode objectBaseNode = _objectBase.CurrentCuddNode;
-                                    CUDD.Ref(obsPreNode);
                                     CUDD.Ref(objectBaseNode);
+                                    CUDDNode obsPreNode = observation.Precondition;
+                                    CUDD.Ref(obsPreNode);
                                     CUDDNode impliesNode = CUDD.Function.Implies(objectBaseNode, obsPreNode);
+                                    //if (observation.FullName == "noinfo(a2,a1)")
+                                    //{
+                                    //    CUDD.Print.PrintMinterm(objectBaseNode);
+                                    //    CUDD.Print.PrintMinterm(obsPreNode);
+                                    //    Console.WriteLine("observation noinfo(a2,a1) is {0}", impliesNode.Equals(CUDD.ONE));
+                                    //}
                                     if (impliesNode.Equals(CUDD.ONE))
                                     {
+                                        Console.WriteLine("Send observation {0} to agent {1}.", observation, otherAgentName);
                                         _agentClientDict[otherAgentName].SendMessage(observation.FullName);
                                         break;
                                     }
