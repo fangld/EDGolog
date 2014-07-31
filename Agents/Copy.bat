@@ -1,0 +1,6 @@
+copy "E:\EDGolog\Agents\bin\Debug\Agents.exe" "C:\Users\良达\Desktop\a1\"
+copy "E:\EDGolog\Agents\bin\Debug\*.dll" "C:\Users\良达\Desktop\a1\"
+copy "E:\EDGolog\Agents\bin\Debug\program.pddl" "C:\Users\良达\Desktop\a1\program.pddl"
+copy "E:\EDGolog\Agents\bin\Debug\Agents.exe" "C:\Users\良达\Desktop\a2\"
+copy "E:\EDGolog\Agents\bin\Debug\*.dll" "C:\Users\良达\Desktop\a2\"
+copy "E:\EDGolog\Agents\bin\Debug\a2Program.pddl" "C:\Users\良达\Desktop\a2\program.pddl"

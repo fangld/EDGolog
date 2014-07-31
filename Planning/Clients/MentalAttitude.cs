@@ -39,21 +39,53 @@ namespace Planning.Clients
 
         #region Methods
 
-        public void Update(EventModel eventModel)
+        public void Update(Response response)
+        {
+            Update(response.EventModel);
+        }
+
+        public void Update(Observation observation)
+        {
+            CUDD.Ref(observation.Precondition);
+            Knowledge = CUDD.Function.And(Knowledge, observation.Precondition);
+            
+            CUDD.Ref(observation.Precondition);
+            CUDD.Ref(Belief);
+            CUDDNode negPrecondition = CUDD.Function.Not(observation.Precondition);
+            CUDDNode impliesNode = CUDD.Function.Implies(Belief, negPrecondition);
+            if (!impliesNode.Equals(CUDD.ONE))
+            {
+                CUDD.Ref(observation.Precondition);
+                Belief = CUDD.Function.And(Belief, observation.Precondition);
+            }
+            else
+            {
+                CUDD.Deref(Belief);
+                Belief = Knowledge;
+                CUDD.Ref(Belief);
+            }
+            CUDD.Deref(impliesNode);
+
+            Update(observation.EventModel);
+        }
+
+        private void Update(EventModel eventModel)
         {
             CUDD.Ref(Belief);
-            CUDDNode impliesNode = CUDD.Function.Implies(Belief, eventModel.BelievePrecondition);
+            CUDD.Ref(eventModel.BelievePrecondition);
+            CUDDNode impliesNode = CUDD.Function.Implies(Belief, CUDD.Function.Not(eventModel.BelievePrecondition));
 
-            if (impliesNode.Equals(CUDD.ONE))
+            if (!impliesNode.Equals(CUDD.ONE))
             {
-                UpdateBelief(eventModel.BelievePartialSsa,eventModel.BelieveAffectedPredSet);
+                UpdateBelief(eventModel.BelievePartialSsa, eventModel.BelieveAffectedPredSet);
                 UpdateKnowledge(eventModel);
                 return;
             }
 
             CUDD.Ref(Belief);
-            impliesNode = CUDD.Function.Implies(Belief, eventModel.KnowPrecondition);
-            if (impliesNode.Equals(CUDD.ONE))
+            CUDD.Ref(eventModel.KnowPrecondition);
+            impliesNode = CUDD.Function.Implies(Belief, CUDD.Function.Not(eventModel.KnowPrecondition));
+            if (!impliesNode.Equals(CUDD.ONE))
             {
                 UpdateBelief(eventModel.KnowPartialSsa, eventModel.KnowAffectedPredSet);
                 UpdateKnowledge(eventModel);
@@ -62,8 +94,9 @@ namespace Planning.Clients
 
             CUDD.Deref(Belief);
             CUDD.Ref(Knowledge);
-            impliesNode = CUDD.Function.Implies(Knowledge, eventModel.BelievePrecondition);
-            if (impliesNode.Equals(CUDD.ONE))
+            CUDD.Ref(eventModel.BelievePrecondition);
+            impliesNode = CUDD.Function.Implies(Knowledge, CUDD.Function.Not(eventModel.BelievePrecondition));
+            if (!impliesNode.Equals(CUDD.ONE))
             {
                 Belief = Knowledge;
                 CUDD.Ref(Belief);
@@ -74,6 +107,7 @@ namespace Planning.Clients
 
             UpdateKnowledge(eventModel);
             Belief = Knowledge;
+            CUDD.Ref(Belief);
         }
 
         private void UpdateKnowledge(EventModel eventModel)
@@ -89,36 +123,39 @@ namespace Planning.Clients
 
             CUDDNode knowledgeWithPssa = CUDD.Function.And(Knowledge, eventModel.KnowPartialSsa);
 
-            //Console.WriteLine("After get knowleget with pre and partial ssa");
-            
-            CUDDVars oldVars = new CUDDVars();
-            CUDDVars newVars = new CUDDVars();
+            //Console.WriteLine("After get knowledge with pre and partial ssa");
 
-            //Console.WriteLine("Is know affected pred set null: {0}", eventModel.KnowAffectedPredSet == null);
-
-            foreach (var predicate in eventModel.KnowAffectedPredSet)
+            if (eventModel.KnowAffectedPredSet.Count != 0)
             {
-                Console.WriteLine("Know predicate: {0}", predicate.FullName);
+                CUDDVars oldVars = new CUDDVars();
+                CUDDVars newVars = new CUDDVars();
 
-                CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
-                CUDD.Ref(trueRestrictBy);
-                CUDD.Ref(knowledgeWithPssa);
-                CUDDNode trueNode = CUDD.Function.Restrict(knowledgeWithPssa, trueRestrictBy);
-                CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
-                CUDDNode falseNode = CUDD.Function.Restrict(knowledgeWithPssa, falseRestrictBy);
+                foreach (var predicate in eventModel.KnowAffectedPredSet)
+                {
+                    CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
+                    CUDD.Ref(trueRestrictBy);
+                    CUDD.Ref(knowledgeWithPssa);
+                    CUDDNode trueNode = CUDD.Function.Restrict(knowledgeWithPssa, trueRestrictBy);
+                    CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
+                    CUDDNode falseNode = CUDD.Function.Restrict(knowledgeWithPssa, falseRestrictBy);
 
-                knowledgeWithPssa = CUDD.Function.Or(trueNode, falseNode);
+                    knowledgeWithPssa = CUDD.Function.Or(trueNode, falseNode);
 
-                oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
-                newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
+                    oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
+                    newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
+                }
+
+                Knowledge = CUDD.Variable.SwapVariables(knowledgeWithPssa, oldVars, newVars);
+
+                oldVars.Deref();
+                newVars.Deref();
             }
-
-            Knowledge = CUDD.Variable.SwapVariables(knowledgeWithPssa, oldVars, newVars);
-
-            oldVars.Deref();
-            newVars.Deref();
-            Console.WriteLine("Whether knowledge is equal to false: {0}", Knowledge.Equals(CUDD.ZERO));
-            Console.WriteLine("Finish!");
+            else
+            {
+                Knowledge = knowledgeWithPssa;
+            }
+            //Console.WriteLine("Whether knowledge is equal to false: {0}", Knowledge.Equals(CUDD.ZERO));
+            //Console.WriteLine("Finish!");
         }
 
         private void UpdateBelief(CUDDNode partialSsa, HashSet<Predicate> affectedPredSet)
@@ -127,28 +164,37 @@ namespace Planning.Clients
             //CUDDNode beliefWithPre = CUDD.Function.And(Belief, precondition);
             CUDD.Ref(partialSsa);
             CUDDNode beliefWithPssa = CUDD.Function.And(Belief, partialSsa);
-            CUDDVars oldVars = new CUDDVars();
-            CUDDVars newVars = new CUDDVars();
 
-            foreach (var predicate in affectedPredSet)
+            if (affectedPredSet.Count != 0)
             {
-                Console.WriteLine("Believe predicate: {0}", predicate.FullName);
+                CUDDVars oldVars = new CUDDVars();
+                CUDDVars newVars = new CUDDVars();
 
-                CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
-                CUDD.Ref(trueRestrictBy);
-                CUDD.Ref(beliefWithPssa);
-                CUDDNode trueNode = CUDD.Function.Restrict(beliefWithPssa, trueRestrictBy);
-                CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
-                CUDDNode falseNode = CUDD.Function.Restrict(beliefWithPssa, falseRestrictBy);
-                beliefWithPssa = CUDD.Function.Or(trueNode, falseNode);
+                foreach (var predicate in affectedPredSet)
+                {
+                    CUDDNode trueRestrictBy = CUDD.Var(predicate.PreviousCuddIndex);
+                    CUDD.Ref(trueRestrictBy);
+                    CUDD.Ref(beliefWithPssa);
+                    CUDDNode trueNode = CUDD.Function.Restrict(beliefWithPssa, trueRestrictBy);
+                    CUDDNode falseRestrictBy = CUDD.Function.Not(trueRestrictBy);
+                    CUDDNode falseNode = CUDD.Function.Restrict(beliefWithPssa, falseRestrictBy);
+                    beliefWithPssa = CUDD.Function.Or(trueNode, falseNode);
 
-                oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
-                newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
+                    oldVars.AddVar(CUDD.Var(predicate.SuccessiveCuddIndex));
+                    newVars.AddVar(CUDD.Var(predicate.PreviousCuddIndex));
+                }
+                Belief = CUDD.Variable.SwapVariables(beliefWithPssa, oldVars, newVars);
+
+                oldVars.Deref();
+                newVars.Deref();
+            }
+            else
+            {
+                Belief = beliefWithPssa;
             }
 
-            Belief = CUDD.Variable.SwapVariables(beliefWithPssa, oldVars, newVars);
-            Console.WriteLine("Whether belief is equal to false: {0}", Belief.Equals(CUDD.ZERO));
-            Console.WriteLine("Finish!");
+            //Console.WriteLine("Whether belief is equal to false: {0}", Belief.Equals(CUDD.ZERO));
+            //Console.WriteLine("Finish!");
         }
 
         public bool Implies(PlanningParser.SubjectGdContext context)
@@ -173,7 +219,13 @@ namespace Planning.Clients
             }
             else if (context.BEL() != null)
             {
+                //Console.WriteLine("Enter belief");
+                //Console.WriteLine("Belief");
+                //CUDD.Print.PrintMinterm(Belief);
                 CUDDNode objectNode = context.gd().GetCuddNode(_predicateDict, assignment);
+                //Console.WriteLine("objectNode");
+                //Console.WriteLine(context.gd().GetText());
+                //CUDD.Print.PrintMinterm(objectNode);
                 CUDD.Ref(Belief);
                 CUDDNode impliesNode = CUDD.Function.Implies(Belief, objectNode);
                 result = impliesNode.Equals(CUDD.ONE);

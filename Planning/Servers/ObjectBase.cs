@@ -83,6 +83,7 @@ namespace Planning.Servers
                 //CUDD.Print.PrintMinterm(responsePrecondition);
 
                 CUDD.Ref(CurrentCuddNode);
+                CUDD.Ref(responsePrecondition);
                 CUDDNode impliesNode = CUDD.Function.Implies(CurrentCuddNode, responsePrecondition);
                 //Console.WriteLine("Implies : {0}", impliesNode.Equals(CUDD.ONE));
                 //Console.ReadLine();

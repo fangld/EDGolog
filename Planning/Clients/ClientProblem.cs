@@ -200,6 +200,7 @@ namespace Planning.Clients
             else
             {
                 InitBelief = InitKnowledge;
+                CUDD.Ref(InitBelief);
             }
         }
 

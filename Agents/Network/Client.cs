@@ -42,60 +42,7 @@ namespace Agents.Network
         #endregion
 
         #region Constructors
-
-        //public Client()
-        //{
-        //    _host = "127.0.0.1";
-        //    _port = 888;
-        //    _serverSocket.Connect(_host, _port);
-
-        //    Console.WriteLine("Please enter the agent id");
-        //    _agentId = Console.ReadLine();
-        //    SendMessage(_agentId);
-        //    string action;
-        //    string rcvMsg;
-
-        //    if (_agentId == "a1")
-        //    {
-        //        do
-        //        {
-        //            action = Console.ReadLine();
-        //            if (action != "quit")
-        //            {
-        //                SendMessage(action);
-        //                rcvMsg = ReceiveMessage();
-        //                Console.WriteLine("Receive response: {0}", rcvMsg);
-        //                rcvMsg = ReceiveMessage();
-        //                Console.WriteLine("Receive observation: {0}", rcvMsg);
-        //            }
-        //            else
-        //            {
-        //                break;
-        //            }
-        //        } while (true);
-        //    }
-        //    else
-        //    {
-        //        do
-        //        {
-        //            rcvMsg = ReceiveMessage();
-        //            Console.WriteLine("Receive observation: {0}", rcvMsg);
-
-        //            action = Console.ReadLine();
-        //            if (action != "quit")
-        //            {
-        //                SendMessage(action);
-        //                rcvMsg = ReceiveMessage();
-        //                Console.WriteLine("Receive response: {0}", rcvMsg);
-        //            }
-        //            else
-        //            {
-        //                break;
-        //            }
-        //        } while (true);
-        //    }
-        //}
-
+        
         public Client(string domainFileName, string problemFileName, string programFileName)
         {
             _host = "127.0.0.1";
@@ -189,7 +136,7 @@ namespace Agents.Network
                 string observationName = ReceiveMessage();
                 Console.WriteLine("Receive observation: {0}", observationName);
                 Observation observation = _observationDict[observationName];
-                _mentalAttitude.Update(observation.EventModel);
+                _mentalAttitude.Update(observation);
             }
             Interpret(_programContext);
         }
@@ -241,42 +188,24 @@ namespace Agents.Network
             string actionName;
             string responseName;
             string observationName;
-            //if (_agentId == "a1")
-            //{
-                actionName = ConstContainer.GetFullName(context.actionSymbol(), context.term());
-                SendMessage(actionName);
-                Action action = _actionDict[actionName];
+            actionName = ConstContainer.GetFullName(context.actionSymbol(), context.term());
+            SendMessage(actionName);
+            Action action = _actionDict[actionName];
 
-                responseName = ReceiveMessage();
-                Console.WriteLine("Receive response: {0}", responseName);
-                Response response = action.ResponseDict[responseName];
-                _mentalAttitude.Update(response.EventModel);
+            responseName = ReceiveMessage();
+            Console.WriteLine("Receive response: {0}", responseName);
+            Response response = action.ResponseDict[responseName];
+            _mentalAttitude.Update(response);
+            //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
 
-                observationName = ReceiveMessage();
-                Console.WriteLine("Receive observation: {0}", observationName);
-                Observation observation = _observationDict[observationName];
-                _mentalAttitude.Update(observation.EventModel);
+            observationName = ReceiveMessage();
+            Console.WriteLine("Receive observation: {0}", observationName);
+            Observation observation = _observationDict[observationName];
+            _mentalAttitude.Update(observation);
 
             Console.ReadLine();
-            //}
-            //else
-            //{
-            //    observationName = ReceiveMessage();
-            //    Console.WriteLine("Receive observation: {0}", observationName);
-            //    Observation observation = _observationDict[observationName];
-            //    _mentalAttitude.Update(observation.EventModel);
-
-            //    actionName = ConstContainer.GetFullName(context.actionSymbol(), context.term());
-            //    SendMessage(actionName);
-            //    Action action = _actionDict[actionName];
-
-            //    responseName = ReceiveMessage();
-            //    Console.WriteLine("Receive response: {0}", responseName);
-            //    Response response = action.ResponseDict[responseName];
-            //    _mentalAttitude.Update(response.EventModel);
-            //}
         }
-        
+
         private void SendMessage(string message)
         {
             byte[] lengthBuffer = new byte[4];

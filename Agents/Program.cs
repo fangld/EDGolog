@@ -106,7 +106,7 @@ namespace Agents
             }
             finally
             {
-                Console.ReadLine();                
+                Console.ReadLine();
             }
 
         }

@@ -42,7 +42,7 @@ namespace Planning
             get { return _affectedPredicateSet; }
         }
 
-        public CUDDNode PartialSsa { get; set; }
+        public CUDDNode PartialSsa { get; private set; }
 
         public IReadOnlyList<Observation> ObservationList
         {
@@ -138,12 +138,10 @@ namespace Planning
 
         private CUDDNode GetPartialFrameNode()
         {
-            CUDDNode result = CUDD.ONE;
-            CUDD.Ref(result);
+            CUDDNode result = CUDD.Constant(1);
             foreach (var predicate in _affectedPredicateSet)
             {
-                CUDDNode frameCondition = CUDD.ONE;
-                CUDD.Ref(frameCondition);
+                CUDDNode frameCondition = CUDD.Constant(1);
 
                 foreach (var cEffect in _condEffect)
                 {
@@ -151,8 +149,7 @@ namespace Planning
                     {
                         CUDD.Ref(cEffect.Item1);
                         CUDDNode negCondition = CUDD.Function.Not(cEffect.Item1);
-                        CUDDNode intermediateNode = CUDD.Function.And(frameCondition, negCondition);
-                        frameCondition = intermediateNode;
+                        frameCondition = CUDD.Function.And(frameCondition, negCondition);
                     }
                 }
 
@@ -161,8 +158,7 @@ namespace Planning
                 CUDDNode invariantNode = CUDD.Function.Equal(prePredNode, sucPredNode);
 
                 CUDDNode frame = CUDD.Function.Implies(frameCondition, invariantNode);
-                CUDDNode tmpNode = CUDD.Function.And(result, frame);
-                result = tmpNode;
+                result = CUDD.Function.And(result, frame);
             }
 
             return result;
