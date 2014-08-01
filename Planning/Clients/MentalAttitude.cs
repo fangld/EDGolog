@@ -30,6 +30,9 @@ namespace Planning.Clients
 
         public MentalAttitude(ClientProblem problem)
         {
+            //CUDD.Print.PrintMinterm(problem.InitKnowledge);
+            //CUDD.Print.PrintMinterm(problem.InitBelief);
+
             Knowledge = problem.InitKnowledge;
             Belief = problem.InitBelief;
             _predicateDict = problem.PredicateDict;
@@ -213,6 +216,7 @@ namespace Planning.Clients
                 //CUDD.Print.PrintMinterm(Knowledge);
                 //Console.WriteLine("Whether knowledge is equal to false: {0}", Knowledge.Equals(CUDD.ZERO));
                 CUDDNode objectNode = context.gd().GetCuddNode(_predicateDict, assignment);
+                //CUDD.Print.PrintMinterm(objectNode);
                 CUDD.Ref(Knowledge);
                 CUDDNode impliesNode = CUDD.Function.Implies(Knowledge, objectNode);
                 result = impliesNode.Equals(CUDD.ONE);

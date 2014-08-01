@@ -42,7 +42,7 @@ namespace Planning
         /// <summary>
         /// Return the list of variables
         /// </summary>
-        public IReadOnlyCollection<string> ConstArray
+        public IReadOnlyList<string> ConstList
         {
             get { return _constArray; }
         }
@@ -51,11 +51,11 @@ namespace Planning
 
         #region Constructors
 
-        protected ConstContainer(string[] constList)
+        protected ConstContainer(string[] constArray)
         {
-            int count = constList.Length;
+            int count = constArray.Length;
             _constArray = new string[count];
-            Array.Copy(constList, _constArray, count);
+            Array.Copy(constArray, _constArray, count);
         }
 
         #endregion

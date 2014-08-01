@@ -26,6 +26,24 @@ namespace Planning
             SuccessiveCuddIndex = intialCuddIndex + 1;
         }
 
+        public bool Satisfy(string name, int[] argumentIndexArray, string[] argumentNameArray)
+        {
+            bool result = Name == name;
+            if (result)
+            {
+                for (int i = 0; i < argumentIndexArray.Length; i++)
+                {
+                    if (ConstList[i] != argumentNameArray[i])
+                    {
+                        result = false;
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         #endregion
     }
 }

@@ -49,6 +49,8 @@
     <Compile Include="Clients\ClientAction.cs" />
     <Compile Include="Clients\ClientProblem.cs" />
     <Compile Include="Clients\MentalAttitude.cs" />
+    <Compile Include="Collections\ExclusiveAxiomEnumerator.cs" />
+    <Compile Include="Collections\MixedRadixEnumeratroWithIndexArray.cs" />
     <Compile Include="ConstContainer.cs" />
     <Compile Include="ContextExtensions\CEffectContextExtension.cs" />
     <Compile Include="ContextExtensions\CondEffectContextExtension.cs" />

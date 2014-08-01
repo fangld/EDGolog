@@ -17,6 +17,10 @@ namespace Planning.Servers
     {
         #region Fields
 
+        //private Dictionary<string, CUDDNode> _predicateExclusiveAxiom;
+
+        //private CUDDNode _exclusiveAxiom;
+
         private Dictionary<string, Predicate> _predicateDict;
 
         private Dictionary<string, Event> _eventDict;
@@ -128,17 +132,22 @@ namespace Planning.Servers
         private void HandlePredicateDefine(PlanningParser.PredicateDefineContext context)
         {
             _predicateDict = new Dictionary<string, Predicate>();
+            //_predicateExclusiveAxiom = new Dictionary<string, CUDDNode>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
             {
                 PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, _predicateDict, _currentCuddIndex);
                 Algorithms.IterativeScanMixedRadix(enumerator);
                 _currentCuddIndex = enumerator.CurrentCuddIndex;
+
+                //string predicateName = atomFormSkeleton.predicate().GetText();
+
+                //_predicateExclusiveAxiom.Add();
             }
 
-            foreach (var predicate in _predicateDict.Values)
-            {
-                Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
-            }
+            //foreach (var predicate in _predicateDict.Values)
+            //{
+            //    Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
+            //}
             //Console.ReadLine();
         }
 

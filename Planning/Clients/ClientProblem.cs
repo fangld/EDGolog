@@ -25,6 +25,8 @@ namespace Planning.Clients
 
         private Dictionary<string, Agent> _agentDict;
 
+        private CUDDNode _exclusiveAxiom;
+
         private List<string> _agentList;
 
         private int _currentCuddIndex;
@@ -126,18 +128,55 @@ namespace Planning.Clients
 
         private void HandlePredicateDefine(PlanningParser.PredicateDefineContext context)
         {
+            _exclusiveAxiom = CUDD.Constant(1);
             _predicateDict = new Dictionary<string, Predicate>();
             foreach (var atomFormSkeleton in context.atomFormSkeleton())
             {
                 PredicateEnumerator enumerator = new PredicateEnumerator(atomFormSkeleton, _predicateDict, _currentCuddIndex);
                 Algorithms.IterativeScanMixedRadix(enumerator);
                 _currentCuddIndex = enumerator.CurrentCuddIndex;
+
+                if (atomFormSkeleton.oneofDefine() != null)
+                {
+                    Console.WriteLine("Predicate {0} have oneOf", atomFormSkeleton.predicate().GetText());
+                    //Console.WriteLine("Hello!");
+                    //Console.ReadLine();
+                    string predicateName = atomFormSkeleton.predicate().GetText();
+                    int oneOfVarsCount = atomFormSkeleton.oneofDefine().VAR().Count;
+                    string[] oneOfVarNameArray = new string[oneOfVarsCount];
+                    var varNameList = atomFormSkeleton.listVariable().GetVariableNameList();
+                    var collection = atomFormSkeleton.listVariable().GetCollection();
+                    IList<string>[] notOneOfVarCollection = new IList<string>[varNameList.Count - oneOfVarsCount];
+
+                    Parallel.For(0, oneOfVarsCount,
+                        i => oneOfVarNameArray[i] = atomFormSkeleton.oneofDefine().VAR(i).GetText());
+
+                    for (int i = 0, k = 0; i < varNameList.Count; i++)
+                    {
+                        bool exists = oneOfVarNameArray.Any(s => s == varNameList[i]);
+
+                        if (!exists)
+                        {
+                            notOneOfVarCollection[k] = collection[i];
+                            k++;
+                            if (k == notOneOfVarCollection.Length)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    ExclusiveAxiomEnumerator exclusiveAxiomEnumerator = new ExclusiveAxiomEnumerator(predicateName,
+                        _predicateDict, notOneOfVarCollection);
+                    Algorithms.IterativeScanMixedRadix(exclusiveAxiomEnumerator);
+                    _exclusiveAxiom = CUDD.Function.And(_exclusiveAxiom, exclusiveAxiomEnumerator.ExclusiveAxiom);
+                }
             }
 
-            foreach (var predicate in _predicateDict.Values)
-            {
-                Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
-            }
+            //foreach (var predicate in _predicateDict.Values)
+            //{
+            //    Console.WriteLine("name: {0}, Previous index: {1}, successive index: {2}", predicate.FullName, predicate.PreviousCuddIndex, predicate.SuccessiveCuddIndex);
+            //}
         }
 
         private void HandleEventsDefine(IReadOnlyList<PlanningParser.EventDefineContext> contexts)
@@ -179,14 +218,18 @@ namespace Planning.Clients
 
         private void HandleInitKnowledge(PlanningParser.InitKnowledgeContext context)
         {
+            CUDD.Ref(_exclusiveAxiom);
+            //Console.WriteLine("Exclusive axiom:");
+            //CUDD.Print.PrintMinterm(_exclusiveAxiom);
             if (context != null)
             {
                 StringDictionary assignment = new StringDictionary();
                 InitKnowledge = context.gd().GetCuddNode(_predicateDict, assignment);
+                InitKnowledge = CUDD.Function.And(_exclusiveAxiom, InitKnowledge);
             }
             else
             {
-                InitKnowledge = CUDD.Constant(1);
+                InitKnowledge = _exclusiveAxiom;
             }
         }
 
@@ -196,11 +239,13 @@ namespace Planning.Clients
             {
                 StringDictionary assignment = new StringDictionary();
                 InitBelief = context.gd().GetCuddNode(_predicateDict, assignment);
+                InitBelief = CUDD.Function.And(InitBelief, _exclusiveAxiom);
             }
             else
             {
                 InitBelief = InitKnowledge;
                 CUDD.Ref(InitBelief);
+                CUDD.Deref(_exclusiveAxiom);
             }
         }
 

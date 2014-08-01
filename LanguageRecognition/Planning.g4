@@ -19,7 +19,7 @@ numericSymbol: NAME;
 typeDefine: LB COLON TYPE typeDeclaration+ RB;
 
 predicateDefine: LB COLON PREDICATE atomFormSkeleton+ RB;
-atomFormSkeleton: LB predicate listVariable RB;
+atomFormSkeleton: LB predicate listVariable oneofDefine? RB;
 predicate: NAME;
 
 typeDeclaration: NAME | LB NAME constTerm constTerm RB;
@@ -70,6 +70,7 @@ emptyOrEffect: effect | LB RB;
 
 listName: NAME* | NAME+ MINUS type listName;
 listVariable: VAR* | VAR+ MINUS type listVariable;
+oneofDefine: ONEOF VAR+;
 
 gd: termAtomForm
   | LB AND gd+ RB
@@ -250,6 +251,7 @@ GEQ: '>=';
 AND: 'and';
 OR: 'or';
 NOT: 'not';
+ONEOF: 'oneof';
 IMPLY: 'imply';
 FORALL: 'forall';
 EXISTS: 'exists';

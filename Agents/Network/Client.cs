@@ -52,6 +52,10 @@ namespace Agents.Network
             _agentId = _problem.AgentId;
             Console.WriteLine(_agentId);
             _mentalAttitude = new MentalAttitude(_problem);
+            //Console.WriteLine("Belief");
+            //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
+            //Console.WriteLine("Knowledge");
+            //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
             _actionDict = _problem.ActionDict;
             _observationDict = _problem.ObservationDict;
         }

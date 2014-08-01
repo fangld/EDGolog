@@ -9,8 +9,8 @@
     
 (:predicates
 	(hold ?i - agent)
-	(loc ?i - agent ?x - point)
-	(acorn ?x - point ?n - numOfAcorn)
+	(loc ?i - agent ?x - point oneof ?x)
+	(acorn ?x - point ?n - numOfAcorn oneof ?n)
 )
 
 (:event leftSucWithNotice
