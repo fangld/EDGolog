@@ -1,4 +1,4 @@
-(define (problem sw-7-3)
+﻿(define (problem sw-7-3)
 	(:domain squirrelsWorlds)
 	(:agent a1 a2)
 	(:agentid a1)

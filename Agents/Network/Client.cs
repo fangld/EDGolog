@@ -196,12 +196,19 @@ namespace Agents.Network
             Console.WriteLine("Receive response: {0}", responseName);
             Response response = action.ResponseDict[responseName];
             _mentalAttitude.Update(response);
+            //Console.WriteLine("Knowledge:");
+            //CUDD.Print.PrintMinterm(_mentalAttitude.Knowledge);
+            //Console.WriteLine("Belief:");
             //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
 
             observationName = ReceiveMessage();
             Console.WriteLine("Receive observation: {0}", observationName);
             Observation observation = _observationDict[observationName];
             _mentalAttitude.Update(observation);
+            //Console.WriteLine("Knowledge:");
+            //CUDD.Print.PrintMinterm(_mentalAttitude.Knowledge);
+            //Console.WriteLine("Belief:");
+            //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
 
             Console.ReadLine();
         }
