@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3F6956FF-E611-4908-9D29-2BD1D0742078}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SquirrelsWorlds</RootNamespace>
     <AssemblyName>SquirrelsWorlds</AssemblyName>
@@ -31,6 +31,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr4.Runtime.net45">
@@ -64,6 +67,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="SquirrelsWorldForm.resx">
       <DependentUpon>SquirrelsWorldForm.cs</DependentUpon>
@@ -95,6 +99,69 @@
       <Project>{a4203db4-85ba-4225-b437-ee889999467c}</Project>
       <Name>Planning</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\EdgyDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\EdgyLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\EdgyRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\EdgyUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\ExpiredDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\ExpiredLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\ExpiredRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\ExpiredUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\NuttyDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\NuttyLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\NuttyRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\NuttyUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\SkwirlDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\SkwirlEast.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\SkwirlRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\SkwirlUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\WallyDown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\WallyLeft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\WallyRight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\WallyUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Figs\SkwirlLeft.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

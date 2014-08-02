@@ -17,10 +17,6 @@ namespace Planning.Servers
     {
         #region Fields
 
-        //private Dictionary<string, CUDDNode> _predicateExclusiveAxiom;
-
-        //private CUDDNode _exclusiveAxiom;
-
         private Dictionary<string, Predicate> _predicateDict;
 
         private Dictionary<string, Event> _eventDict;

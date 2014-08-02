@@ -18,11 +18,20 @@ namespace Planning
 
         private IDictionary<string, PlanningType> _typeDict;
 
-        private IDictionary<string, int> _numericConstValueDict;
+        private Dictionary<string, int> _numericConstValueDict;
 
         private StringDictionary _constTypeDict;
 
         private IDictionary<string, IList<string>> _typeConstListDict;
+
+        #endregion
+
+        #region Properties
+
+        public IReadOnlyDictionary<string, int> NumericConstValueDict
+        {
+            get { return _numericConstValueDict; }
+        }
 
         #endregion
 

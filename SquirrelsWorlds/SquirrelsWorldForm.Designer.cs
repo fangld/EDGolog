@@ -35,6 +35,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(622, 433);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "SquirrelsWorldForm";
             this.Text = "SquirrelsWorld";
             this.ResumeLayout(false);
