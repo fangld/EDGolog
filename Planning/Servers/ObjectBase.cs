@@ -22,6 +22,17 @@ namespace Planning.Servers
 
         public CUDDNode CurrentCuddNode { get; private set; }
 
+        public IReadOnlyDictionary<string, bool> PredBooleanMap
+        {
+            get { return _predBooleanMap; }
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<Tuple<IReadOnlyDictionary<string, bool>, Event>> Changed;
+
         #endregion
 
         #region Constructors
@@ -35,14 +46,9 @@ namespace Planning.Servers
                 bool value = problem.TruePredSet.Contains(predicateFullName);
                 _predBooleanMap.Add(predicateFullName, value);
             }
+
             CurrentCuddNode = GetKbNode();
         }
-
-        #endregion
-
-        #region Events
-
-        public EventHandler<Tuple<IReadOnlyDictionary<string, bool>, Event>> ObjectBaseChanged;
 
         #endregion
 
@@ -131,10 +137,10 @@ namespace Planning.Servers
             CUDD.Deref(CurrentCuddNode);
             CurrentCuddNode = GetKbNode();
 
-            if (ObjectBaseChanged != null)
+            if (Changed != null)
             {
                 var tuple = new Tuple<IReadOnlyDictionary<string, bool>, Event>(_predBooleanMap, e);
-                ObjectBaseChanged(this, tuple);
+                Changed(this, tuple);
             }
         }
 

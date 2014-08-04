@@ -34,7 +34,6 @@ namespace Planning
             : base(constArray)
         {
             Name = context.actionSymbol().GetText();
-            //Console.WriteLine(FullName);
             GenerateResponses(context.responseDefine(),eventDict, assignment);
         }
 

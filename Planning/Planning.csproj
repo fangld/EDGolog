@@ -62,8 +62,6 @@
     <Compile Include="Domain.cs" />
     <Compile Include="Collections\CEffectEnumerator.cs" />
     <Compile Include="Event.cs" />
-    <Compile Include="EventArrayExtension.cs" />
-    <Compile Include="EventCollection.cs" />
     <Compile Include="ContextExtensions\GdContextExtension.cs" />
     <Compile Include="ContextExtensions\GdEventContextExtension.cs" />
     <Compile Include="ContextExtensions\ListVariableContextExtension.cs" />
@@ -73,15 +71,9 @@
     <Compile Include="Collections\PredicateEnumerator.cs" />
     <Compile Include="Collections\IMixedRadixEnumerator.cs" />
     <Compile Include="Collections\MixedRadixEnumerator.cs" />
-    <Compile Include="EventCollectionArrayExtension.cs" />
     <Compile Include="EventModel.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="Response.cs" />
-    <Compile Include="Formulas\BinaryFormula.cs" />
-    <Compile Include="Formulas\Constant.cs" />
-    <Compile Include="Formulas\Formula.cs" />
-    <Compile Include="Formulas\MultiFormula.cs" />
-    <Compile Include="Formulas\UnaryFormula.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="PlanningLexer.cs" />
     <Compile Include="PlanningNumericType.cs" />

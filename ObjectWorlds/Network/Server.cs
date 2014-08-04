@@ -29,15 +29,23 @@ namespace ObjectWorlds.Network
 
         private ServerProblem _problem;
 
-        private ObjectBase _objectBase;
+        //private ObjectBase _objectBase;
 
         private Dictionary<string, Client> _agentClientDict;
 
         #endregion
 
+        #region Properties
+
+        public ObjectBase ObjectBase { get; set; }
+
+        #endregion
+
         #region Events
 
-        public event EventHandler<Client> NewClient;
+        public event
+            EventHandler<Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event>>
+            ObjectBaseChanged;
 
         #endregion
 
@@ -48,8 +56,9 @@ namespace ObjectWorlds.Network
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             _port = port;
             _backLog = backlog;
-            _objectBase = new ObjectBase(problem);
-            _objectBase.ObjectBaseChanged += ShowObjectBase;
+            ObjectBase = new ObjectBase(problem);
+            ObjectBase.Changed += ShowObjectBase;
+            //ObjectBase.Changed += (sender, tuple) => ObjectBaseChanged(sender, tuple);
             _problem = problem;
             _agentClientDict = new Dictionary<string, Client>();
         }
@@ -60,7 +69,7 @@ namespace ObjectWorlds.Network
 
         public void Run()
         {
-            _objectBase.ShowInfo();
+            ObjectBase.ShowInfo();
             Console.WriteLine("Wait for an agent");
             Listen();
             Console.WriteLine("Connect 2 agents");
@@ -96,40 +105,34 @@ namespace ObjectWorlds.Network
                 {
                     Action action = _agentClientDict[agentName].GetAction();
                     Console.WriteLine(action);
-                    Response response = _objectBase.GetActualResponse(action);
+                    Response response = ObjectBase.GetActualResponse(action);
                     _agentClientDict[agentName].SendMessage(response.FullName);
-                    Event e = _objectBase.GetActualEvent(response);
+                    Event e = ObjectBase.GetActualEvent(response);
+
+                    Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event> tuple = null;
 
                     foreach (var otherAgentName in _problem.AgentList)
                     {
                         if (otherAgentName != agentName)
                         {
                             Agent otherAgent = _problem.AgentDict[otherAgentName];
-                            //Console.WriteLine("agent name: {0}, observation list count: {1}", otherAgentName, otherAgent.ObservationList.Count);
-                            //foreach (var observation in e.ObservationList)
-                            //{
-                            //    Console.WriteLine("Event's observation: {0}", observation.FullName);
-                            //}
 
                             foreach (var observation in otherAgent.ObservationList)
                             {
-                                //Console.WriteLine("Other agent observation: {0}", observation.FullName);
                                 if (e.ObservationList.Any(obs => obs == observation))
                                 {
-                                    CUDDNode objectBaseNode = _objectBase.CurrentCuddNode;
+                                    CUDDNode objectBaseNode = ObjectBase.CurrentCuddNode;
                                     CUDD.Ref(objectBaseNode);
                                     CUDDNode obsPreNode = observation.Precondition;
                                     CUDD.Ref(obsPreNode);
                                     CUDDNode impliesNode = CUDD.Function.Implies(objectBaseNode, obsPreNode);
-                                    //if (observation.FullName == "noinfo(a2,a1)")
-                                    //{
-                                    //    CUDD.Print.PrintMinterm(objectBaseNode);
-                                    //    CUDD.Print.PrintMinterm(obsPreNode);
-                                    //    Console.WriteLine("observation noinfo(a2,a1) is {0}", impliesNode.Equals(CUDD.ONE));
-                                    //}
                                     if (impliesNode.Equals(CUDD.ONE))
                                     {
                                         Console.WriteLine("Send observation {0} to agent {1}.", observation, otherAgentName);
+                                        tuple =
+                                            new Tuple
+                                                <IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event
+                                                    >(ObjectBase.PredBooleanMap, agentName,action, response, observation, e);
                                         _agentClientDict[otherAgentName].SendMessage(observation.FullName);
                                         break;
                                     }
@@ -139,8 +142,9 @@ namespace ObjectWorlds.Network
                         }
                     }
 
-                    _objectBase.Update(e);
-                    //_objectBase.ShowInfo();
+                    ObjectBase.Update(e);
+                    ObjectBaseChanged(this, tuple);
+
                 }
             } while (true);
         }

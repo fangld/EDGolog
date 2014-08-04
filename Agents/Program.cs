@@ -198,26 +198,5 @@ namespace Agents
         //    }
         //}
 
-        private static void Test2(string programFileName)
-        {
-            TextReader tr = new StreamReader(programFileName);
-
-            // create a CharStream that reads from standard input
-            AntlrInputStream input = new AntlrInputStream(tr);
-            // create a lexer that feeds off of input CharStream
-
-            HighLevelProgramLexer lexer = new HighLevelProgramLexer(input);
-            // create a buffer of tokens pulled from the lexer
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            // create a parser that feeds off the tokens buffer
-            HighLevelProgramParser parser = new HighLevelProgramParser(tokens);
-
-            HighLevelProgramParser.ProgramContext programContext = parser.program();// begin parsing at init rule
-            //ProgramInterpretor interpretor = new ProgramInterpretor();
-            //interpretor.EnterProgram(programContext);
-            //Console.WriteLine(programContext.GetText());
-
-            tr.Close();
-        }
-    }
+       }
 }

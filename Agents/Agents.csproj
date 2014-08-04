@@ -51,12 +51,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HighLevelPrograms\HighLevelProgramLexer.cs" />
-    <Compile Include="HighLevelPrograms\HighLevelProgramParser.cs" />
-    <Compile Include="HighLevelPrograms\MentalAttitude.cs" />
-    <Compile Include="HighLevelPrograms\MentalAttitudeExtension.cs" />
-    <Compile Include="HighLevelPrograms\ProgramInterpretor.cs" />
-    <Compile Include="HighLevelPrograms\ObjectFormulaContextExtension.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

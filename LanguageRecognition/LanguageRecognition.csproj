@@ -45,12 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HighLevelProgram.g4.lexer.cs">
-      <DependentUpon>HighLevelProgram.g4</DependentUpon>
-    </Compile>
-    <Compile Include="HighLevelProgram.g4.parser.cs">
-      <DependentUpon>HighLevelProgram.g4</DependentUpon>
-    </Compile>
     <Compile Include="Planning.g4.lexer.cs">
       <DependentUpon>Planning.g4</DependentUpon>
     </Compile>
@@ -60,12 +54,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Antlr4 Include="HighLevelProgram.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>
-      <Listener>False</Listener>
-      <Visitor>False</Visitor>
-    </Antlr4>
     <Antlr4 Include="Planning.g4">
       <Generator>MSBuild:Compile</Generator>
       <CustomToolNamespace>LanguageRecognition</CustomToolNamespace>

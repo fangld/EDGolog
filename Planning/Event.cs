@@ -61,20 +61,6 @@ namespace Planning
             Name = context.eventSymbol().GetText();
             Precondition = precondition;
             _condEffect = context.emptyOrEffect().GetEffect(predicateDict, assignment);
-
-            //if (FullName == "pickSuc(a2)")
-            //{
-            //    Console.WriteLine("Cond effect:");
-
-            //    foreach (var tuple in _condEffect)
-            //    {
-            //        foreach (var literal in tuple.Item2)
-            //        {
-            //            Console.WriteLine(literal.Item1);
-            //        }
-            //    }
-            //}
-
             GeneratePartialSuccessorStateAxiom();
             _observationList = new List<Observation>();
         }
@@ -123,15 +109,6 @@ namespace Planning
 
                 result = CUDD.Function.And(result, cEffectNode);
             }
-
-            //if (FullName == "pickSuc(a2)")
-            //{
-            //    Console.WriteLine("Get effect node");
-            //    foreach (var predicate in _affectedPredicateSet)
-            //    {
-            //        Console.WriteLine(predicate);
-            //    }
-            //}
 
             return result;
         }
