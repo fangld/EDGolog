@@ -225,7 +225,7 @@ namespace SquirrelsWorlds
         
         private void Initial()
         {
-            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+            CUDD.InitialiseCUDD(3072, 256, 262144, 0.1);
 
             // Create a TextReader that reads from a file
             TextReader tr = new StreamReader(_domainFileName);
@@ -266,8 +266,7 @@ namespace SquirrelsWorlds
             //            problem.ShowInfo();
 
             _server = new Server(_port, _listenBackLog, _problem);
-
-
+            
             _server.ObjectBaseChanged += _server_ObjectBaseChanged;
 
         }

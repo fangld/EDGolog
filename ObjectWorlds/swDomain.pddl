@@ -203,53 +203,29 @@
 (:observation otherPickSuc
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (pickSuc ?j)
 )
 
 (:observation otherDropSuc
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (dropSuc ?j)
 )
 
 (:observation otherPickFail
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (pickFail ?j)
 )
 
 (:observation otherDropFail
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x ?y)))
+                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (dropFail ?j)
-)
-
-(:observation otherPickSucOrFail
-:parameters (?i - agent ?j - agent)
-:precondition (exists (?x - point ?y - point) 
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
-:eventmodel (
-	        (:pldegree 0
-             :events (pickSuc ?j))
-            (:pldegree 1 
-			 :events (pickFail ?j))
-		    )
-)
-
-(:observation otherDropSucOrFail
-:parameters (?i - agent ?j - agent)
-:precondition (exists (?x - point ?y - point) 
-                      (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)))))
-:eventmodel (
-	        (:pldegree 0
-             :events (dropSuc ?j))
-            (:pldegree 1 
-			 :events (dropFail ?j))
-		    )
 )
 
 (:observation otherSmell
