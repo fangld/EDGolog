@@ -232,12 +232,12 @@ namespace Planning.Servers
             List<string> eventNameArray = new List<string>
             {
                 "leftFail(a1)",
-                "rightSucWithNotice(a2,-2)",
-                "leftSucWithNotice(a1,0)",
-                "leftSucWithoutNotice(a1)",
-                "leftSucWithoutNotice(a2)",
-                "rightSucWithoutNotice(a1)",
-                "rightSucWithoutNotice(a2)",
+                "rightSuc2(a2,-2)",
+                "leftSuc2(a1,0)",
+                "leftSuc1(a1)",
+                "leftSuc1(a2)",
+                "rightSuc1(a1)",
+                "rightSuc1(a2)",
                 "dropFail(a1)",
                 "dropSuc(a1)",
                 "pickSuc(a2)",
@@ -250,6 +250,7 @@ namespace Planning.Servers
             for (int i = 0; i < eventNameArray.Count; i++)
             {
                 string eventName = eventNameArray[i];
+                Console.WriteLine(eventName);
                 Event e = _eventDict[eventName];
                 Console.WriteLine("  Name: {0}", eventNameArray[i]);
                 Console.WriteLine("  Cudd index: {0}", e.CuddIndex);

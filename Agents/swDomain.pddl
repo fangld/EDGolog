@@ -13,7 +13,7 @@
 	(acorn ?x - point ?n - numOfAcorn oneof ?n)
 )
 
-(:event leftSucWithNotice
+(:event leftSuc2
 :parameters (?i - agent ?d - leftRelLoc)
 :precondition (exists (?x - point ?y - point ?j - agent)
                       (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (= ?x (+ ?y ?d)) (!= ?x 0))
@@ -23,7 +23,7 @@
 		)
 )
 
-(:event leftSucWithoutNotice
+(:event leftSuc1
 :parameters (?i - agent)
 :precondition (exists (?x - point ?y - point ?j - agent)
                       (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (!= ?x 0) (forall (?r - leftRelLoc) (!= ?x (+ ?y ?r))))
@@ -38,7 +38,7 @@
 :precondition (exists (?x - point) (and (loc ?i ?x) (= ?x 0)))
 )
 
-(:event rightSucWithNotice
+(:event rightSuc2
 :parameters (?i - agent ?d - rightRelLoc)
 :precondition (exists (?x - point ?y - point ?j - agent)
                       (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (= ?x (+ ?y ?d)) (!= ?x maxLoc))
@@ -48,7 +48,7 @@
 		)
 )
 
-(:event rightSucWithoutNotice
+(:event rightSuc1
 :parameters (?i - agent)
 :precondition (exists (?x - point ?y - point ?j - agent)
                       (and (!= ?i ?j) (loc ?i ?x) (loc ?j ?y) (!= ?x maxLoc) (forall (?r - rightRelLoc) (!= ?x (+ ?y ?r))))
@@ -92,68 +92,67 @@
 :precondition (exists (?x - point ?n - numOfAcorn) (and (acorn ?x ?n) (loc ?i ?x) (= ?n (+ ?m ?d))))
 )
 
-(:event nil
+(:event noop
 :parameters (?i - agent)
 )
 
 
-(:action left
+(:action Left
 :parameters (?i - agent)
 
-(:response sucWithNotice
+(:response LeftSuc2
 :parameters (?d - leftRelLoc)
-:eventmodel (leftSucWithNotice ?i ?d))
+:eventmodel (leftSuc2 ?i ?d))
 
-(:response sucWithoutNotice
-:eventmodel (leftSucWithoutNotice ?i))
+(:response LeftSuc1
+:eventmodel (leftSuc1 ?i))
 
-(:response fail
+(:response LeftFail
 :eventmodel (leftFail ?i))
 )
 
-(:action right
+
+(:action Right
 :parameters (?i - agent)
 
-(:response sucWithNotice
+(:response RightSuc2
 :parameters (?d - rightRelLoc)
-:eventmodel (rightSucWithNotice ?i ?d))
+:eventmodel (rightSuc2 ?i ?d))
 
-(:response sucWithoutNotice
-:eventmodel (rightSucWithoutNotice ?i))
+(:response RightSuc1
+:eventmodel (rightSuc1 ?i))
 
-(:response fail
+(:response RightFail
 :eventmodel (rightFail ?i))
 )
 
 
-
-(:action pick
+(:action Pick
 :parameters (?i - agent)
 
-(:response suc
+(:response PickSuc
 :eventmodel (pickSuc ?i))
 
-(:response fail
+(:response PickFail
 :eventmodel (pickFail ?i))
 )
 
 
-
-(:action drop
+(:action Drop
 :parameters (?i - agent)
 
-(:response suc
+(:response DropSuc
 :eventmodel (dropSuc ?i))
 
-(:response fail
+(:response DropFail
 :eventmodel (dropFail ?i))
 )
 
 
-(:action smell
+(:action Smell
 :parameters (?i - agent)
 
-(:response noise
+(:response Learn
 :parameters (?m - numOfAcorn)
 :eventmodel (
 	        (:pldegree 0
@@ -164,95 +163,94 @@
 ))
 
 
-
-(:action empty
+(:action Noop
 :parameters (?i - agent)
 
-(:response suc
-:eventmodel (nil ?i))
+(:response Noop
+:eventmodel (noop ?i))
 )
 
 
 
-(:observation otherLeftSuc
+(:observation ObsLeftSuc
 :parameters (?i - agent ?j - agent ?d - leftRelLoc)
 :precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x (+ ?y ?d))))
-:eventmodel (leftSucWithNotice ?j ?d)
+:eventmodel (leftSuc2 ?j ?d)
 )
 
-(:observation otherRightSuc
+(:observation ObsRightSuc
 :parameters (?i - agent ?j - agent ?d - rightRelLoc)
 :precondition (exists (?x - point ?y - point) (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (= ?x (+ ?y ?d))))
-:eventmodel (rightSucWithNotice ?j ?d)
+:eventmodel (rightSuc2 ?j ?d)
 )
 
-(:observation otherLeftFail
+(:observation ObsLeftFail
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x ?y))))
 :eventmodel (leftFail ?j)
 )
 
-(:observation otherRightFail
+(:observation ObsRightFail
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (rightFail ?j)
 )
 
-(:observation otherPickSuc
+(:observation ObsPickSuc
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (pickSuc ?j)
 )
 
-(:observation otherDropSuc
+(:observation ObsDropSuc
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (dropSuc ?j)
 )
 
-(:observation otherPickFail
+(:observation ObsPickFail
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (pickFail ?j)
 )
 
-(:observation otherDropFail
+(:observation ObsDropFail
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (dropFail ?j)
 )
 
-(:observation otherSmell
+(:observation ObsSmell
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
 :eventmodel (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn ?j ?m ?d))
 )
 
-(:observation otherNil
+(:observation ObsNoop
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point) 
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (or (= ?x (+ ?y 1)) (= ?x (- ?y 1)) (= ?x ?y))))
-:eventmodel (nil ?j)
+:eventmodel (noop ?j)
 )
 
-(:observation noinfo
+(:observation NoObs
 :parameters (?i - agent ?j - agent)
 :precondition (exists (?x - point ?y - point)
                       (and (!= ?i ?j) (loc ?j ?x) (loc ?i ?y) (!= ?x (+ ?y 1)) (!= ?x (- ?y 1)) (!= ?x ?y))
 					  )
 :eventmodel (
 	        (:pldegree 0
-             :events (nil ?j))
+             :events (noop ?j))
             (:pldegree 1 
-			 :events (or (leftSucWithoutNotice ?j) (rightSucWithoutNotice ?j)
-                    	 (leftFail ?j) (rightFail ?j) (pickSuc ?j) (dropSuc ?j) (pickFail ?j) (dropFail ?j)
+			 :events (or (leftSuc1 ?j) (rightSuc1 ?j) (leftFail ?j) (rightFail ?j) 
+			             (pickSuc ?j) (dropSuc ?j) (pickFail ?j) (dropFail ?j)
 	                     (exists (?m - numOfAcorn ?d - noiseSensingAcorn) (learn ?j ?m ?d))
 	                 )
 			)

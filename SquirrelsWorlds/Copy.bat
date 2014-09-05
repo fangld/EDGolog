@@ -1,0 +1,5 @@
+copy "E:\EDGolog\SquirrelsWorlds\bin\Debug\*.exe" "C:\Users\Razor\Desktop\Server\"
+copy "E:\EDGolog\SquirrelsWorlds\bin\Debug\*.dll" "C:\Users\Razor\Desktop\Server\"
+copy "E:\EDGolog\SquirrelsWorlds\bin\Debug\*.pdb" "C:\Users\Razor\Desktop\Server\"
+copy "E:\EDGolog\SquirrelsWorlds\bin\Debug\swServerProblem.pddl" "C:\Users\Razor\Desktop\Server\swServerProblem.pddl"
+copy "E:\EDGolog\SquirrelsWorlds\bin\Debug\swDomain.pddl" "C:\Users\Razor\Desktop\Server\"

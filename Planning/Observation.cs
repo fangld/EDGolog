@@ -29,6 +29,7 @@ namespace Planning
         {
             Name = context.observationSymbol().GetText();
             Precondition = precondition;
+            //Console.WriteLine(Name);
             EventModel = context.eventModel().GetEventModel(eventDict, assignment);
 
             foreach (var e in EventModel.KnowEventList)

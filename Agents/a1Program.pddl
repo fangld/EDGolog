@@ -1,18 +1,23 @@
 ﻿(seq 
-    (while (know (not (loc a1 3)))
+    (while (not (know (loc a1 3)))
         (seq 
-	        (if (not (know (hold a1)))
-	            (pick a1)
+	        (if (forall (?n - numOfAcorn) (not (bel (exists (?x - point) (and (loc a1 ?x) (acorn ?x ?n))))))
+	            (Smell a1)
+			)
+			
+		    (if (and (bel (exists (?x - point) (and (loc a1 ?x) (exists (?n - numOfAcorn) (and (loc a1 ?x) (acorn ?x ?n) (> ?n 0))))))
+					(know (not (hold a1)))
+				)
+		        (Pick a1)
 			)
 		    
-			(right a1)
+			(Right a1)
 	    )
     )
 	
-	(if (and (know (hold a1)) (bel (not (acorn 3 3))))
-		(drop a1)
-	)
-	(empty a1)
-	(empty a1)
-	(empty a1)
+	(Drop a1)
+
+	(Noop a1)
+	(Noop a1)
+	(Noop a1)
 )

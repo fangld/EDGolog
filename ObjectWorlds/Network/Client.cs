@@ -55,6 +55,8 @@ namespace ObjectWorlds.Network
         /// </summary>
         public bool IsConnected { get; private set; }
 
+        public bool IsTerminated { get; private set; }
+
         #endregion
 
         #region Constructors

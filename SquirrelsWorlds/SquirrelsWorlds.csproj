@@ -73,6 +73,7 @@
     <EmbeddedResource Include="SquirrelsWorldForm.resx">
       <DependentUpon>SquirrelsWorldForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="Copy.bat" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -165,6 +166,9 @@
     <None Include="Figs\SkwirlLeft.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>call E:\EDGolog\SquirrelsWorlds\Copy.bat</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

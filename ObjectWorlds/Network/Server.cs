@@ -101,6 +101,8 @@ namespace ObjectWorlds.Network
         {
             do
             {
+                
+
                 foreach (var agentName in _problem.AgentList)
                 {
                     Action action = _agentClientDict[agentName].GetAction();

@@ -174,22 +174,22 @@ namespace SquirrelsWorlds
             Image edgyImage = _edgyLastImage;
             Image wallyImage = _wallyLastImage;
             string actionFullName = action.FullName;
-            if (actionFullName == "left(a1)")
+            if (actionFullName == "Left(a1)")
             {
                 edgyImage = _edgyLeftImage;
                 _edgyLastImage = edgyImage;
             }
-            else if (actionFullName == "right(a1)")
+            else if (actionFullName == "Right(a1)")
             {
                 edgyImage = _edgyRightImage;
                 _edgyLastImage = edgyImage;
             }
-            else if (actionFullName == "left(a2)")
+            else if (actionFullName == "Left(a2)")
             {
                 wallyImage = _wallyLeftImage;
                 _wallyLastImage = wallyImage;
             }
-            else if (actionFullName == "right(a2)")
+            else if (actionFullName == "Right(a2)")
             {
                 wallyImage = _wallyRightImage;
                 _wallyLastImage = wallyImage;

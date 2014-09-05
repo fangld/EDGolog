@@ -18,70 +18,54 @@ namespace Agents
     {
         static void Main(string[] args)
         {
-            //string programFileName = @"program.edp";
-            //Test2(programFileName);
             Test1();
-            //string domainFileName, problemFileName;
-            //if (args.Length == 3)
-            //{
-            //    domainFileName = args[1];
-            //    problemFileName = args[2];
-            //}
-            //else
-            //{
-            //    domainFileName = "d1.pddl";
-            //    problemFileName = "a1.pddl";
-            //}
-            //Client client = new Client();
-            //Test3(domainFileName, problemFileName);
-            //Console.ReadLine();
         }
 
-        static void Test3(string domainFileName, string problemFileName)
-        {
-            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+        //static void Test3(string domainFileName, string problemFileName)
+        //{
+        //    CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
 
-            // Create a TextReader that reads from a file
-            TextReader tr = new StreamReader(domainFileName);
+        //    // Create a TextReader that reads from a file
+        //    TextReader tr = new StreamReader(domainFileName);
 
-            // create a CharStream that reads from standard input
-            AntlrInputStream input = new AntlrInputStream(tr);
-            // create a lexer that feeds off of input CharStream
+        //    // create a CharStream that reads from standard input
+        //    AntlrInputStream input = new AntlrInputStream(tr);
+        //    // create a lexer that feeds off of input CharStream
 
-            PlanningLexer lexer = new PlanningLexer(input);
-            // create a buffer of tokens pulled from the lexer
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            // create a parser that feeds off the tokens buffer
-            PlanningParser parser = new PlanningParser(tokens);
+        //    PlanningLexer lexer = new PlanningLexer(input);
+        //    // create a buffer of tokens pulled from the lexer
+        //    CommonTokenStream tokens = new CommonTokenStream(lexer);
+        //    // create a parser that feeds off the tokens buffer
+        //    PlanningParser parser = new PlanningParser(tokens);
 
-            //var domainContext = parser.domain();// begin parsing at init rule
-            tr.Close();
-            //var domain = Domain<ClientAction>.CreateInstance(domainContext);
-            //ShowDomainInfo(domain);
+        //    //var domainContext = parser.domain();// begin parsing at init rule
+        //    tr.Close();
+        //    //var domain = Domain<ClientAction>.CreateInstance(domainContext);
+        //    //ShowDomainInfo(domain);
 
-            // Create a TextReader that reads from a file
-            tr = new StreamReader(problemFileName);
+        //    // Create a TextReader that reads from a file
+        //    tr = new StreamReader(problemFileName);
 
-            // create a CharStream that reads from standard input
-            input = new AntlrInputStream(tr);
-            // create a lexer that feeds off of input CharStream
+        //    // create a CharStream that reads from standard input
+        //    input = new AntlrInputStream(tr);
+        //    // create a lexer that feeds off of input CharStream
 
-            lexer = new PlanningLexer(input);
-            // create a buffer of tokens pulled from the lexer
-            tokens = new CommonTokenStream(lexer);
-            // create a parser that feeds off the tokens buffer
-            parser = new PlanningParser(tokens);
+        //    lexer = new PlanningLexer(input);
+        //    // create a buffer of tokens pulled from the lexer
+        //    tokens = new CommonTokenStream(lexer);
+        //    // create a parser that feeds off the tokens buffer
+        //    parser = new PlanningParser(tokens);
 
-            var problemContext = parser.clientProblem();// begin parsing at init rule
-            tr.Close();
+        //    var problemContext = parser.clientProblem();// begin parsing at init rule
+        //    tr.Close();
 
-            //ClientProblem problem = ClientProblem.CreateInstance(domain, problemContext);
-            //problem.ShowInfo();
+        //    //ClientProblem problem = ClientProblem.CreateInstance(domain, problemContext);
+        //    //problem.ShowInfo();
 
-            //Server server = new Server(port, listenBacklog, problem);
-            //server.Run();
-            Console.ReadLine();
-        }
+        //    //Server server = new Server(port, listenBacklog, problem);
+        //    //server.Run();
+        //    Console.ReadLine();
+        //}
 
         private static void Test1()
         {

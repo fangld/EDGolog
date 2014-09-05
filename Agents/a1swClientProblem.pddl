@@ -4,7 +4,7 @@
 	(:agentid a1)
 	(:numbers (maxLoc 3) (maxAcorn 3) (noticeRelLoc 1) (errorSencingAcorn 1))
 	(:initknowledge (and 
-      	(loc a1 0)		
+		(loc a1 0)
 		(loc a2 3)
 		(not (hold a1))
 		(not (hold a2))

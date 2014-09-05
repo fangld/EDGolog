@@ -46,6 +46,11 @@
   <ItemGroup>
     <Compile Include="Action.cs" />
     <Compile Include="Clients\ProgramInterpretor.cs" />
+    <Compile Include="HighLevelProgramExecution\Action.cs" />
+    <Compile Include="HighLevelProgramExecution\ConditionalStructure.cs" />
+    <Compile Include="HighLevelProgramExecution\EmptyProgram.cs" />
+    <Compile Include="HighLevelProgramExecution\LoopStructure.cs" />
+    <Compile Include="HighLevelProgramExecution\Program.cs" />
     <Compile Include="Collections\ActionEnumerator.cs" />
     <Compile Include="Collections\Algorithms.cs" />
     <Compile Include="Clients\ClientAction.cs" />
@@ -74,6 +79,8 @@
     <Compile Include="Collections\IMixedRadixEnumerator.cs" />
     <Compile Include="Collections\MixedRadixEnumerator.cs" />
     <Compile Include="EventModel.cs" />
+    <Compile Include="HighLevelProgramExecution\Sequence.cs" />
+    <Compile Include="HighLevelProgramExecution\TestCondition.cs" />
     <Compile Include="Observation.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Globals.cs" />

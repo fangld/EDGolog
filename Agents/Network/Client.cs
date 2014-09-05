@@ -66,7 +66,7 @@ namespace Agents.Network
 
         private void Initial(string domainFileName, string problemFileName, string programFileName)
         {
-            CUDD.InitialiseCUDD(256, 256, 262144, 0.1);
+            CUDD.InitialiseCUDD(3072, 256, 262144, 0.1);
 
             // Create a TextReader that reads from a file
             TextReader tr = new StreamReader(domainFileName);
@@ -134,6 +134,12 @@ namespace Agents.Network
 
         public void ExecuteProgram()
         {
+            string message = ReceiveMessage();
+            if (message == "sendmeaction")
+            {
+                
+            }
+
             if (_agentId != "a1")
             {
                 Console.WriteLine("Agent id: {0}", _agentId);

@@ -4,10 +4,17 @@
 	(:agentid a2)
 	(:numbers (maxLoc 3) (maxAcorn 3) (noticeRelLoc 1) (errorSencingAcorn 1))
 	(:initknowledge (and 
-      	(loc a1 0)
+		(loc a1 0)
 		(loc a2 3)
 		(not (hold a1))
 		(not (hold a2))
         )
+	)
+	(:initbelief (and 
+		(acorn 0 2)
+		(acorn 1 2)
+		(acorn 2 2)
+		(acorn 3 2)
+	    )
 	)
 )
