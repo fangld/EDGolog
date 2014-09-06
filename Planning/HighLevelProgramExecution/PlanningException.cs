@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace Planning.HighLevelProgramExecution
 {
-    public class Sequence : Program
+    public class PlanningException: Exception
     {
-        #region Properties
+        #region Constructors
 
-        public Program SubProgram1 { get; private set; }
-        public Program SubProgram2 { get; private set; }
+        public PlanningException() { }
+
+        public PlanningException(string message) : base(message) { }
 
         #endregion
     }

@@ -29,6 +29,8 @@ namespace ObjectWorlds.Network
 
         private ServerProblem _problem;
 
+        private Random random;
+
         //private ObjectBase _objectBase;
 
         private Dictionary<string, Client> _agentClientDict;
@@ -47,6 +49,8 @@ namespace ObjectWorlds.Network
             EventHandler<Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event>>
             ObjectBaseChanged;
 
+        public event EventHandler<ObjectBase> Completed;
+
         #endregion
 
         #region Constructors
@@ -61,6 +65,7 @@ namespace ObjectWorlds.Network
             //ObjectBase.Changed += (sender, tuple) => ObjectBaseChanged(sender, tuple);
             _problem = problem;
             _agentClientDict = new Dictionary<string, Client>();
+            random = new Random();
         }
 
         #endregion
@@ -101,24 +106,41 @@ namespace ObjectWorlds.Network
         {
             do
             {
-                
+                //Console.ReadLine();
 
-                foreach (var agentName in _problem.AgentList)
+                Client client = SelectAnClient();
+                if (client == null)
                 {
-                    Action action = _agentClientDict[agentName].GetAction();
-                    Console.WriteLine(action);
-                    Response response = ObjectBase.GetActualResponse(action);
-                    _agentClientDict[agentName].SendMessage(response.FullName);
-                    Event e = ObjectBase.GetActualEvent(response);
-
-                    Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event> tuple = null;
-
-                    foreach (var otherAgentName in _problem.AgentList)
+                    if (Completed != null)
                     {
-                        if (otherAgentName != agentName)
-                        {
-                            Agent otherAgent = _problem.AgentDict[otherAgentName];
+                        Completed(this, null);
+                    }
+                    break;
+                }
+                Console.WriteLine("Select agent: {0}", client.AgentId);
+                client.SendMessage("action");
+                Action action = client.GetAction();
+                Response response = ObjectBase.GetActualResponse(action);
+                client.SendMessage(response.FullName);
+                string message = client.ReceiveMessage();
+                Console.WriteLine("receive message: {0}", message);
+                if (message == "quit")
+                {
+                    Console.WriteLine("Agent {0} is terminated", client.AgentId);
+                    client.IsTerminated = true;
+                }
 
+                string agentName = client.AgentId;
+                Event e = ObjectBase.GetActualEvent(response);
+                Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event> tuple = null;
+                foreach (var otherAgentName in _problem.AgentList)
+                {
+                    if (otherAgentName != agentName)
+                    {
+                        Agent otherAgent = _problem.AgentDict[otherAgentName];
+                        Client otherClient = _agentClientDict[otherAgentName];
+                        if (!otherClient.IsTerminated)
+                        {
                             foreach (var observation in otherAgent.ObservationList)
                             {
                                 if (e.ObservationList.Any(obs => obs == observation))
@@ -130,25 +152,52 @@ namespace ObjectWorlds.Network
                                     CUDDNode impliesNode = CUDD.Function.Implies(objectBaseNode, obsPreNode);
                                     if (impliesNode.Equals(CUDD.ONE))
                                     {
-                                        Console.WriteLine("Send observation {0} to agent {1}.", observation, otherAgentName);
+                                        Console.WriteLine("Send observation {0} to agent {1}.", observation,
+                                            otherAgentName);
                                         tuple =
                                             new Tuple
-                                                <IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event
-                                                    >(ObjectBase.PredBooleanMap, agentName,action, response, observation, e);
-                                        _agentClientDict[otherAgentName].SendMessage(observation.FullName);
+                                                <IReadOnlyDictionary<string, bool>, string, Action, Response,
+                                                    Observation, Event
+                                                    >(ObjectBase.PredBooleanMap, agentName, action, response,
+                                                        observation, e);
+                                        otherClient.SendMessage("observation");
+                                        otherClient.SendMessage(observation.FullName);
                                         break;
                                     }
                                 }
                             }
-                            
                         }
                     }
+                }
 
-                    ObjectBase.Update(e);
+                ObjectBase.Update(e);
+                if (ObjectBaseChanged != null)
+                {
                     ObjectBaseChanged(this, tuple);
-
                 }
             } while (true);
+        }
+
+        private Client SelectAnClient()
+        {
+            Client result = null;
+            List<Client> clientList = new List<Client>();
+            foreach (var client in _agentClientDict.Values)
+            {
+                if (!client.IsTerminated)
+                {
+                    clientList.Add(client);
+                }
+            }
+
+            //Console.WriteLine("Remaining agents' number: {0}", clientList.Count);
+
+            if (clientList.Count != 0)
+            {
+                int index = random.Next(clientList.Count);
+                result = clientList[index];
+            }
+            return result;
         }
 
         private void ShowObjectBase(object sender, Tuple<IReadOnlyDictionary<string, bool>, Event> tuple)

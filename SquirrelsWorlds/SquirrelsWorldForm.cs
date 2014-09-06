@@ -268,7 +268,13 @@ namespace SquirrelsWorlds
             _server = new Server(_port, _listenBackLog, _problem);
             
             _server.ObjectBaseChanged += _server_ObjectBaseChanged;
+            _server.Completed += _server_Completed;
 
+        }
+
+        void _server_Completed(object sender, ObjectBase e)
+        {
+            MessageBox.Show("All squirrels terminated!");
         }
 
         void _server_ObjectBaseChanged(object sender, Tuple<IReadOnlyDictionary<string, bool>, string, Planning.Action, Response, Observation, Event> e)

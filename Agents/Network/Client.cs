@@ -6,14 +6,15 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-//using Agents.HighLevelPrograms;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
 using Planning;
 using Planning.Clients;
+using Planning.HighLevelProgramExecution;
 using Action = Planning.Action;
+using Program = Planning.HighLevelProgramExecution.Program;
 
 namespace Agents.Network
 {
@@ -134,62 +135,157 @@ namespace Agents.Network
 
         public void ExecuteProgram()
         {
-            string message = ReceiveMessage();
-            if (message == "sendmeaction")
-            {
-                
-            }
-
-            if (_agentId != "a1")
-            {
-                Console.WriteLine("Agent id: {0}", _agentId);
-                string observationName = ReceiveMessage();
-                Console.WriteLine("Receive observation: {0}", observationName);
-                Observation observation = _observationDict[observationName];
-                _mentalAttitude.Update(observation);
-            }
             Interpret(_programContext);
         }
 
         private void Interpret(PlanningParser.ProgramContext context)
         {
-            Console.WriteLine(context.GetText());
+            var program = Planning.HighLevelProgramExecution.Program.CreateInstance(context);
+            Interpret(program);
 
-            if (context.SEQ() != null)
+        }
+
+        private void Interpret(Planning.HighLevelProgramExecution.Program program)
+        {
+            if (!Final(program))
             {
-                Console.WriteLine("Enter seq");
-                foreach (var programContext in context.program())
+                do
                 {
-                    Interpret(programContext);
+                    Console.WriteLine(program.GetType());
+                    string message = ReceiveMessage();
+                    Console.WriteLine("Receive message: {0}", message);
+                    if (message == "observation")
+                    {
+                        string observationName = ReceiveMessage();
+                        Console.WriteLine("Receive observation: {0}", observationName);
+                        Observation observation = _observationDict[observationName];
+                        _mentalAttitude.Update(observation);
+                    }
+                    else
+                    {
+                        Console.WriteLine(program);
+                        program = Trans(program);
+                        if (!Final(program))
+                        {
+                            SendMessage("remain");
+                        }
+                        else
+                        {
+                            SendMessage("quit");
+                            break;
+                        }
+                    }
+                } while (true);
+            }
+        }
+
+        private bool Final(Planning.HighLevelProgramExecution.Program program)
+        {
+            bool result;
+            if (program is EmptyProgram)
+            {
+                result = true;
+            }
+            
+            else if (program is SequenceStructure)
+            {
+                SequenceStructure seq = ((SequenceStructure)program);
+                result = true;
+                foreach (var subProgram in seq.SubPrograms)
+                {
+                    if (!Final(subProgram))
+                    {
+                        result = false;
+                        break;
+                    }
                 }
             }
-            else if (context.IF() != null)
+            
+            else if (program is ConditionalStructure)
             {
-                Console.WriteLine("Enter if and condition is {0}", _mentalAttitude.Implies(context.subjectGd()));
-
-                if (_mentalAttitude.Implies(context.subjectGd()))
-                {
-                    Interpret(context.program()[0]);
-                }
-                else if (context.program().Count == 2)
-                {
-                    Interpret(context.program()[1]);
-                }
+                ConditionalStructure cond = ((ConditionalStructure)program);
+                return _mentalAttitude.Implies(cond.Condition) ? Final(cond.SubProgram1) : Final(cond.SubProgram2);
             }
-            else if (context.WHILE() != null)
-            {
-                Console.WriteLine("Enter while and condition is {0}", _mentalAttitude.Implies(context.subjectGd()));
 
-                while (_mentalAttitude.Implies(context.subjectGd()))
+            else if (program is LoopStructure)
+            {
+                LoopStructure loop = ((LoopStructure) program);
+                result = true;
+                if (_mentalAttitude.Implies(loop.Condition))
                 {
-                    Interpret(context.program(0));
+                    result = Final(loop.SubProgram);
                 }
             }
             else
             {
-                Console.WriteLine("Enter primitive action");
-                ExecuteAction(context);
+                result = false;
             }
+
+            return result;
+        }
+        
+        private Planning.HighLevelProgramExecution.Program Trans(Planning.HighLevelProgramExecution.Program program)
+        {
+            //Console.WriteLine();
+            //Console.WriteLine(program);
+            Planning.HighLevelProgramExecution.Program remainingProgram;
+            
+            if (program is Planning.HighLevelProgramExecution.Action)
+            {
+                remainingProgram = Planning.HighLevelProgramExecution.Program.EmptyProgram;
+
+                Planning.HighLevelProgramExecution.Action programAction =
+                    (Planning.HighLevelProgramExecution.Action) program;
+                Action action = _actionDict[programAction.FullName];
+                SendMessage(action.FullName);
+                string responseName = ReceiveMessage();
+                Console.WriteLine("Receive response: {0}", responseName);
+                Response response = action.ResponseDict[responseName];
+                _mentalAttitude.Update(response);
+            }
+            else if (program is SequenceStructure)
+            {
+                SequenceStructure seq = ((SequenceStructure) program);
+                int i;
+                for (i = 0; i < seq.SubProgramLength - 1; i++)
+                {
+                    if (!Final(seq.SubPrograms[i]))
+                    {
+                        break;
+                    }
+                }
+
+                Planning.HighLevelProgramExecution.Program[] newRemainingProgramArray =
+                    new Planning.HighLevelProgramExecution.Program[seq.SubProgramLength - i];
+                newRemainingProgramArray[0] = Trans(seq.SubPrograms[i]);
+                for (int j = 1; j < newRemainingProgramArray.Length; j++)
+                {
+                    //Console.WriteLine("newIndex:{0}, oldIndex:{1}", j, j + i - 1);
+                    newRemainingProgramArray[j] = seq.SubPrograms[j + i];
+                }
+
+                remainingProgram = new SequenceStructure(newRemainingProgramArray);
+            }
+            else if (program is ConditionalStructure)
+            {
+                ConditionalStructure cond = (ConditionalStructure) program;
+                remainingProgram = _mentalAttitude.Implies(cond.Condition)
+                    ? Trans(cond.SubProgram1)
+                    : Trans(cond.SubProgram2);
+            }
+            else if (program is LoopStructure)
+            {
+                LoopStructure loop = (LoopStructure) program;
+                remainingProgram = _mentalAttitude.Implies(loop.Condition)
+                    ? new SequenceStructure(new[] {Trans(loop.SubProgram), program})
+                    : null;
+            }
+            else
+            {
+                throw new PlanningException("Trans an empty program!");
+            }
+
+            return remainingProgram;
         }
 
         private void ExecuteAction(PlanningParser.ProgramContext context)

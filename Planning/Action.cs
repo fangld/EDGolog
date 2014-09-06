@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using LanguageRecognition;
 using PAT.Common.Classes.CUDDLib;
+using Planning.Clients;
 using Planning.Collections;
 using Planning.ContextExtensions;
+using Planning.HighLevelProgramExecution;
 
 namespace Planning
 {

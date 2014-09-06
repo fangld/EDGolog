@@ -1,5 +1,0 @@
-﻿dunk(bomb1, toilet1);
-dunk(bomb2, toilet2);
-flush(toilet1);
-flush(toilet2);
-dunk(bomb3, toilet1)

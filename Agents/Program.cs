@@ -79,7 +79,7 @@ namespace Agents
                 client.Connect();
                 client.Handshake();
                 Console.WriteLine("Start to execute program");
-                Console.ReadLine();
+                //Console.ReadLine();
                 client.ExecuteProgram();
             }
             catch (Exception e)

@@ -72,9 +72,6 @@
     <None Include="App.config" />
     <None Include="Copy.bat" />
     <None Include="packages.config" />
-    <None Include="program.edp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="program.pddl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

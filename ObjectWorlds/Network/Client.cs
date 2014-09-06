@@ -55,7 +55,10 @@ namespace ObjectWorlds.Network
         /// </summary>
         public bool IsConnected { get; private set; }
 
-        public bool IsTerminated { get; private set; }
+        /// <summary>
+        /// The flag representing wherther the agent is quit
+        /// </summary>
+        public bool IsTerminated { get; set; }
 
         #endregion
 
@@ -71,6 +74,7 @@ namespace ObjectWorlds.Network
             Host = ipEndPoint.Address.ToString();
             Port = ipEndPoint.Port;
             IsConnected = true;
+            IsTerminated = false;
             _actionDict = problem.ActionDict;
         }
 
@@ -100,10 +104,15 @@ namespace ObjectWorlds.Network
             _socket.Send(contentBuffer);
         }
 
+        public string ReceiveMessage()
+        {
+            byte[] contentBuffer = ReceiveBuffer();
+            return BytesToString(contentBuffer);
+        }
+
         public Action GetAction()
         {
             byte[] contentBuffer = ReceiveBuffer();
-
             int index = Array.FindIndex(contentBuffer, b => b == (byte)'(');
             char[] actionNameChars = new char[index];
             Parallel.For(0, index, i => actionNameChars[i] = (char)contentBuffer[i]);
