@@ -45,11 +45,19 @@ namespace ObjectWorlds.Network
 
         #region Events
 
-        public event
-            EventHandler<Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event>>
-            ObjectBaseChanged;
+        //public event
+        //    EventHandler<Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event>>
+        //    ObjectBaseChanged;
+
+        //public event EventHandler<Tuple<IReadOnlyDictionary<string, bool>, Event>> NewEvent;
+
+        public event EventHandler<Tuple<string, Action, Response, Event, IReadOnlyDictionary<string, bool>>> NewAction;
+
+        public event EventHandler<Tuple<string, Observation>> NewObservation;
 
         public event EventHandler<ObjectBase> Completed;
+
+        public event EventHandler<string> AgentTerminated;
 
         #endregion
 
@@ -106,8 +114,6 @@ namespace ObjectWorlds.Network
         {
             do
             {
-                //Console.ReadLine();
-
                 Client client = SelectAnClient();
                 if (client == null)
                 {
@@ -121,6 +127,11 @@ namespace ObjectWorlds.Network
                 client.SendMessage("action");
                 Action action = client.GetAction();
                 Response response = ObjectBase.GetActualResponse(action);
+                //if (NewAction != null)
+                //{
+                //    NewAction(this, new Tuple<string, Action, Response>(client.AgentId, action, response));
+                //}
+
                 client.SendMessage(response.FullName);
                 string message = client.ReceiveMessage();
                 Console.WriteLine("receive message: {0}", message);
@@ -128,6 +139,10 @@ namespace ObjectWorlds.Network
                 {
                     Console.WriteLine("Agent {0} is terminated", client.AgentId);
                     client.IsTerminated = true;
+                    if (AgentTerminated != null)
+                    {
+                        AgentTerminated(this, client.AgentId);
+                    }
                 }
 
                 string agentName = client.AgentId;
@@ -154,12 +169,18 @@ namespace ObjectWorlds.Network
                                     {
                                         Console.WriteLine("Send observation {0} to agent {1}.", observation,
                                             otherAgentName);
-                                        tuple =
-                                            new Tuple
-                                                <IReadOnlyDictionary<string, bool>, string, Action, Response,
-                                                    Observation, Event
-                                                    >(ObjectBase.PredBooleanMap, agentName, action, response,
-                                                        observation, e);
+
+                                        if (NewObservation != null)
+                                        {
+                                            NewObservation(this,
+                                                new Tuple<string, Observation>(otherAgentName, observation));
+                                        }
+                                        //tuple =
+                                        //    new Tuple
+                                        //        <IReadOnlyDictionary<string, bool>, string, Action, Response,
+                                        //            Observation, Event
+                                        //            >(ObjectBase.PredBooleanMap, agentName, action, response,
+                                        //                observation, e);
                                         otherClient.SendMessage("observation");
                                         otherClient.SendMessage(observation.FullName);
                                         break;
@@ -171,9 +192,12 @@ namespace ObjectWorlds.Network
                 }
 
                 ObjectBase.Update(e);
-                if (ObjectBaseChanged != null)
+                if (NewAction != null)
                 {
-                    ObjectBaseChanged(this, tuple);
+                    NewAction(this,
+                        new Tuple<string, Action, Response, Event, IReadOnlyDictionary<string, bool>>(client.AgentId,
+                            action, response, e, ObjectBase.PredBooleanMap));
+                    //NewAction(this, new Tuple<IReadOnlyDictionary<string, bool>, Event>(ObjectBase.PredBooleanMap, e));
                 }
             } while (true);
         }

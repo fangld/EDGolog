@@ -74,6 +74,10 @@ namespace SquirrelsWorlds
         private Image _wallyInitialImage;
         private Image _wallyLastImage;
 
+        private Image _expiredInitialImage;
+        private Image _expiredLeftImage;
+        private Image _expiredRightImage;
+
         #endregion
 
         public SquirrelsWorldForm()
@@ -95,32 +99,13 @@ namespace SquirrelsWorlds
             _wallyRightImage = Resources.WallyRight;
             _wallyInitialImage = Resources.WallyUp;
 
+            _expiredInitialImage = Resources.ExpiredUp;
+            _expiredLeftImage = Resources.ExpiredLeft;
+            _expiredRightImage = Resources.ExpiredRight;
+
             InitializeComponent();
         }
-
-        //void _server_ObjectBaseChanged(object sender, Tuple<IReadOnlyDictionary<string, bool>, Event> e)
-        //{
-        //    Graphics graphics = CreateGraphics();
-        //    DrawGrids(graphics);
-        //    DrawAcorns(graphics, _server.ObjectBase.PredBooleanMap);
-        //    DrawMovingSquirrels(graphics, e.Item1, e.Item2);
-        //    graphics.Dispose();
-        //    var predBoolMap = _server.ObjectBase.PredBooleanMap;
-
-        //    listviewPredBoolMap.Items.Clear();
-        //    ListViewItem predicateItem = new ListViewItem();
-        //    ListViewItem valueItem = new ListViewItem();
-
-        //    foreach (var pair in predBoolMap)
-        //    {
-        //        predicateItem.SubItems.Add(pair.Key);
-        //        valueItem.SubItems.Add(pair.Value.ToString());
-        //    }
-
-        //    listviewPredBoolMap.Items.AddRange(new[] { predicateItem, valueItem });
-
-        //}
-
+        
         private void DrawGrids(Graphics graphics)
         {
             graphics.Clear(Color.White);
@@ -263,13 +248,100 @@ namespace SquirrelsWorlds
             tr.Close();
             _problem = ServerProblem.CreateInstance(domainContext, serverProblemContext);
             _gridCount = Globals.TermInterpreter.NumericConstValueDict["maxLoc"] + 1;
-            //            problem.ShowInfo();
 
             _server = new Server(_port, _listenBackLog, _problem);
             
-            _server.ObjectBaseChanged += _server_ObjectBaseChanged;
+            //_server.ObjectBaseChanged += _server_ObjectBaseChanged;
+            _server.NewAction += _server_NewAction;
+            _server.NewObservation += _server_NewObservation;
+            _server.AgentTerminated += _server_AgentTerminated;
             _server.Completed += _server_Completed;
 
+        }
+
+        void _server_NewAction(object sender, Tuple<string, Action, Response, Event, IReadOnlyDictionary<string, bool>> e)
+        {
+            Graphics graphics = CreateGraphics();
+            DrawGrids(graphics);
+            DrawAcorns(graphics, _server.ObjectBase.PredBooleanMap);
+            DrawMovingSquirrels(graphics, e.Item5, e.Item2);
+            graphics.Dispose();
+
+            var predBoolMap = e.Item5;
+            foreach (var pair in predBoolMap)
+            {
+                ListViewItem[] searchItems = listviewPredBoolMap.Items.Find(pair.Key, true);
+                Console.WriteLine("Count of listview items: {0}", searchItems.Length);
+                Console.WriteLine(pair.Key);
+                string newValueString = pair.Value.ToString();
+                searchItems[0].ForeColor = searchItems[0].SubItems[1].Text == newValueString ? Color.Black : Color.Red;
+                searchItems[0].SubItems[1].Text = newValueString;
+            }
+
+            rtbEventList.AppendText(e.Item4.FullName);
+            rtbEventList.AppendText("\n");
+
+
+            string actionText = string.Format("Action: {0}\n", e.Item2);
+            string responseText = string.Format("Response: {0}\n", e.Item3);
+            if (e.Item1 == "a1")
+            {
+                rtbEdgy.AppendText(actionText);
+                rtbEdgy.AppendText(responseText);
+            }
+            else
+            {
+                rtbWally.AppendText(actionText);
+                rtbWally.AppendText(responseText);
+            }
+        }
+
+        void _server_NewObservation(object sender, Tuple<string, Observation> e)
+        {
+            string observationText = string.Format("Observation: {0}\n", e.Item2);
+
+            if (e.Item1 == "a1")
+            {
+                rtbWally.AppendText(observationText);
+            }
+            else
+            {
+                rtbEdgy.AppendText(observationText);
+            }
+        }
+
+        void _server_AgentTerminated(object sender, string e)
+        {
+            if (e == "a1")
+            {
+                if (_edgyLastImage == _edgeInitialImage)
+                {
+                    _edgyLastImage = _expiredInitialImage;
+                }
+                else if (_edgyLastImage == _edgyLeftImage)
+                {
+                    _edgyLastImage = _expiredLeftImage;
+                }
+                else
+                {
+                    _edgyLastImage = _expiredRightImage;
+                }
+            }
+            else
+            {
+                if (_wallyLastImage == _wallyInitialImage)
+                {
+                    _wallyLastImage = _expiredInitialImage;
+                }
+                else if (_wallyLastImage == _wallyLeftImage)
+                {
+                    _wallyLastImage = _expiredLeftImage;
+                }
+                else
+                {
+                    _wallyLastImage = _expiredRightImage;
+                }
+            }
         }
 
         void _server_Completed(object sender, ObjectBase e)
@@ -277,7 +349,7 @@ namespace SquirrelsWorlds
             MessageBox.Show("All squirrels terminated!");
         }
 
-        void _server_ObjectBaseChanged(object sender, Tuple<IReadOnlyDictionary<string, bool>, string, Planning.Action, Response, Observation, Event> e)
+        void _server_ObjectBaseChanged(object sender, Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event> e)
         {
             Graphics graphics = CreateGraphics();
             DrawGrids(graphics);
@@ -285,7 +357,7 @@ namespace SquirrelsWorlds
             DrawMovingSquirrels(graphics, e.Item1, e.Item3);
             graphics.Dispose();
 
-            var predBoolMap = _server.ObjectBase.PredBooleanMap;
+            var predBoolMap = e.Item1;
             foreach (var pair in predBoolMap)
             {
                 ListViewItem[] searchItems = listviewPredBoolMap.Items.Find(pair.Key, true);

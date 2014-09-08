@@ -142,9 +142,6 @@
     <None Include="Figs\SkwirlDown.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Figs\SkwirlEast.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Figs\SkwirlRight.png" />
   </ItemGroup>
   <ItemGroup>

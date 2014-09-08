@@ -16,8 +16,4 @@
     )
 	
 	(Drop a1)
-
-	(Noop a1)
-	(Noop a1)
-	(Noop a1)
 )

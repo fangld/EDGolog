@@ -18,11 +18,6 @@ namespace Planning.HighLevelProgramExecution
 
         #region Constructors
 
-        //public Action(string fullName)
-        //{
-        //    FullName = fullName;
-        //}
-
         public Action(PlanningParser.ProgramContext context)
         {
             FullName = ConstContainer.GetFullName(context.actionSymbol(), context.term());

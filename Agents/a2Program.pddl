@@ -12,8 +12,4 @@
 	(if (and (know (hold a2)) (bel (not (acorn 3 0))))
 		(Drop a2)
 	)
-
-	(Noop a2)
-	(Noop a2)
-	(Noop a2)
 )
