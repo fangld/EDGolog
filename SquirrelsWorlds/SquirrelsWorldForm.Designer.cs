@@ -30,6 +30,8 @@
         {
             this.btnStart = new System.Windows.Forms.Button();
             this.listviewPredBoolMap = new System.Windows.Forms.ListView();
+            this.colPredicate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.rtbEdgy = new System.Windows.Forms.RichTextBox();
             this.rtbWally = new System.Windows.Forms.RichTextBox();
             this.labelEdgy = new System.Windows.Forms.Label();
@@ -37,8 +39,6 @@
             this.labelPredBoolMap = new System.Windows.Forms.Label();
             this.labelEventList = new System.Windows.Forms.Label();
             this.rtbEventList = new System.Windows.Forms.RichTextBox();
-            this.colPredicate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // btnStart
@@ -64,6 +64,16 @@
             this.listviewPredBoolMap.TabIndex = 2;
             this.listviewPredBoolMap.UseCompatibleStateImageBehavior = false;
             this.listviewPredBoolMap.View = System.Windows.Forms.View.Details;
+            // 
+            // colPredicate
+            // 
+            this.colPredicate.Text = "Predicate";
+            this.colPredicate.Width = 135;
+            // 
+            // colValue
+            // 
+            this.colValue.Text = "Value";
+            this.colValue.Width = 55;
             // 
             // rtbEdgy
             // 
@@ -125,21 +135,11 @@
             this.rtbEventList.TabIndex = 4;
             this.rtbEventList.Text = "";
             // 
-            // colPredicate
-            // 
-            this.colPredicate.Text = "Predicate";
-            this.colPredicate.Width = 135;
-            // 
-            // colValue
-            // 
-            this.colValue.Text = "Value";
-            this.colValue.Width = 55;
-            // 
             // SquirrelsWorldForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1006, 721);
+            this.ClientSize = new System.Drawing.Size(1782, 853);
             this.Controls.Add(this.labelEventList);
             this.Controls.Add(this.rtbEventList);
             this.Controls.Add(this.labelPredBoolMap);

@@ -246,12 +246,16 @@ namespace SquirrelsWorlds
 
             var serverProblemContext = parser.serverProblem(); // begin parsing at init rule
             tr.Close();
+
+            DateTime starTime = DateTime.Now;
             _problem = ServerProblem.CreateInstance(domainContext, serverProblemContext);
+            DateTime endTime = DateTime.Now;
+            Console.WriteLine("Compilation time: {0}", endTime.Subtract(starTime));
+
             _gridCount = Globals.TermInterpreter.NumericConstValueDict["maxLoc"] + 1;
 
             _server = new Server(_port, _listenBackLog, _problem);
-            
-            //_server.ObjectBaseChanged += _server_ObjectBaseChanged;
+
             _server.NewAction += _server_NewAction;
             _server.NewObservation += _server_NewObservation;
             _server.AgentTerminated += _server_AgentTerminated;
@@ -346,49 +350,7 @@ namespace SquirrelsWorlds
 
         void _server_Completed(object sender, ObjectBase e)
         {
-            MessageBox.Show("All squirrels terminated!");
-        }
-
-        void _server_ObjectBaseChanged(object sender, Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event> e)
-        {
-            Graphics graphics = CreateGraphics();
-            DrawGrids(graphics);
-            DrawAcorns(graphics, _server.ObjectBase.PredBooleanMap);
-            DrawMovingSquirrels(graphics, e.Item1, e.Item3);
-            graphics.Dispose();
-
-            var predBoolMap = e.Item1;
-            foreach (var pair in predBoolMap)
-            {
-                ListViewItem[] searchItems = listviewPredBoolMap.Items.Find(pair.Key, true);
-                Console.WriteLine("Count of listview items: {0}", searchItems.Length);
-                Console.WriteLine(pair.Key);
-                string newValueString = pair.Value.ToString();
-                searchItems[0].ForeColor = searchItems[0].SubItems[1].Text == newValueString ? Color.Black : Color.Red;
-                searchItems[0].SubItems[1].Text = newValueString;
-            }
-
-            rtbEventList.AppendText(e.Item6.FullName);
-            rtbEventList.AppendText("\n");
-
-            if (e.Item2 == "a1")
-            {
-                string actionText = string.Format("Action: {0}\n", e.Item3);
-                rtbEdgy.AppendText(actionText);
-                string responseText = string.Format("Response: {0}\n", e.Item4);
-                rtbEdgy.AppendText(responseText);
-                string observationText = string.Format("Observation: {0}\n", e.Item5);
-                rtbWally.AppendText(observationText);
-            }
-            else
-            {
-                string actionText = string.Format("Action: {0}\n", e.Item3);
-                rtbWally.AppendText(actionText);
-                string responseText = string.Format("Response: {0}\n", e.Item4);
-                rtbWally.AppendText(responseText);
-                string observationText = string.Format("Observation: {0}\n", e.Item5);
-                rtbEdgy.AppendText(observationText);
-            }
+            //("All squirrels terminated!");
         }
 
         private void btnStart_Click(object sender, EventArgs e)

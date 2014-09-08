@@ -44,10 +44,10 @@ namespace Agents.Network
 
         #region Constructors
         
-        public Client(string domainFileName, string problemFileName, string programFileName)
+        public Client(string domainFileName, string problemFileName, string programFileName, string serverUrl, int port)
         {
-            _host = "127.0.0.1";
-            _port = 888;
+            _host = serverUrl;
+            _port = port;
 
             Initial(domainFileName, problemFileName, programFileName);
             _agentId = _problem.AgentId;
@@ -160,11 +160,15 @@ namespace Agents.Network
                         Console.WriteLine("Receive observation: {0}", observationName);
                         Observation observation = _observationDict[observationName];
                         _mentalAttitude.Update(observation);
+                        int memory = CUDD.ReadMemoryInUse();
+                        Console.WriteLine("Used memory: {0}MB", memory >> 20);
                     }
                     else
                     {
                         Console.WriteLine(program);
                         program = Trans(program);
+                        int memory = CUDD.ReadMemoryInUse();
+                        Console.WriteLine("Used memory: {0}MB", memory >> 20);
                         if (!Final(program))
                         {
                             SendMessage("remain");
@@ -226,8 +230,6 @@ namespace Agents.Network
         
         private Planning.HighLevelProgramExecution.Program Trans(Planning.HighLevelProgramExecution.Program program)
         {
-            //Console.WriteLine();
-            //Console.WriteLine(program);
             Planning.HighLevelProgramExecution.Program remainingProgram;
             
             if (program is Planning.HighLevelProgramExecution.Action)

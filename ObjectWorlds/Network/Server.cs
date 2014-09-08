@@ -86,7 +86,10 @@ namespace ObjectWorlds.Network
             Console.WriteLine("Wait for an agent");
             Listen();
             Console.WriteLine("Connect 2 agents");
+            DateTime start = DateTime.Now;
             ReceiveActions();
+            DateTime end = DateTime.Now;
+            Console.WriteLine(end.Subtract(start));
         }
 
         public void Listen()

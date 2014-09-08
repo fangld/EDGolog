@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Agents.Network;
+using Agents.Properties;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using LanguageRecognition;
@@ -71,11 +72,12 @@ namespace Agents
         {
             try
             {
-                string domainFileName = "swDomain.pddl";
-                string problomFileName = "swClientProblem.pddl";
-
-                string programFileName = "program.pddl";
-                Client client = new Client(domainFileName, problomFileName, programFileName);
+                string domainFileName = Settings.Default.DomainFileName;
+                string problomFileName = Settings.Default.ClientProblemFileName;
+                string programFileName = Settings.Default.ProgramFileName;
+                string serverUrl = Settings.Default.ServeUrl;
+                int port = Settings.Default.ServerPort;
+                Client client = new Client(domainFileName, problomFileName, programFileName, serverUrl, port);
                 client.Connect();
                 client.Handshake();
                 Console.WriteLine("Start to execute program");
