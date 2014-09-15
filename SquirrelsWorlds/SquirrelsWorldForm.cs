@@ -275,8 +275,8 @@ namespace SquirrelsWorlds
             foreach (var pair in predBoolMap)
             {
                 ListViewItem[] searchItems = listviewPredBoolMap.Items.Find(pair.Key, true);
-                Console.WriteLine("Count of listview items: {0}", searchItems.Length);
-                Console.WriteLine(pair.Key);
+                //Console.WriteLine("Count of listview items: {0}", searchItems.Length);
+                //Console.WriteLine(pair.Key);
                 string newValueString = pair.Value.ToString();
                 searchItems[0].ForeColor = searchItems[0].SubItems[1].Text == newValueString ? Color.Black : Color.Red;
                 searchItems[0].SubItems[1].Text = newValueString;
@@ -306,11 +306,11 @@ namespace SquirrelsWorlds
 
             if (e.Item1 == "a1")
             {
-                rtbWally.AppendText(observationText);
+                rtbEdgy.AppendText(observationText);
             }
             else
             {
-                rtbEdgy.AppendText(observationText);
+                rtbWally.AppendText(observationText);
             }
         }
 

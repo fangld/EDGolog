@@ -130,10 +130,6 @@ namespace ObjectWorlds.Network
                 client.SendMessage("action");
                 Action action = client.GetAction();
                 Response response = ObjectBase.GetActualResponse(action);
-                //if (NewAction != null)
-                //{
-                //    NewAction(this, new Tuple<string, Action, Response>(client.AgentId, action, response));
-                //}
 
                 client.SendMessage(response.FullName);
                 string message = client.ReceiveMessage();
@@ -150,7 +146,6 @@ namespace ObjectWorlds.Network
 
                 string agentName = client.AgentId;
                 Event e = ObjectBase.GetActualEvent(response);
-                Tuple<IReadOnlyDictionary<string, bool>, string, Action, Response, Observation, Event> tuple = null;
                 foreach (var otherAgentName in _problem.AgentList)
                 {
                     if (otherAgentName != agentName)
@@ -178,12 +173,6 @@ namespace ObjectWorlds.Network
                                             NewObservation(this,
                                                 new Tuple<string, Observation>(otherAgentName, observation));
                                         }
-                                        //tuple =
-                                        //    new Tuple
-                                        //        <IReadOnlyDictionary<string, bool>, string, Action, Response,
-                                        //            Observation, Event
-                                        //            >(ObjectBase.PredBooleanMap, agentName, action, response,
-                                        //                observation, e);
                                         otherClient.SendMessage("observation");
                                         otherClient.SendMessage(observation.FullName);
                                         break;

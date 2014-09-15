@@ -151,7 +151,7 @@ namespace Agents.Network
             {
                 do
                 {
-                    Console.WriteLine(program.GetType());
+                    //Console.WriteLine(program.GetType());
                     string message = ReceiveMessage();
                     Console.WriteLine("Receive message: {0}", message);
                     if (message == "observation")
@@ -165,7 +165,7 @@ namespace Agents.Network
                     }
                     else
                     {
-                        Console.WriteLine(program);
+                        //Console.WriteLine(program);
                         program = Trans(program);
                         int memory = CUDD.ReadMemoryInUse();
                         Console.WriteLine("Used memory: {0}MB", memory >> 20);
@@ -260,11 +260,8 @@ namespace Agents.Network
                 Planning.HighLevelProgramExecution.Program[] newRemainingProgramArray =
                     new Planning.HighLevelProgramExecution.Program[seq.SubProgramLength - i];
                 newRemainingProgramArray[0] = Trans(seq.SubPrograms[i]);
-                for (int j = 1; j < newRemainingProgramArray.Length; j++)
-                {
-                    //Console.WriteLine("newIndex:{0}, oldIndex:{1}", j, j + i - 1);
-                    newRemainingProgramArray[j] = seq.SubPrograms[j + i];
-                }
+                Parallel.For(1, newRemainingProgramArray.Length,
+                    j => newRemainingProgramArray[j] = seq.SubPrograms[j + i]);
 
                 remainingProgram = new SequenceStructure(newRemainingProgramArray);
             }
@@ -290,36 +287,36 @@ namespace Agents.Network
             return remainingProgram;
         }
 
-        private void ExecuteAction(PlanningParser.ProgramContext context)
-        {
-            Console.WriteLine("Action context: {0}", context.GetText());
-            string actionName;
-            string responseName;
-            string observationName;
-            actionName = ConstContainer.GetFullName(context.actionSymbol(), context.term());
-            SendMessage(actionName);
-            Action action = _actionDict[actionName];
+        //private void ExecuteAction(PlanningParser.ProgramContext context)
+        //{
+        //    Console.WriteLine("Action context: {0}", context.GetText());
+        //    string actionName;
+        //    string responseName;
+        //    string observationName;
+        //    actionName = ConstContainer.GetFullName(context.actionSymbol(), context.term());
+        //    SendMessage(actionName);
+        //    Action action = _actionDict[actionName];
 
-            responseName = ReceiveMessage();
-            Console.WriteLine("Receive response: {0}", responseName);
-            Response response = action.ResponseDict[responseName];
-            _mentalAttitude.Update(response);
-            //Console.WriteLine("Knowledge:");
-            //CUDD.Print.PrintMinterm(_mentalAttitude.Knowledge);
-            //Console.WriteLine("Belief:");
-            //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
+        //    responseName = ReceiveMessage();
+        //    Console.WriteLine("Receive response: {0}", responseName);
+        //    Response response = action.ResponseDict[responseName];
+        //    _mentalAttitude.Update(response);
+        //    //Console.WriteLine("Knowledge:");
+        //    //CUDD.Print.PrintMinterm(_mentalAttitude.Knowledge);
+        //    //Console.WriteLine("Belief:");
+        //    //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
 
-            observationName = ReceiveMessage();
-            Console.WriteLine("Receive observation: {0}", observationName);
-            Observation observation = _observationDict[observationName];
-            _mentalAttitude.Update(observation);
-            //Console.WriteLine("Knowledge:");
-            //CUDD.Print.PrintMinterm(_mentalAttitude.Knowledge);
-            //Console.WriteLine("Belief:");
-            //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
+        //    observationName = ReceiveMessage();
+        //    Console.WriteLine("Receive observation: {0}", observationName);
+        //    Observation observation = _observationDict[observationName];
+        //    _mentalAttitude.Update(observation);
+        //    //Console.WriteLine("Knowledge:");
+        //    //CUDD.Print.PrintMinterm(_mentalAttitude.Knowledge);
+        //    //Console.WriteLine("Belief:");
+        //    //CUDD.Print.PrintMinterm(_mentalAttitude.Belief);
 
-            Console.ReadLine();
-        }
+        //    Console.ReadLine();
+        //}
 
         private void SendMessage(string message)
         {

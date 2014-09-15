@@ -17,11 +17,6 @@ namespace SquirrelsWorlds
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             SquirrelsWorldForm squirrelsWorldForm = new SquirrelsWorldForm();
-            //squirrelsWorldForm.LocationX = 20;
-            //squirrelsWorldForm.LocationY = 20;
-            //squirrelsWorldForm.LineWidth = 1;
-            //squirrelsWorldForm.BitmapWidth = 50;
-            //squirrelsWorldForm.BitmapHeight = 50;
             Application.Run(squirrelsWorldForm);
         }
     }
