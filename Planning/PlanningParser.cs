@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from E:\edgolog\LanguageRecognition\Planning.g4 by ANTLR 4.3
+// Generated from E:\EDGolog\LanguageRecognition\Planning.g4 by ANTLR 4.3
 
 // Unreachable code detected
 #pragma warning disable 0162
